@@ -1,5 +1,7 @@
+import utils.TYPE
+
 class WasmPlatform: Platform {
-    override val name: String = "Web with Kotlin/Wasm"
+    override val type = TYPE.WEB
 }
 
 actual fun getPlatform(): Platform = WasmPlatform()

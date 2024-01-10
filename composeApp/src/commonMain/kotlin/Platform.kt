@@ -1,5 +1,7 @@
+import utils.TYPE
+
 interface Platform {
-    val name: String
+    val type: TYPE
 }
 
 expect fun getPlatform(): Platform

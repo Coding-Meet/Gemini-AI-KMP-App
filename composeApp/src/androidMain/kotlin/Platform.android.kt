@@ -1,7 +1,8 @@
 import android.os.Build
+import utils.TYPE
 
 class AndroidPlatform : Platform {
-    override val name: String = "Android ${Build.VERSION.SDK_INT}"
+    override val type = TYPE.MOBILE
 }
 
 actual fun getPlatform(): Platform = AndroidPlatform()
