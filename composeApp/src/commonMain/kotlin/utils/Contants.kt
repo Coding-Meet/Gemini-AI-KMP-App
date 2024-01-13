@@ -12,6 +12,12 @@ enum class TYPE{
     DESKTOP,
     WEB,
 }
+
+enum class DialogType{
+    NEW_CHAT,
+    API_KEY
+}
+
 enum class Screens{
     MAIN,
     DETAIL,

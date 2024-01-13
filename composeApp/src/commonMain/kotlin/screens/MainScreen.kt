@@ -17,6 +17,7 @@ import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.text.input.KeyboardCapitalization
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.*
+import androidx.compose.ui.window.DialogProperties
 import desktopweb.SideScreenDesktop
 import mobile.SideScreenMobile
 import models.Robot
@@ -27,7 +28,7 @@ import viewmodels.MainViewModel
 
 @Composable
 fun MainScreen(viewModel: MainViewModel) {
-
+    ChatAlertDialogBox(viewModel)
     val sideScreen = if (viewModel.allPlatform == TYPE.MOBILE) {
         SideScreenMobile(viewModel)
     } else {
@@ -36,7 +37,7 @@ fun MainScreen(viewModel: MainViewModel) {
     when (viewModel.screens) {
         Screens.MAIN -> {
             sideScreen.SideRow {
-                TopBarLayout {
+                TopBarLayout(viewModel) {
                     LazyColumn(
                         Modifier.fillMaxSize().padding(it).background(lightBackgroundColor)
                     ) {
@@ -45,7 +46,6 @@ fun MainScreen(viewModel: MainViewModel) {
                                 value = viewModel.searchText,
                                 onValueChange = {
                                     viewModel.searchText = it
-                                    viewModel.isAddNewChat = false
                                 },
                                 keyboardOptions = KeyboardOptions(capitalization = KeyboardCapitalization.Sentences),
                                 singleLine = true,
@@ -59,7 +59,6 @@ fun MainScreen(viewModel: MainViewModel) {
                                 trailingIcon = {
                                     if (viewModel.searchText.isNotEmpty()) {
                                         IconButton(onClick = {
-                                            viewModel.isAddNewChat = false
                                             viewModel.searchText = ""
                                         }) {
                                             Icon(
@@ -84,52 +83,10 @@ fun MainScreen(viewModel: MainViewModel) {
                                     selectionColors = TextSelectionColors(selectionColor, selectionColor)
                                 )
                             )
-                            if (viewModel.searchText.isEmpty() && viewModel.isAddNewChat) {
-                                TextField(
-                                    value = viewModel.newChartRobotText,
-                                    onValueChange = { viewModel.newChartRobotText = it },
-                                    modifier = Modifier.fillMaxWidth().padding(10.dp)
-                                        .background(borderColor),
-                                    keyboardOptions = KeyboardOptions(capitalization = KeyboardCapitalization.Sentences),
-                                    placeholder = {
-                                        Text("Enter the Chat Name", color = textHintColor)
-                                    },
-                                    singleLine = true,
-                                    colors = TextFieldDefaults.colors(
-                                        unfocusedContainerColor = lightBorderColor,
-                                        focusedContainerColor = lightBorderColor,
-                                        focusedIndicatorColor = Color.Transparent,
-                                        unfocusedIndicatorColor = Color.Transparent,
-                                        focusedTextColor = whiteColor,
-                                        unfocusedTextColor = whiteColor,
-                                        focusedPlaceholderColor = whiteColor,
-                                        unfocusedPlaceholderColor = whiteColor,
-                                        unfocusedLabelColor = whiteColor,
-                                        focusedLabelColor = whiteColor,
-                                        cursorColor = whiteColor,
-                                        selectionColors = TextSelectionColors(selectionColor, selectionColor)
-                                    ),
-                                    shape = RoundedCornerShape(10.dp)
-                                )
-                            }
                             Button(
                                 onClick = {
-                                    if (viewModel.isAddNewChat) {
-                                        if (viewModel.newChartRobotText.trim().isNotEmpty()) {
-                                            val newRobot = Robot(
-                                                generateRandomKey(),
-                                                viewModel.newChartRobotText.trim(),
-                                                currentDateTimeToString(),
-                                                "robot_${(1..8).random()}.png"
-                                            )
-                                            viewModel.robotList.add(newRobot)
-                                            viewModel.newChartRobotText = ""
-                                            viewModel.isAddNewChat = false
-                                        }
-                                    } else {
-                                        viewModel.isAddNewChat = true
-                                        viewModel.searchText = ""
-                                    }
+                                    viewModel.dialogTypeState = DialogType.NEW_CHAT
+                                    viewModel.isShowDialog = true
                                 },
                                 modifier = Modifier.fillMaxWidth().padding(10.dp),
                                 colors = ButtonDefaults.buttonColors(
@@ -142,12 +99,10 @@ fun MainScreen(viewModel: MainViewModel) {
                                     tint = blackColor
                                 )
                                 Spacer(Modifier.size(ButtonDefaults.IconSize))
-                                Text(
-                                    text = if (viewModel.isAddNewChat) "Save" else "New Chat",
-                                )
+                                Text(text = "New Chat")
                             }
                         }
-                        itemsIndexed(viewModel.robotList) { index,menuItem ->
+                        itemsIndexed(viewModel.robotList) { index, menuItem ->
                             UserLayout(menuItem) {
                                 if (viewModel.allPlatform == TYPE.MOBILE) {
                                     viewModel.screens = Screens.DETAIL
@@ -175,6 +130,7 @@ fun MainScreen(viewModel: MainViewModel) {
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun TopBarLayout(
+    viewModel: MainViewModel,
     content: @Composable (PaddingValues) -> Unit
 ) {
     val scrollBehavior = TopAppBarDefaults.pinnedScrollBehavior(rememberTopAppBarState())
@@ -196,7 +152,11 @@ fun TopBarLayout(
                     )
                 },
                 actions = {
-                    IconButton(onClick = { /* do something */ }) {
+                    IconButton(onClick = {
+                        viewModel.getApikeyLocalStorage()
+                        viewModel.dialogTypeState = DialogType.API_KEY
+                        viewModel.isShowDialog = true
+                    }) {
                         Icon(
                             imageVector = Icons.Filled.Settings,
                             contentDescription = "api key",
@@ -265,5 +225,123 @@ fun UserRow(robot: Robot, customModifier: Modifier = Modifier) {
                 modifier = Modifier.padding(top = 8.dp)
             )
         }
+    }
+}
+
+
+@Composable
+fun ChatAlertDialogBox(viewModel: MainViewModel) {
+    if (viewModel.isShowDialog) {
+        AlertDialog(properties = DialogProperties(dismissOnBackPress = true, dismissOnClickOutside = false),
+            icon = {
+                Icon(
+                    when (viewModel.dialogTypeState) {
+                        DialogType.NEW_CHAT -> {
+                            Icons.Default.Person
+                        }
+
+                        DialogType.API_KEY -> {
+                            Icons.Default.Settings
+                        }
+                    }, contentDescription = "robot"
+                )
+            },
+            containerColor = lightBackgroundColor,
+            textContentColor = whiteColor,
+            iconContentColor = whiteColor,
+            titleContentColor = whiteColor,
+            title = {
+                Text(
+                    text =
+                    when (viewModel.dialogTypeState) {
+                        DialogType.NEW_CHAT -> "Add Robot"
+                        DialogType.API_KEY -> "Add Api Key"
+                    }
+                )
+            },
+            text = {
+                TextField(
+                    value = viewModel.newChartRobotAndApiKeyText,
+                    onValueChange = { viewModel.newChartRobotAndApiKeyText = it },
+                    modifier = Modifier.fillMaxWidth().padding(10.dp)
+                        .background(borderColor),
+                    keyboardOptions = KeyboardOptions(capitalization = KeyboardCapitalization.Sentences),
+                    placeholder = {
+                        Text(
+                            when (viewModel.dialogTypeState) {
+                                DialogType.NEW_CHAT -> "Enter the Chat Name"
+                                DialogType.API_KEY -> "Enter the Api Key"
+                            }, color = textHintColor
+                        )
+                    },
+                    singleLine = true,
+                    colors = TextFieldDefaults.colors(
+                        unfocusedContainerColor = lightBorderColor,
+                        focusedContainerColor = lightBorderColor,
+                        focusedIndicatorColor = Color.Transparent,
+                        unfocusedIndicatorColor = Color.Transparent,
+                        focusedTextColor = whiteColor,
+                        unfocusedTextColor = whiteColor,
+                        focusedPlaceholderColor = whiteColor,
+                        unfocusedPlaceholderColor = whiteColor,
+                        unfocusedLabelColor = whiteColor,
+                        focusedLabelColor = whiteColor,
+                        cursorColor = whiteColor,
+                        selectionColors = TextSelectionColors(selectionColor, selectionColor)
+                    ),
+                    shape = RoundedCornerShape(10.dp)
+                )
+            },
+            onDismissRequest = {
+                viewModel.newChartRobotAndApiKeyText = ""
+                viewModel.isShowDialog = false
+            },
+
+            confirmButton = {
+                Button(
+                    onClick = {
+                        if (viewModel.newChartRobotAndApiKeyText.trim().isNotEmpty()) {
+                            when (viewModel.dialogTypeState) {
+                                DialogType.NEW_CHAT -> {
+                                    val newRobot = Robot(
+                                        generateRandomKey(),
+                                        viewModel.newChartRobotAndApiKeyText.trim(),
+                                        currentDateTimeToString(),
+                                        "robot_${(1..8).random()}.png"
+                                    )
+                                    viewModel.robotList.add(newRobot)
+                                }
+
+                                DialogType.API_KEY -> {
+                                    viewModel.setApikeyLocalStorage()
+                                }
+                            }
+                        }
+                        viewModel.newChartRobotAndApiKeyText = ""
+                        viewModel.isShowDialog = false
+                    },
+                    colors = ButtonDefaults.buttonColors(
+                        containerColor = whiteColor,
+                        contentColor = blackColor,
+                    ),
+                ) {
+                    Text("Save")
+                }
+            },
+            dismissButton = {
+                Button(
+                    onClick = {
+                        viewModel.newChartRobotAndApiKeyText = ""
+                        viewModel.isShowDialog = false
+                    },
+                    colors = ButtonDefaults.buttonColors(
+                        containerColor = whiteColor,
+                        contentColor = blackColor,
+                    ),
+                ) {
+                    Text("Cancel")
+                }
+            }
+        )
     }
 }

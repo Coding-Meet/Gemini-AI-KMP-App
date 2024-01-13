@@ -51,6 +51,7 @@ kotlin {
             implementation(libs.mpfilepicker)
 
             implementation("com.mikepenz:multiplatform-markdown-renderer:0.10.0")
+            implementation("com.russhwolf:multiplatform-settings-no-arg:1.1.1")
         }
         desktopMain.dependencies {
             implementation(compose.desktop.currentOs)
