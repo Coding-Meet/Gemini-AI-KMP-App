@@ -20,7 +20,7 @@ kotlin {
         }
         binaries.executable()
     }
-    
+
     androidTarget {
         compilations.all {
             kotlinOptions {
@@ -28,15 +28,16 @@ kotlin {
             }
         }
     }
-    
+
     jvm("desktop")
-    
+
     sourceSets {
         val desktopMain by getting
-        
+
         androidMain.dependencies {
             implementation(libs.compose.ui.tooling.preview)
             implementation(libs.androidx.activity.compose)
+//            implementation("com.mikepenz:multiplatform-markdown-renderer-android:0.10.0")
         }
         commonMain.dependencies {
             implementation(compose.runtime)
@@ -44,12 +45,16 @@ kotlin {
             implementation(compose.material)
             implementation(compose.ui)
             implementation(compose.material3)
-            @OptIn(ExperimentalComposeLibrary::class)
-            implementation(compose.components.resources)
+            @OptIn(ExperimentalComposeLibrary::class) implementation(compose.components.resources)
             implementation(libs.moko.mvvm)
+            implementation(libs.kotlinx.datetime)
+            implementation(libs.mpfilepicker)
+
+            implementation("com.mikepenz:multiplatform-markdown-renderer:0.10.0")
         }
         desktopMain.dependencies {
             implementation(compose.desktop.currentOs)
+//            implementation("com.mikepenz:multiplatform-markdown-renderer-jvm:0.10.0")
         }
 
         jsMain.dependencies {
@@ -109,8 +114,7 @@ compose.experimental {
 }
 
 rootProject.plugins.withType(org.jetbrains.kotlin.gradle.targets.js.yarn.YarnPlugin::class.java) {
-    rootProject.the<YarnRootExtension>().yarnLockMismatchReport =
-        YarnLockMismatchReport.WARNING // NONE | FAIL
+    rootProject.the<YarnRootExtension>().yarnLockMismatchReport = YarnLockMismatchReport.WARNING // NONE | FAIL
     rootProject.the<YarnRootExtension>().reportNewYarnLock = false // true
     rootProject.the<YarnRootExtension>().yarnLockAutoReplace = false // true
 }

@@ -1,28 +1,28 @@
 package screens
 
-import androidx.compose.animation.AnimatedContent
-import androidx.compose.animation.AnimatedVisibility
+
 import androidx.compose.foundation.*
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.*
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.text.KeyboardOptions
+import androidx.compose.foundation.text.selection.TextSelectionColors
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.*
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
-import androidx.compose.ui.Alignment
-import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.*
+import androidx.compose.ui.*
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.input.nestedscroll.nestedScroll
+import androidx.compose.ui.text.input.KeyboardCapitalization
 import androidx.compose.ui.text.style.TextOverflow
-import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.*
 import desktopweb.SideScreenDesktop
 import mobile.SideScreenMobile
+import models.Robot
 import org.jetbrains.compose.resources.*
 import theme.*
-import utils.Screens
-import utils.TYPE
-import utils.menuItems
+import utils.*
 import viewmodels.MainViewModel
 
 @Composable
@@ -43,7 +43,12 @@ fun MainScreen(viewModel: MainViewModel) {
                         item {
                             TextField(
                                 value = viewModel.searchText,
-                                onValueChange = { viewModel.searchText = it },
+                                onValueChange = {
+                                    viewModel.searchText = it
+                                    viewModel.isAddNewChat = false
+                                },
+                                keyboardOptions = KeyboardOptions(capitalization = KeyboardCapitalization.Sentences),
+                                singleLine = true,
                                 label = { Text("Search") },
                                 leadingIcon = {
                                     Icon(
@@ -53,7 +58,10 @@ fun MainScreen(viewModel: MainViewModel) {
                                 },
                                 trailingIcon = {
                                     if (viewModel.searchText.isNotEmpty()) {
-                                        IconButton(onClick = { viewModel.searchText = "" }) {
+                                        IconButton(onClick = {
+                                            viewModel.isAddNewChat = false
+                                            viewModel.searchText = ""
+                                        }) {
                                             Icon(
                                                 Icons.Filled.Close, contentDescription = "close",
                                                 tint = whiteColor
@@ -72,11 +80,57 @@ fun MainScreen(viewModel: MainViewModel) {
                                     unfocusedLabelColor = whiteColor,
                                     focusedLabelColor = whiteColor,
                                     focusedIndicatorColor = whiteColor,
-                                    cursorColor = whiteColor
+                                    cursorColor = whiteColor,
+                                    selectionColors = TextSelectionColors(selectionColor, selectionColor)
                                 )
                             )
+                            if (viewModel.searchText.isEmpty() && viewModel.isAddNewChat) {
+                                TextField(
+                                    value = viewModel.newChartRobotText,
+                                    onValueChange = { viewModel.newChartRobotText = it },
+                                    modifier = Modifier.fillMaxWidth().padding(10.dp)
+                                        .background(borderColor),
+                                    keyboardOptions = KeyboardOptions(capitalization = KeyboardCapitalization.Sentences),
+                                    placeholder = {
+                                        Text("Enter the Chat Name", color = textHintColor)
+                                    },
+                                    singleLine = true,
+                                    colors = TextFieldDefaults.colors(
+                                        unfocusedContainerColor = lightBorderColor,
+                                        focusedContainerColor = lightBorderColor,
+                                        focusedIndicatorColor = Color.Transparent,
+                                        unfocusedIndicatorColor = Color.Transparent,
+                                        focusedTextColor = whiteColor,
+                                        unfocusedTextColor = whiteColor,
+                                        focusedPlaceholderColor = whiteColor,
+                                        unfocusedPlaceholderColor = whiteColor,
+                                        unfocusedLabelColor = whiteColor,
+                                        focusedLabelColor = whiteColor,
+                                        cursorColor = whiteColor,
+                                        selectionColors = TextSelectionColors(selectionColor, selectionColor)
+                                    ),
+                                    shape = RoundedCornerShape(10.dp)
+                                )
+                            }
                             Button(
-                                onClick = {},
+                                onClick = {
+                                    if (viewModel.isAddNewChat) {
+                                        if (viewModel.newChartRobotText.trim().isNotEmpty()) {
+                                            val newRobot = Robot(
+                                                generateRandomKey(),
+                                                viewModel.newChartRobotText.trim(),
+                                                currentDateTimeToString(),
+                                                "robot_${(1..8).random()}.png"
+                                            )
+                                            viewModel.robotList.add(newRobot)
+                                            viewModel.newChartRobotText = ""
+                                            viewModel.isAddNewChat = false
+                                        }
+                                    } else {
+                                        viewModel.isAddNewChat = true
+                                        viewModel.searchText = ""
+                                    }
+                                },
                                 modifier = Modifier.fillMaxWidth().padding(10.dp),
                                 colors = ButtonDefaults.buttonColors(
                                     containerColor = whiteColor,
@@ -84,20 +138,21 @@ fun MainScreen(viewModel: MainViewModel) {
                                 ),
                             ) {
                                 Icon(
-                                    Icons.Filled.Add, contentDescription = "search",
+                                    Icons.Filled.Add, contentDescription = "add",
                                     tint = blackColor
                                 )
                                 Spacer(Modifier.size(ButtonDefaults.IconSize))
                                 Text(
-                                    text = "New Chat",
+                                    text = if (viewModel.isAddNewChat) "Save" else "New Chat",
                                 )
                             }
                         }
-                        items(menuItems) { menuItem ->
+                        itemsIndexed(viewModel.robotList) { index,menuItem ->
                             UserLayout(menuItem) {
                                 if (viewModel.allPlatform == TYPE.MOBILE) {
                                     viewModel.screens = Screens.DETAIL
                                 }
+                                viewModel.currentPos = index
                             }
                         }
                     }
@@ -157,131 +212,10 @@ fun TopBarLayout(
     }
 }
 
-@OptIn(ExperimentalMaterial3Api::class, ExperimentalResourceApi::class)
+
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun UserBarLayout(
-    viewModel: MainViewModel,
-    menuItem: MenuItem,
-    content: @Composable (PaddingValues) -> Unit
-) {
-    val scrollBehavior = TopAppBarDefaults.pinnedScrollBehavior(rememberTopAppBarState())
-
-    Scaffold(
-        modifier = Modifier.nestedScroll(scrollBehavior.nestedScrollConnection),
-
-        topBar = {
-            TopAppBar(
-                colors = TopAppBarDefaults.topAppBarColors(
-                    containerColor = borderColor,
-                    titleContentColor = whiteColor,
-                ),
-                title = {
-                    Row(
-                        Modifier
-                            .fillMaxSize(),
-                        verticalAlignment = Alignment.CenterVertically
-                    ) {
-                        Image(
-                            painter = painterResource("compose-multiplatform.xml"), null,
-                            modifier = Modifier.width(50.dp),
-                            colorFilter = ColorFilter.tint(color = whiteColor)
-                        )
-                        Spacer(modifier = Modifier.width(10.dp))
-                        Column(
-                            modifier = Modifier.fillMaxWidth()
-                        ) {
-                            Text(
-                                text = menuItem.titleResId,
-                                style = MaterialTheme.typography.titleLarge,
-                                maxLines = 1,
-                                overflow = TextOverflow.Ellipsis
-                            )
-                            Text(
-                                text = menuItem.descriptionResId,
-                                style = MaterialTheme.typography.bodyMedium,
-                                maxLines = 1,
-                                overflow = TextOverflow.Ellipsis,
-                                modifier = Modifier.padding(top = 8.dp)
-                            )
-                        }
-                    }
-                },
-                actions = {
-                    IconButton(onClick = { /* do something */ }) {
-                        Icon(
-                            imageVector = Icons.Filled.Delete,
-                            contentDescription = "delete",
-                            tint = Color.Red
-                        )
-                    }
-                },
-                scrollBehavior = scrollBehavior,
-            )
-        },
-        bottomBar = {
-            BottomAppBar(
-                containerColor = borderColor,
-                contentColor = whiteColor,
-            ) {
-                Row(
-                    modifier = Modifier.fillMaxSize(),
-                    verticalAlignment = Alignment.CenterVertically,
-                    horizontalArrangement = Arrangement.SpaceBetween
-                ) {
-                    IconButton(onClick = { /* do something */ }) {
-                        Icon(
-                            imageVector = Icons.Filled.Add,
-                            contentDescription = "upload",
-                            tint = whiteColor
-                        )
-                    }
-                    TextField(
-                        value = viewModel.userText,
-                        onValueChange = { viewModel.userText = it },
-                        modifier = Modifier.weight(1f)
-                            .padding(start = 8.dp)
-                            .background(borderColor),
-                        colors = TextFieldDefaults.colors(
-                            unfocusedContainerColor = lightBorderColor,
-                            focusedContainerColor = lightBorderColor,
-                            focusedIndicatorColor = Color.Transparent,
-                            unfocusedIndicatorColor = Color.Transparent,
-                            focusedTextColor = whiteColor,
-                            unfocusedTextColor = whiteColor,
-                            focusedPlaceholderColor = whiteColor,
-                            unfocusedPlaceholderColor = whiteColor,
-                            unfocusedLabelColor = whiteColor,
-                            focusedLabelColor = whiteColor,
-                            cursorColor = whiteColor
-                        ),
-                        shape = RoundedCornerShape(10.dp)
-                    )
-                    IconButton(onClick = { /* do something */ }) {
-                        Icon(
-                            imageVector = Icons.Filled.Send,
-                            contentDescription = "send",
-                            tint = whiteColor
-                        )
-                    }
-                }
-            }
-        }
-    ) { innerPadding ->
-        content(innerPadding)
-    }
-}
-
-data class MenuItem(
-    val routeId: String,
-    val titleResId: String,
-    val descriptionResId: String,
-    val icon: String
-)
-
-
-@OptIn(ExperimentalMaterial3Api::class, ExperimentalResourceApi::class)
-@Composable
-fun UserLayout(menuItem: MenuItem, onClick: () -> Unit) {
+fun UserLayout(robot: Robot, onClick: () -> Unit) {
     Card(
         modifier = Modifier
             .fillMaxWidth()
@@ -295,36 +229,41 @@ fun UserLayout(menuItem: MenuItem, onClick: () -> Unit) {
             contentColor = whiteColor
         )
     ) {
-        Row(
-            Modifier
-                .padding(10.dp)
-                .fillMaxWidth(),
-            verticalAlignment = Alignment.CenterVertically
+        UserRow(robot, Modifier.padding(10.dp))
+    }
+}
+
+@OptIn(ExperimentalResourceApi::class)
+@Composable
+fun UserRow(robot: Robot, customModifier: Modifier = Modifier) {
+    Row(
+        Modifier
+            .fillMaxWidth()
+            .then(customModifier),
+        verticalAlignment = Alignment.CenterVertically
+    ) {
+        Image(
+            painter = painterResource(robot.icon), null,
+            modifier = Modifier.size(50.dp)
+        )
+        Spacer(modifier = Modifier.width(10.dp))
+        Column(
+            modifier = Modifier
+                .weight(0.8f)
         ) {
-            Image(
-                painter = painterResource("compose-multiplatform.xml"), null,
-                modifier = Modifier
-                    .weight(0.1f)
+            Text(
+                text = robot.robotName.capitalizeFirstLetter(),
+                style = MaterialTheme.typography.titleLarge,
+                maxLines = 1,
+                overflow = TextOverflow.Ellipsis
             )
-            Spacer(modifier = Modifier.width(10.dp))
-            Column(
-                modifier = Modifier
-                    .weight(0.8f)
-            ) {
-                Text(
-                    text = menuItem.titleResId,
-                    style = MaterialTheme.typography.titleLarge,
-                    maxLines = 1,
-                    overflow = TextOverflow.Ellipsis
-                )
-                Text(
-                    text = menuItem.descriptionResId,
-                    style = MaterialTheme.typography.bodyMedium,
-                    maxLines = 1,
-                    overflow = TextOverflow.Ellipsis,
-                    modifier = Modifier.padding(top = 8.dp)
-                )
-            }
+            Text(
+                text = robot.date,
+                style = MaterialTheme.typography.bodyMedium,
+                maxLines = 1,
+                overflow = TextOverflow.Ellipsis,
+                modifier = Modifier.padding(top = 8.dp)
+            )
         }
     }
 }

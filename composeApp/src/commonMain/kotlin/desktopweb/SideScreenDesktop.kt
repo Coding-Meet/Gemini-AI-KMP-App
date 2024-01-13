@@ -1,20 +1,20 @@
 package desktopweb
 
-import androidx.compose.foundation.background
-import androidx.compose.foundation.border
+import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.foundation.*
 import androidx.compose.foundation.layout.*
-import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.runtime.Composable
-import androidx.compose.ui.Alignment
-import androidx.compose.ui.Modifier
+import androidx.compose.runtime.*
+import androidx.compose.ui.*
 import androidx.compose.ui.unit.dp
 import commoninterface.DistributeComp
-import screens.DetailScreen
-import screens.UserBarLayout
-import theme.borderColor
-import theme.lightBackgroundColor
-import utils.menuItems
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
+import screens.*
+import theme.*
 import viewmodels.MainViewModel
+import kotlin.random.Random
 
 
 class SideScreenDesktop(private val viewModel: MainViewModel) : DistributeComp {
@@ -22,17 +22,25 @@ class SideScreenDesktop(private val viewModel: MainViewModel) : DistributeComp {
     override fun SideRow(content: @Composable () -> Unit) {
         Row(
             modifier = Modifier.fillMaxSize().background(lightBackgroundColor)
-                .padding(20.dp).border(2.dp, borderColor).padding(end = 2.dp)
+                .padding(20.dp)
         ) {
-            Column(
-                Modifier.fillMaxHeight().weight(0.25f).background(lightBackgroundColor).border(2.dp, borderColor),
-                horizontalAlignment = Alignment.CenterHorizontally
+            AnimatedVisibility(viewModel.isDesktopDrawerOpen,
+                Modifier.fillMaxHeight().weight(0.25f),
             ) {
-                content()
+                Column(
+                    Modifier.background(lightBackgroundColor).border(2.dp, borderColor),
+                    horizontalAlignment = Alignment.CenterHorizontally
+                ) {
+                    content()
+                }
             }
-
+            val customModifier = if(viewModel.isDesktopDrawerOpen){
+                Modifier.fillMaxHeight().weight(0.75f)
+            }else{
+                Modifier.fillMaxSize()
+            }
             Column(
-                Modifier.fillMaxHeight().weight(0.75f).padding(start = 2.dp).background(lightBackgroundColor)
+                customModifier.padding(start = 2.dp).background(lightBackgroundColor)
                     .border(2.dp, borderColor),
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
