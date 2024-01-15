@@ -153,7 +153,7 @@ fun TopBarLayout(
                 },
                 actions = {
                     IconButton(onClick = {
-                        viewModel.getApikeyLocalStorage()
+                        viewModel.newChartRobotAndApiKeyText =  viewModel.getApikeyLocalStorage()
                         viewModel.dialogTypeState = DialogType.API_KEY
                         viewModel.isShowDialog = true
                     }) {

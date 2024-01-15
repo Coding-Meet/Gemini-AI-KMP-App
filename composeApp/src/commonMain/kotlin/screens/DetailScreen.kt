@@ -18,18 +18,16 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.*
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.RectangleShape
-import androidx.compose.ui.graphics.StrokeCap
+import androidx.compose.ui.graphics.ImageBitmap
 import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.text.input.KeyboardCapitalization
 import androidx.compose.ui.unit.*
 import models.Robot
 import org.jetbrains.compose.resources.ExperimentalResourceApi
 import org.jetbrains.compose.resources.painterResource
-import org.jetbrains.skia.Bitmap
 import theme.*
+import utils.Screens
 import utils.TYPE
-import utils.capitalizeFirstLetter
 import utils.generateRandomKey
 import viewmodels.MainViewModel
 import kotlin.random.Random
@@ -122,6 +120,7 @@ fun UserBarLayout(
                 IconButton(onClick = {
                     viewModel.robotList.remove(robot)
                     viewModel.currentPos = -1
+                    viewModel.screens = Screens.MAIN
                 }) {
                     Icon(
                         imageVector = Icons.Filled.Delete,
@@ -271,7 +270,7 @@ fun BottomTextBar(viewModel: MainViewModel) {
 fun MessageItem(
     viewModel: MainViewModel,
     isInComing: Boolean,
-    images: List<Bitmap>,
+    images: List<ImageBitmap>,
     content: String,
     modifier: Modifier = Modifier
 ) {

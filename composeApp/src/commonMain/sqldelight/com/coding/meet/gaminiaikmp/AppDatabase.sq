@@ -1,0 +1,35 @@
+import kotlin.Boolean;
+
+CREATE TABLE IF NOT EXISTS Chat(
+    chatId TEXT UNIQUE PRIMARY KEY NOT NULL,
+    createdAt TEXT NOT NULL,
+    title TEXT NOT NULL,
+    image TEXT NOT NULL
+);
+
+
+CREATE TABLE IF NOT EXISTS Message(
+    messageId TEXT PRIMARY KEY NOT NULL,
+    chatId TEXT NOT NULL,
+    content TEXT NOT NULL,
+    isAiResponse INTEGER AS Boolean NOT NULL DEFAULT 0,
+    timestamp TEXT NOT NULL,
+    FOREIGN KEY (chatId) REFERENCES Chat(chatId)
+);
+
+getChatById:
+SELECT *
+FROM Message
+WHERE chatId = :chatId;
+
+insertMessage:
+INSERT INTO Message
+VALUES ?;
+
+deleteChatById:
+DELETE FROM Chat
+WHERE chatId = :chatId;
+
+deleteMessagesByChatId:
+DELETE FROM Message
+WHERE chatId = :chatId;
