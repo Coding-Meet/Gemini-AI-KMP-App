@@ -1,4 +1,4 @@
-package screens
+package presenation.screens.main
 
 
 import androidx.compose.foundation.*
@@ -22,9 +22,9 @@ import desktopweb.SideScreenDesktop
 import mobile.SideScreenMobile
 import models.Robot
 import org.jetbrains.compose.resources.*
+import presenation.screens.chatscreen.DetailScreen
 import theme.*
 import utils.*
-import viewmodels.MainViewModel
 
 @Composable
 fun MainScreen(viewModel: MainViewModel) {

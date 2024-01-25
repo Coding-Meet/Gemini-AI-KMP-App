@@ -8,6 +8,8 @@ plugins {
     alias(libs.plugins.kotlinMultiplatform)
     alias(libs.plugins.androidApplication)
     alias(libs.plugins.jetbrainsCompose)
+    kotlin("plugin.serialization") version "1.9.21"
+//    id("app.cash.sqldelight") version "2.0.1"
 }
 
 kotlin {
@@ -37,7 +39,12 @@ kotlin {
         androidMain.dependencies {
             implementation(libs.compose.ui.tooling.preview)
             implementation(libs.androidx.activity.compose)
-//            implementation("com.mikepenz:multiplatform-markdown-renderer-android:0.10.0")
+
+//            api(libs.spotlight.android)
+//            implementation(libs.sqldelight.android.driver)
+
+            implementation(libs.ktor.client.okhttp)
+            api(libs.koin.android)
         }
         commonMain.dependencies {
             implementation(compose.runtime)
@@ -46,24 +53,77 @@ kotlin {
             implementation(compose.ui)
             implementation(compose.material3)
             @OptIn(ExperimentalComposeLibrary::class) implementation(compose.components.resources)
-            implementation(libs.moko.mvvm)
+
+
+            // precompose
+            api(libs.precompose)
+            api(libs.precompose.viewmodel)
+            api(libs.precompose.koin)
+
+//            implementation(libs.moko.mvvm)
             implementation(libs.kotlinx.datetime)
             implementation(libs.mpfilepicker)
 
-            implementation("com.mikepenz:multiplatform-markdown-renderer:0.10.0")
-            implementation("com.russhwolf:multiplatform-settings-no-arg:1.1.1")
+            // markdown text show
+            implementation(libs.multiplatform.markdown.renderer)
+
+            // local storage like share preference
+            implementation(libs.multiplatform.settings.no.arg)
+
+            // SQLDelight
+//            implementation(libs.spotlight)
+//            implementation(libs.sqldelight.coroutine.ext)
+//            implementation(libs.sqldelight.primitive.adapters)
+
+            //Kermit  for logging
+            implementation(libs.kermit)
+
+            //Coroutines
+            api(libs.kotlinx.coroutines)
+
+            //Ktor
+            with(libs.ktor.client) {
+                implementation(core)
+                implementation(content.negotiation)
+                implementation(serialization)
+                api(logging)
+            }
+
+            //Koin
+            implementation(libs.koin.core)
+            implementation(libs.koin.compose)
+
+//            implementation(libs.koin.core.coroutine)
+
+
         }
         desktopMain.dependencies {
             implementation(compose.desktop.currentOs)
-//            implementation("com.mikepenz:multiplatform-markdown-renderer-jvm:0.10.0")
+//
+//            implementation(libs.sqlite.driver)
+            implementation(libs.ktor.client.java)
+
         }
 
         jsMain.dependencies {
             implementation(compose.html.core)
+
+            implementation(libs.ktor.client.js)
+
+//            implementation(libs.web.worker.driver)
+//            implementation(devNpm("copy-webpack-plugin", "9.1.0"))
+//            implementation(npm("@cashapp/sqldelight-sqljs-worker", "2.0.0"))
+//            implementation(npm("sql.js", "1.8.0"))
         }
     }
 }
-
+//sqldelight {
+//    databases {
+//        create("GeminiApiChatDB") {
+//            packageName.set("com.coding.meet.gaminiaikmp")
+//        }
+//    }
+//}
 android {
     namespace = "com.coding.meet.gaminiaikmp"
     compileSdk = libs.versions.android.compileSdk.get().toInt()

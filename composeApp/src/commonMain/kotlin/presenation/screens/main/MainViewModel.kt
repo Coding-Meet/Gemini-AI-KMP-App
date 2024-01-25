@@ -1,14 +1,14 @@
-package viewmodels
+package presenation.screens.main
 
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.*
 import androidx.compose.runtime.setValue
 import com.russhwolf.settings.*
 import data.network.client
-import dev.icerock.moko.mvvm.viewmodel.ViewModel
 import getPlatform
 import io.ktor.client.plugins.*
 import models.Robot
+import moe.tlaster.precompose.viewmodel.ViewModel
 import utils.DialogType
 import utils.Screens
 

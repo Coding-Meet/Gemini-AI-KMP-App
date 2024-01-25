@@ -1,8 +1,6 @@
-package screens
+package presenation.screens.chatscreen
 
 import androidx.compose.animation.AnimatedContent
-import androidx.compose.animation.animateContentSize
-import androidx.compose.animation.core.spring
 import androidx.compose.foundation.*
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.*
@@ -20,42 +18,48 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.ImageBitmap
 import androidx.compose.ui.input.nestedscroll.nestedScroll
+import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.text.input.KeyboardCapitalization
 import androidx.compose.ui.unit.*
 import models.Robot
 import org.jetbrains.compose.resources.ExperimentalResourceApi
 import org.jetbrains.compose.resources.painterResource
+import org.koin.compose.koinInject
+import presenation.screens.main.UserRow
 import theme.*
 import utils.Screens
 import utils.TYPE
 import utils.generateRandomKey
-import viewmodels.MainViewModel
+import presenation.screens.main.MainViewModel
 import kotlin.random.Random
 
 
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
 fun DetailScreen(viewModel: MainViewModel) {
+    val chatViewModel = koinInject<ChatViewModel>()
+    val uiState = chatViewModel.uiState.collectAsState()
+
     Column(
         Modifier.fillMaxHeight().background(lightBackgroundColor),
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
         if (viewModel.robotList.isNotEmpty() && viewModel.currentPos != -1) {
-            UserBarLayout(viewModel, viewModel.robotList[viewModel.currentPos]) {
+            UserBarLayout(viewModel, chatViewModel,viewModel.robotList[viewModel.currentPos]) {
                 Row(
                     verticalAlignment = Alignment.CenterVertically
                 ) {
-                    if(viewModel.allPlatform != TYPE.MOBILE) {
+                    if (viewModel.allPlatform != TYPE.MOBILE) {
                         IconButton(
                             onClick = {
                                 viewModel.isDesktopDrawerOpen = !viewModel.isDesktopDrawerOpen
                             },
-                            modifier = Modifier.size(30.dp, 80.dp).background(borderColor, RoundedCornerShape(10))
+                            modifier = Modifier.size(30.dp, 80.dp)
+                                .background(borderColor, RoundedCornerShape(10))
                                 .clip(RoundedCornerShape(10))
                         ) {
                             Icon(
-                                imageVector =
-                                if (viewModel.isDesktopDrawerOpen) {
+                                imageVector = if (viewModel.isDesktopDrawerOpen) {
                                     Icons.Default.KeyboardArrowRight
                                 } else {
                                     Icons.Default.KeyboardArrowLeft
@@ -72,12 +76,12 @@ fun DetailScreen(viewModel: MainViewModel) {
                         reverseLayout = true,
                         contentPadding = PaddingValues(horizontal = 10.dp),
                     ) {
-                        items(10) {
+                        items(uiState.value.messages) {
                             MessageItem(
                                 viewModel,
                                 isInComing = Random.nextBoolean(),
                                 images = emptyList(),
-                                content = generateRandomKey(),
+                                content = it.content,
                                 modifier = Modifier
                                     .fillMaxWidth()
                                     .animateItemPlacement()
@@ -87,8 +91,7 @@ fun DetailScreen(viewModel: MainViewModel) {
                 }
             }
         } else {
-            Column(
-            ) {
+            Column {
                 Text("Welcome To Gemini Ai Kmp App", color = whiteColor)
             }
         }
@@ -98,9 +101,7 @@ fun DetailScreen(viewModel: MainViewModel) {
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalResourceApi::class)
 @Composable
 fun UserBarLayout(
-    viewModel: MainViewModel,
-    robot: Robot,
-    content: @Composable () -> Unit
+    viewModel: MainViewModel, chatViewModel: ChatViewModel,robot: Robot, content: @Composable () -> Unit,
 ) {
     val scrollBehavior = TopAppBarDefaults.pinnedScrollBehavior(rememberTopAppBarState())
 
@@ -143,37 +144,34 @@ fun UserBarLayout(
         ) {
             items(viewModel.imageUris) { imageUri ->
                 Box(
-                    modifier = Modifier.padding(4.dp).background(lightBorderColor, RoundedCornerShape(10.dp))
+                    modifier = Modifier.padding(4.dp)
+                        .background(lightBorderColor, RoundedCornerShape(10.dp))
                 ) {
                     Image(
                         painter = painterResource(imageUri),
                         contentDescription = null,
-                        modifier = Modifier
-                            .padding(4.dp)
-                            .requiredSize(100.dp)
+                        modifier = Modifier.padding(4.dp).requiredSize(100.dp)
                     )
 
-                    Icon(
-                        Icons.Default.Close,
+                    Icon(Icons.Default.Close,
                         tint = whiteColor,
                         contentDescription = "remove",
-                        modifier = Modifier.padding(end = 8.dp)
-                            .clip(CircleShape)
-                            .background(Color.Gray)
-                            .align(Alignment.TopEnd)
-                            .clickable {
+                        modifier = Modifier.padding(end = 8.dp).clip(CircleShape)
+                            .background(Color.Gray).align(Alignment.TopEnd).clickable {
                                 viewModel.imageUris.remove(imageUri)
-                            }
-                    )
+                            })
                 }
             }
         }
-        BottomTextBar(viewModel)
+        BottomTextBar(viewModel, chatViewModel)
     }
 }
 
+@OptIn(ExperimentalComposeUiApi::class)
 @Composable
-fun BottomTextBar(viewModel: MainViewModel) {
+fun BottomTextBar(viewModel: MainViewModel,chatViewModel: ChatViewModel) {
+    val keyboardController = LocalSoftwareKeyboardController.current
+
     Row(
         modifier = Modifier.background(borderColor).padding(vertical = 8.dp),
         verticalAlignment = Alignment.CenterVertically,
@@ -188,16 +186,13 @@ fun BottomTextBar(viewModel: MainViewModel) {
 
         }) {
             Icon(
-                imageVector = Icons.Filled.Add,
-                contentDescription = "upload",
-                tint = whiteColor
+                imageVector = Icons.Filled.Add, contentDescription = "upload", tint = whiteColor
             )
         }
         TextField(
             value = viewModel.userText,
             onValueChange = { viewModel.userText = it },
-            modifier = Modifier.weight(1f)
-                .background(borderColor),
+            modifier = Modifier.weight(1f).background(borderColor),
             keyboardOptions = KeyboardOptions(capitalization = KeyboardCapitalization.Sentences),
             maxLines = 3,
             placeholder = {
@@ -219,17 +214,21 @@ fun BottomTextBar(viewModel: MainViewModel) {
             ),
             shape = RoundedCornerShape(10.dp)
         )
-        FloatingActionButton(
-            containerColor = lightBorderColor,
+        FloatingActionButton(containerColor = lightBorderColor,
             elevation = FloatingActionButtonDefaults.elevation(
                 defaultElevation = if (viewModel.isGenerating) 0.dp else 6.dp,
                 pressedElevation = 0.dp
             ),
             modifier = Modifier.padding(horizontal = 8.dp),
             onClick = {
-                if (viewModel.isGenerating) {
-
+                if (viewModel.userText.isNotEmpty()) {
+                    keyboardController?.hide()
+                    chatViewModel.onSend(viewModel.userText)
+                    viewModel.userText = ""
                 }
+//                if (viewModel.isGenerating) {
+//
+//                }
 //                viewModel.isGenerating = true
 //                if (promptText.isNotBlank() && isGenerating.not()) {
 //                    mainViewModel.sendText(promptText, imageBitmaps)
@@ -243,8 +242,7 @@ fun BottomTextBar(viewModel: MainViewModel) {
 //                        Toast.LENGTH_SHORT
 //                    ).show()
 //                }
-            }
-        ) {
+            }) {
             AnimatedContent(
                 targetState = viewModel.isGenerating,
             ) { generating ->
@@ -272,24 +270,18 @@ fun MessageItem(
     isInComing: Boolean,
     images: List<ImageBitmap>,
     content: String,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
 ) {
 
     val cardShape by remember {
         derivedStateOf {
             if (isInComing) {
                 RoundedCornerShape(
-                    16.dp,
-                    16.dp,
-                    16.dp,
-                    0.dp
+                    16.dp, 16.dp, 16.dp, 0.dp
                 )
             } else {
                 RoundedCornerShape(
-                    16.dp,
-                    16.dp,
-                    0.dp,
-                    16.dp
+                    16.dp, 16.dp, 0.dp, 16.dp
                 )
             }
         }
@@ -334,9 +326,7 @@ fun MessageItem(
             modifier = modifier.fillMaxWidth()
         ) {
             Card(
-                modifier = Modifier
-                    .wrapContentSize()
-                    .padding(cardPadding),
+                modifier = Modifier.wrapContentSize().padding(cardPadding),
                 shape = cardShape,
                 colors = CardDefaults.cardColors(
                     containerColor = borderColor

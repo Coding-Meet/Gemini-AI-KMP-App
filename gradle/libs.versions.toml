@@ -1,5 +1,5 @@
 [versions]
-agp = "8.2.1"
+agp = "8.2.0"
 android-compileSdk = "34"
 android-minSdk = "24"
 android-targetSdk = "34"
@@ -12,6 +12,7 @@ androidx-material = "1.10.0"
 androidx-test-junit = "1.1.5"
 compose = "1.5.4"
 compose-compiler = "1.5.6"
+koinCompose = "1.1.0"
 moko-mvvm = "0.16.1"
 kotlinx-datetime = "0.5.0"
 compose-plugin = "1.6.0-alpha01"
@@ -19,8 +20,22 @@ junit = "4.13.2"
 kotlin = "1.9.21"
 coreI18n = "1.0.0-alpha01"
 mpfilepicker = "3.1.0"
+koin = "3.5.3"
+multiplatformMarkdownRenderer = "0.10.0"
+multiplatformSettingsNoArg = "1.1.1"
+precomposeKoin = "1.5.10"
+precomposeViewmodel = "1.5.10"
+precompose = "1.5.10"
+sqldelight = "2.0.1"
+appyx-navigation = "2.0.0-alpha09"
+ktor = "2.3.7"
+coroutines = "1.8.0-RC2"
+kermit = "2.0.2"
+animationAndroid = "1.5.4"
+
 
 [libraries]
+koin-compose = { module = "io.insert-koin:koin-compose", version.ref = "koinCompose" }
 kotlin-test = { module = "org.jetbrains.kotlin:kotlin-test", version.ref = "kotlin" }
 kotlin-test-junit = { module = "org.jetbrains.kotlin:kotlin-test-junit", version.ref = "kotlin" }
 junit = { group = "junit", name = "junit", version.ref = "junit" }
@@ -40,7 +55,40 @@ compose-ui-tooling-preview = { module = "androidx.compose.ui:ui-tooling-preview"
 compose-foundation = { module = "androidx.compose.foundation:foundation", version.ref = "compose" }
 compose-material = { module = "androidx.compose.material:material", version.ref = "compose" }
 androidx-core-i18n = { group = "androidx.core", name = "core-i18n", version.ref = "coreI18n" }
+
+kotlinx-coroutines = {module = "org.jetbrains.kotlinx:kotlinx-coroutines-core", version.ref="coroutines"}
+
+ktor-client-okhttp = {module = "io.ktor:ktor-client-android", version.ref = "ktor"}
+ktor-client-core = {module = "io.ktor:ktor-client-core", version.ref = "ktor"}
+ktor-client-content-negotiation = {module = "io.ktor:ktor-client-content-negotiation", version.ref = "ktor"}
+ktor-client-js = { module = "io.ktor:ktor-client-js", version.ref = "ktor" }
+ktor-client-java = {module = "io.ktor:ktor-client-java", version.ref = "ktor"}
+ktor-client-serialization = {module = "io.ktor:ktor-serialization-kotlinx-json", version.ref = "ktor"}
+ktor-client-logging = {module = "io.ktor:ktor-client-logging", version.ref = "ktor"}
+
+kermit = {module = "co.touchlab:kermit", version.ref = "kermit"}
+
+
 mpfilepicker = { module = "com.darkrockstudios:mpfilepicker", version.ref = "mpfilepicker" }
+multiplatform-markdown-renderer = { module = "com.mikepenz:multiplatform-markdown-renderer", version.ref = "multiplatformMarkdownRenderer" }
+multiplatform-settings-no-arg = { module = "com.russhwolf:multiplatform-settings-no-arg", version.ref = "multiplatformSettingsNoArg" }
+
+koin-android = {group = "io.insert-koin", name = "koin-android", version.ref="koin"}
+koin-core = {group = "io.insert-koin", name = "koin-core", version.ref="koin"}
+koin-core-coroutine = {module = "io.insert-koin:koin-core-coroutines", version.ref="koin"}
+
+precompose-koin = { module = "moe.tlaster:precompose-koin", version.ref = "precomposeKoin" }
+precompose-viewmodel = { module = "moe.tlaster:precompose-viewmodel", version.ref = "precomposeViewmodel" }
+precompose = { module = "moe.tlaster:precompose", version.ref = "precompose" }
+sqldelight-coroutine-ext = {module = "app.cash.sqldelight:coroutines-extensions", version.ref = "sqldelight"}
+sqldelight-primitive-adapters = {module = "app.cash.sqldelight:primitive-adapters", version.ref = "sqldelight"}
+spotlight = { module = "com.bumble.appyx:spotlight", version.ref = "appyx-navigation" }
+spotlight-android = { module = "com.bumble.appyx:spotlight-android", version.ref = "appyx-navigation" }
+sqldelight-android-driver = {module = "app.cash.sqldelight:android-driver", version.ref = "sqldelight"}
+sqldelight-native-driver = {module = "app.cash.sqldelight:native-driver", version.ref = "sqldelight"}
+web-worker-driver = { module = "app.cash.sqldelight:web-worker-driver", version.ref = "sqldelight" }
+sqlite-driver = { module = "app.cash.sqldelight:sqlite-driver", version.ref = "sqldelight" }
+androidx-animation-android = { group = "androidx.compose.animation", name = "animation-android", version.ref = "animationAndroid" }
 
 [plugins]
 androidApplication = { id = "com.android.application", version.ref = "agp" }

@@ -1,7 +1,7 @@
 import androidx.compose.material.MaterialTheme
 import androidx.compose.runtime.Composable
-import screens.MainScreen
-import viewmodels.MainViewModel
+import presenation.screens.main.MainScreen
+import presenation.screens.main.MainViewModel
 
 @Composable
 fun App(viewModel: MainViewModel) {

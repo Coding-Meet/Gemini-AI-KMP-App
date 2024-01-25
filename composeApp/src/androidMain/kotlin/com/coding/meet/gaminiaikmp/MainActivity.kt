@@ -4,14 +4,10 @@ import App
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.OnBackPressedCallback
-import androidx.activity.compose.BackHandler
 import androidx.activity.compose.setContent
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.remember
-import androidx.compose.ui.tooling.preview.Preview
+import org.koin.compose.koinInject
 import utils.Screens
-import utils.TYPE
-import viewmodels.MainViewModel
+import presenation.screens.main.MainViewModel
 
 class MainActivity : ComponentActivity() {
 
@@ -19,12 +15,12 @@ class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContent {
-            val viewModel = remember { MainViewModel() }
-            onBackPressedDispatcher.addCallback(this,object : OnBackPressedCallback(true) {
+            val viewModel = koinInject<MainViewModel>()
+            onBackPressedDispatcher.addCallback(this, object : OnBackPressedCallback(true) {
                 override fun handleOnBackPressed() {
-                    if (viewModel.screens == Screens.DETAIL){
+                    if (viewModel.screens == Screens.DETAIL) {
                         viewModel.screens = Screens.MAIN
-                    }else{
+                    } else {
                         finish()
                     }
                 }
@@ -32,11 +28,4 @@ class MainActivity : ComponentActivity() {
             App(viewModel)
         }
     }
-}
-
-@Preview
-@Composable
-fun AppAndroidPreview() {
-    val viewModel = remember { MainViewModel() }
-    App(viewModel)
 }

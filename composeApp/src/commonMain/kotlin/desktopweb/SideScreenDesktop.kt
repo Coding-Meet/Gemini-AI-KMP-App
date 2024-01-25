@@ -7,14 +7,9 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.*
 import androidx.compose.ui.unit.dp
 import commoninterface.DistributeComp
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.delay
-import kotlinx.coroutines.launch
-import screens.*
+import presenation.screens.chatscreen.DetailScreen
 import theme.*
-import viewmodels.MainViewModel
-import kotlin.random.Random
+import presenation.screens.main.MainViewModel
 
 
 class SideScreenDesktop(private val viewModel: MainViewModel) : DistributeComp {
