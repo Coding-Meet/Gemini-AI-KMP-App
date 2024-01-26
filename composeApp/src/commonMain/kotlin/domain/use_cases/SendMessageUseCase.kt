@@ -1,20 +1,20 @@
 package domain.use_cases
 
+import AppCoroutineDispatchersImpl
 import data.DataResult
 import data.entity.ChatModel
+import data.respository.ChatRepositoryImpl
 import domain.GeminiResult
 import domain.GeminiResult.*
 import domain.model.Message
-import domain.respository.ChatRepository
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.flowOn
-import org.koin.core.component.KoinComponent
-import org.koin.core.component.inject
-import utils.AppCoroutineDispatchers
+import presenation.screens.main.MainViewModel
 
-class SendMessageUseCase() : KoinComponent {
-    private val chatRepository: ChatRepository by inject()
-    private val appCoroutineDispatchers: AppCoroutineDispatchers by inject()
+class SendMessageUseCase(mainViewModel: MainViewModel)  {
+
+    private val appCoroutineDispatchers = AppCoroutineDispatchersImpl()
+    private val chatRepository =  ChatRepositoryImpl(mainViewModel,appCoroutineDispatchers)
 
     data class Param(
         val chat: ChatModel,
@@ -39,6 +39,7 @@ class SendMessageUseCase() : KoinComponent {
             emit(Error(e.message))
         }
     }.flowOn(appCoroutineDispatchers.io)
+
 
 
 }

@@ -1,5 +1,8 @@
+import androidx.compose.ui.platform.ClipboardManager
+import kotlinx.browser.window
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.await
 import utils.AppCoroutineDispatchers
 import utils.TYPE
 
@@ -27,3 +30,8 @@ actual class AppCoroutineDispatchersImpl actual constructor() : AppCoroutineDisp
     override val main: CoroutineDispatcher
         get() = Dispatchers.Main
 }
+
+actual suspend fun clipData(clipboardManager: ClipboardManager): String? {
+    return window.navigator.clipboard.readText().await().toString().trim()
+}
+

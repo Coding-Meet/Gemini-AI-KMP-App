@@ -36,8 +36,7 @@ class ChatViewModel(
                 SendMessageUseCase.Param(
                     chat = chat,
                     text = text,
-//                    list = _uiState.value.messages
-                    list = arrayListOf()
+                    list = _uiState.value.messages
                 )
             ).collect { result ->
                 when (result) {
@@ -52,6 +51,6 @@ class ChatViewModel(
 
 data class HomeUiState(
     val messages: List<Message> = emptyList(),
-    val onAnswering: Boolean? = null,
+    val onAnswering: Boolean = false,
     val size: Int = 0
 )

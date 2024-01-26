@@ -21,15 +21,14 @@ import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.text.input.KeyboardCapitalization
 import androidx.compose.ui.unit.*
+import domain.use_cases.SendMessageUseCase
 import models.Robot
 import org.jetbrains.compose.resources.ExperimentalResourceApi
 import org.jetbrains.compose.resources.painterResource
-import org.koin.compose.koinInject
 import presenation.screens.main.UserRow
 import theme.*
 import utils.Screens
 import utils.TYPE
-import utils.generateRandomKey
 import presenation.screens.main.MainViewModel
 import kotlin.random.Random
 
@@ -37,7 +36,9 @@ import kotlin.random.Random
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
 fun DetailScreen(viewModel: MainViewModel) {
-    val chatViewModel = koinInject<ChatViewModel>()
+//    val chatViewModel = koinInject<ChatViewModel>()
+    val sendMessageUseCase = remember { SendMessageUseCase(viewModel) }
+    val chatViewModel = remember { ChatViewModel(sendMessageUseCase) }
     val uiState = chatViewModel.uiState.collectAsState()
 
     Column(
@@ -76,10 +77,10 @@ fun DetailScreen(viewModel: MainViewModel) {
                         reverseLayout = true,
                         contentPadding = PaddingValues(horizontal = 10.dp),
                     ) {
-                        items(uiState.value.messages) {
+                        items(uiState.value.messages.reversed()) {
                             MessageItem(
                                 viewModel,
-                                isInComing = Random.nextBoolean(),
+                                isInComing = uiState.value.onAnswering,
                                 images = emptyList(),
                                 content = it.content,
                                 modifier = Modifier

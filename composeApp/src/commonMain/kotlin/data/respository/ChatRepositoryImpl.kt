@@ -4,9 +4,13 @@ import data.DataResult
 import data.entity.ChatModel
 import data.entity.GeminiContent
 import data.entity.GeminiMessage
-import data.services.GeminiAPIService
+import data.entity.generateContent.GeminiGenerateContentRequest
+import data.entity.generateContent.GeminiGenerateContentResponse
+import data.network.client
+import data.toDataResult
 import domain.model.Message
 import domain.respository.ChatRepository
+import io.ktor.client.request.*
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.flowOn
 import utils.AppCoroutineDispatchers
@@ -16,7 +20,6 @@ import presenation.screens.main.MainViewModel
 
 class ChatRepositoryImpl(
     private val viewModel: MainViewModel,
-    private val geminiAPIService: GeminiAPIService,
     private val appCoroutineDispatchers: AppCoroutineDispatchers
 ) : ChatRepository {
     override suspend fun generateContent(
@@ -41,7 +44,16 @@ class ChatRepositoryImpl(
             )
         }.toMutableList()
 
-        when (val response = geminiAPIService.generateContent( viewModel.getApikeyLocalStorage(), geminiContent)) {
+        when (val response = client.post {
+                url("v1beta/models/gemini-pro:generateContent")
+                parameter("key",viewModel.getApikeyLocalStorage())
+                setBody(
+                    GeminiGenerateContentRequest(
+                        contents = geminiContent
+                    )
+                )
+            }.toDataResult<GeminiGenerateContentResponse>()
+        ) {
             is DataResult.Error -> emit(DataResult.Error(response.message))
             is DataResult.Success -> {
                 val modelMessage = Message(

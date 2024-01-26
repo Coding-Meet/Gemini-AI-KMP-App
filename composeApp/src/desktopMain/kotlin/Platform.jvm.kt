@@ -1,3 +1,4 @@
+import androidx.compose.ui.platform.ClipboardManager
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.Dispatchers
 import utils.AppCoroutineDispatchers
@@ -15,7 +16,9 @@ actual fun getPlatform(): Platform = JVMPlatform()
 //    return JdbcSqliteDriver(JdbcSqliteDriver.IN_MEMORY)
 //        .also { schema.create(it).await() }
 //}
-
+actual suspend fun clipData(clipboardManager: ClipboardManager) : String? {
+  return  clipboardManager.getText()?.text.toString().trim()
+}
 actual class AppCoroutineDispatchersImpl actual constructor() : AppCoroutineDispatchers {
     override val io: CoroutineDispatcher
         get() = Dispatchers.IO

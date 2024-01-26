@@ -14,11 +14,14 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.*
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.input.nestedscroll.nestedScroll
+import androidx.compose.ui.platform.LocalClipboardManager
 import androidx.compose.ui.text.input.KeyboardCapitalization
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.*
 import androidx.compose.ui.window.DialogProperties
+import clipData
 import desktopweb.SideScreenDesktop
+import kotlinx.coroutines.launch
 import mobile.SideScreenMobile
 import models.Robot
 import org.jetbrains.compose.resources.*
@@ -134,7 +137,6 @@ fun TopBarLayout(
     content: @Composable (PaddingValues) -> Unit
 ) {
     val scrollBehavior = TopAppBarDefaults.pinnedScrollBehavior(rememberTopAppBarState())
-
     Scaffold(
         modifier = Modifier.nestedScroll(scrollBehavior.nestedScrollConnection),
 
@@ -229,8 +231,12 @@ fun UserRow(robot: Robot, customModifier: Modifier = Modifier) {
 }
 
 
+@OptIn(ExperimentalResourceApi::class)
 @Composable
 fun ChatAlertDialogBox(viewModel: MainViewModel) {
+    val coroutine = rememberCoroutineScope()
+    val clipboardManager = LocalClipboardManager.current
+
     if (viewModel.isShowDialog) {
         AlertDialog(properties = DialogProperties(dismissOnBackPress = true, dismissOnClickOutside = false),
             icon = {
@@ -289,7 +295,24 @@ fun ChatAlertDialogBox(viewModel: MainViewModel) {
                         cursorColor = whiteColor,
                         selectionColors = TextSelectionColors(selectionColor, selectionColor)
                     ),
-                    shape = RoundedCornerShape(10.dp)
+                    shape = RoundedCornerShape(10.dp),
+                    trailingIcon ={
+                        if (viewModel.dialogTypeState==DialogType.API_KEY){
+                            IconButton(onClick = {
+                                coroutine.launch {
+                                    clipData(clipboardManager)?.let {
+                                        viewModel.newChartRobotAndApiKeyText = it
+                                    }
+                                }
+                            }) {
+                                Icon(
+                                    painter = painterResource("ic_paste.xml"),
+                                    contentDescription = "api key",
+                                    tint = whiteColor
+                                )
+                            }
+                        }
+                    }
                 )
             },
             onDismissRequest = {

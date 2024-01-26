@@ -44,7 +44,6 @@ kotlin {
 //            implementation(libs.sqldelight.android.driver)
 
             implementation(libs.ktor.client.okhttp)
-            api(libs.koin.android)
         }
         commonMain.dependencies {
             implementation(compose.runtime)
@@ -88,12 +87,6 @@ kotlin {
                 implementation(serialization)
                 api(logging)
             }
-
-            //Koin
-            implementation(libs.koin.core)
-            implementation(libs.koin.compose)
-
-//            implementation(libs.koin.core.coroutine)
 
 
         }
