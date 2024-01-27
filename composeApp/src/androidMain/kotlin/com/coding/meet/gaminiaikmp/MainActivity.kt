@@ -7,7 +7,7 @@ import androidx.activity.OnBackPressedCallback
 import androidx.activity.compose.setContent
 import androidx.compose.runtime.*
 import utils.Screens
-import presenation.screens.main.MainViewModel
+import screens.main.MainViewModel
 
 class MainActivity : ComponentActivity() {
 

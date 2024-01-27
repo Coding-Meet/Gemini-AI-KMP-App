@@ -1,12 +1,10 @@
-package presenation.screens.main
+package screens.main
 
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.*
 import androidx.compose.runtime.setValue
 import com.russhwolf.settings.*
-import data.network.client
 import getPlatform
-import io.ktor.client.plugins.*
 import models.Robot
 import moe.tlaster.precompose.viewmodel.ViewModel
 import utils.DialogType
@@ -33,20 +31,10 @@ class MainViewModel : ViewModel() {
 
     fun setApikeyLocalStorage() {
         settings["api_key"] = newChartRobotAndApiKeyText.trim()
-        initializeInterceptor()
     }
 
     fun getApikeyLocalStorage() :String{
         return settings.getString("api_key","AIzaSyBZ4r4qf_-G9lE1K3N7pHop499KkfdDEbM")
     }
-    init {
-        initializeInterceptor()
-    }
 
-    private fun initializeInterceptor(){
-        client.plugin(HttpSend).intercept { builder ->
-            builder.url.parameters.append("key", getApikeyLocalStorage())
-            execute(builder)
-        }
-    }
 }

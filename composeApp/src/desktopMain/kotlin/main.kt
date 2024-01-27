@@ -1,10 +1,11 @@
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.window.*
-import presenation.screens.main.MainViewModel
+import screens.main.MainViewModel
 import java.awt.Dimension
 
 fun main() = application {
+    initKoin()
     Window(
         onCloseRequest = ::exitApplication, state = WindowState(
             placement = WindowPlacement.Maximized,
@@ -12,6 +13,7 @@ fun main() = application {
         ), title = "Gemini-AI-KMP-App"
     ) {
         window.minimumSize = Dimension(1280, 768)
+
         val viewModel = remember { MainViewModel() }
         App(viewModel)
     }

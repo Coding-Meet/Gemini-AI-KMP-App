@@ -7,7 +7,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import commoninterface.DistributeComp
 import theme.lightBackgroundColor
-import presenation.screens.main.MainViewModel
+import screens.main.MainViewModel
 
 
 class SideScreenMobile(viewModel: MainViewModel) : DistributeComp {

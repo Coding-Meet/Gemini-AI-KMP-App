@@ -1,4 +1,4 @@
-package presenation.screens.chatscreen
+package screens.chatscreen
 
 import androidx.compose.animation.AnimatedContent
 import androidx.compose.foundation.*
@@ -21,25 +21,23 @@ import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.text.input.KeyboardCapitalization
 import androidx.compose.ui.unit.*
-import domain.use_cases.SendMessageUseCase
 import models.Robot
 import org.jetbrains.compose.resources.ExperimentalResourceApi
 import org.jetbrains.compose.resources.painterResource
-import presenation.screens.main.UserRow
+import org.koin.mp.KoinPlatform
+import screens.main.UserRow
 import theme.*
 import utils.Screens
 import utils.TYPE
-import presenation.screens.main.MainViewModel
-import kotlin.random.Random
+import screens.main.MainViewModel
 
 
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
 fun DetailScreen(viewModel: MainViewModel) {
-//    val chatViewModel = koinInject<ChatViewModel>()
-    val sendMessageUseCase = remember { SendMessageUseCase(viewModel) }
-    val chatViewModel = remember { ChatViewModel(sendMessageUseCase) }
-    val uiState = chatViewModel.uiState.collectAsState()
+    val chatViewModel: ChatViewModel = KoinPlatform.getKoin().get()
+
+    val uiState = chatViewModel.chatUiState.collectAsState()
 
     Column(
         Modifier.fillMaxHeight().background(lightBackgroundColor),
@@ -77,12 +75,12 @@ fun DetailScreen(viewModel: MainViewModel) {
                         reverseLayout = true,
                         contentPadding = PaddingValues(horizontal = 10.dp),
                     ) {
-                        items(uiState.value.messages.reversed()) {
+                        items(uiState.value.message.reversed()) {
                             MessageItem(
                                 viewModel,
-                                isInComing = uiState.value.onAnswering,
+                                isInComing = it.isModel,
                                 images = emptyList(),
-                                content = it.content,
+                                content = it.text,
                                 modifier = Modifier
                                     .fillMaxWidth()
                                     .animateItemPlacement()
@@ -102,7 +100,7 @@ fun DetailScreen(viewModel: MainViewModel) {
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalResourceApi::class)
 @Composable
 fun UserBarLayout(
-    viewModel: MainViewModel, chatViewModel: ChatViewModel,robot: Robot, content: @Composable () -> Unit,
+    viewModel: MainViewModel, chatViewModel: ChatViewModel, robot: Robot, content: @Composable () -> Unit,
 ) {
     val scrollBehavior = TopAppBarDefaults.pinnedScrollBehavior(rememberTopAppBarState())
 
@@ -170,7 +168,7 @@ fun UserBarLayout(
 
 @OptIn(ExperimentalComposeUiApi::class)
 @Composable
-fun BottomTextBar(viewModel: MainViewModel,chatViewModel: ChatViewModel) {
+fun BottomTextBar(viewModel: MainViewModel, chatViewModel: ChatViewModel) {
     val keyboardController = LocalSoftwareKeyboardController.current
 
     Row(
@@ -224,7 +222,7 @@ fun BottomTextBar(viewModel: MainViewModel,chatViewModel: ChatViewModel) {
             onClick = {
                 if (viewModel.userText.isNotEmpty()) {
                     keyboardController?.hide()
-                    chatViewModel.onSend(viewModel.userText)
+                    chatViewModel.generateContentWithText(viewModel.userText, null)
                     viewModel.userText = ""
                 }
 //                if (viewModel.isGenerating) {

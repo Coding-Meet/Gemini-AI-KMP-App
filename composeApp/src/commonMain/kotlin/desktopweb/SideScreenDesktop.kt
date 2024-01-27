@@ -7,9 +7,9 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.*
 import androidx.compose.ui.unit.dp
 import commoninterface.DistributeComp
-import presenation.screens.chatscreen.DetailScreen
+import screens.chatscreen.DetailScreen
 import theme.*
-import presenation.screens.main.MainViewModel
+import screens.main.MainViewModel
 
 
 class SideScreenDesktop(private val viewModel: MainViewModel) : DistributeComp {

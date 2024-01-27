@@ -1,4 +1,4 @@
-package presenation.screens.main
+package screens.main
 
 
 import androidx.compose.foundation.*
@@ -25,7 +25,7 @@ import kotlinx.coroutines.launch
 import mobile.SideScreenMobile
 import models.Robot
 import org.jetbrains.compose.resources.*
-import presenation.screens.chatscreen.DetailScreen
+import screens.chatscreen.DetailScreen
 import theme.*
 import utils.*
 
