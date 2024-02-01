@@ -4,8 +4,8 @@ import org.koin.core.context.startKoin
 fun initKoin() =
     startKoin {
         modules(
-            nGeminiServiceModule,
-            nGeminiRepositoryModule,
+            geminiServiceModule,
+            geminiRepositoryModule,
             networkModule,
             useCaseModule,
             viewModelModule

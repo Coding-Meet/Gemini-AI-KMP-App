@@ -1,54 +1,57 @@
 package screens.chatscreen
 
+import ImagePicker
 import androidx.compose.animation.AnimatedContent
+import androidx.compose.animation.core.*
 import androidx.compose.foundation.*
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.*
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardOptions
-import androidx.compose.foundation.text.selection.SelectionContainer
-import androidx.compose.foundation.text.selection.TextSelectionColors
+import androidx.compose.foundation.text.selection.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.*
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.*
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.ImageBitmap
+import androidx.compose.ui.draw.drawWithContent
+import androidx.compose.ui.graphics.*
+import androidx.compose.ui.graphics.drawscope.rotate
 import androidx.compose.ui.input.nestedscroll.nestedScroll
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.text.input.KeyboardCapitalization
 import androidx.compose.ui.unit.*
-import models.Robot
-import org.jetbrains.compose.resources.ExperimentalResourceApi
-import org.jetbrains.compose.resources.painterResource
+import domain.model.ChatMessage
+import domain.model.Role
+import models.Group
 import org.koin.mp.KoinPlatform
 import screens.main.UserRow
 import theme.*
 import utils.Screens
 import utils.TYPE
 import screens.main.MainViewModel
+import toComposeImageBitmap
 
 
-@OptIn(ExperimentalFoundationApi::class)
 @Composable
 fun DetailScreen(viewModel: MainViewModel) {
     val chatViewModel: ChatViewModel = KoinPlatform.getKoin().get()
 
-    val uiState = chatViewModel.chatUiState.collectAsState()
+    val chatUiState by chatViewModel.chatUiState.collectAsState()
 
     Column(
         Modifier.fillMaxHeight().background(lightBackgroundColor),
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
-        if (viewModel.robotList.isNotEmpty() && viewModel.currentPos != -1) {
-            UserBarLayout(viewModel, chatViewModel,viewModel.robotList[viewModel.currentPos]) {
+        if (viewModel.groupList.isNotEmpty() && viewModel.currentPos != -1) {
+            UserBarLayout(viewModel, chatViewModel, chatUiState, viewModel.groupList[viewModel.currentPos]) {
                 Row(
                     verticalAlignment = Alignment.CenterVertically
                 ) {
-                    if (viewModel.allPlatform != TYPE.MOBILE) {
+                    if (viewModel.platformType != TYPE.MOBILE) {
                         IconButton(
                             onClick = {
                                 viewModel.isDesktopDrawerOpen = !viewModel.isDesktopDrawerOpen
@@ -75,16 +78,10 @@ fun DetailScreen(viewModel: MainViewModel) {
                         reverseLayout = true,
                         contentPadding = PaddingValues(horizontal = 10.dp),
                     ) {
-                        items(uiState.value.message.reversed()) {
-                            MessageItem(
-                                viewModel,
-                                isInComing = it.isModel,
-                                images = emptyList(),
-                                content = it.text,
-                                modifier = Modifier
-                                    .fillMaxWidth()
-                                    .animateItemPlacement()
-                            )
+                        items(chatUiState.message.filter {
+                            it.chatId == viewModel.groupList[viewModel.currentPos].groupId
+                        }.reversed()) {
+                            MessageItem(it)
                         }
                     }
                 }
@@ -97,10 +94,14 @@ fun DetailScreen(viewModel: MainViewModel) {
     }
 }
 
-@OptIn(ExperimentalMaterial3Api::class, ExperimentalResourceApi::class)
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun UserBarLayout(
-    viewModel: MainViewModel, chatViewModel: ChatViewModel, robot: Robot, content: @Composable () -> Unit,
+    mainViewModel: MainViewModel,
+    chatViewModel: ChatViewModel,
+    chatUiState: ChatUiState,
+    group: Group,
+    content: @Composable () -> Unit,
 ) {
     val scrollBehavior = TopAppBarDefaults.pinnedScrollBehavior(rememberTopAppBarState())
 
@@ -114,13 +115,13 @@ fun UserBarLayout(
                 titleContentColor = whiteColor,
             ),
             title = {
-                UserRow(robot)
+                UserRow(group)
             },
             actions = {
                 IconButton(onClick = {
-                    viewModel.robotList.remove(robot)
-                    viewModel.currentPos = -1
-                    viewModel.screens = Screens.MAIN
+                    mainViewModel.groupList.remove(group)
+                    mainViewModel.currentPos = -1
+                    mainViewModel.screens = Screens.MAIN
                 }) {
                     Icon(
                         imageVector = Icons.Filled.Delete,
@@ -141,15 +142,17 @@ fun UserBarLayout(
             verticalAlignment = Alignment.CenterVertically,
             horizontalArrangement = Arrangement.Center,
         ) {
-            items(viewModel.imageUris) { imageUri ->
+            items(chatViewModel.imageUris) { imageUri ->
+                val bitmap = imageUri.toComposeImageBitmap()
                 Box(
                     modifier = Modifier.padding(4.dp)
                         .background(lightBorderColor, RoundedCornerShape(10.dp))
                 ) {
                     Image(
-                        painter = painterResource(imageUri),
+                        bitmap,
                         contentDescription = null,
-                        modifier = Modifier.padding(4.dp).requiredSize(100.dp)
+                        contentScale = ContentScale.FillHeight,
+                        modifier = Modifier.padding(4.dp).height(192.dp).clip(RoundedCornerShape(16.dp)),
                     )
 
                     Icon(Icons.Default.Close,
@@ -157,40 +160,44 @@ fun UserBarLayout(
                         contentDescription = "remove",
                         modifier = Modifier.padding(end = 8.dp).clip(CircleShape)
                             .background(Color.Gray).align(Alignment.TopEnd).clickable {
-                                viewModel.imageUris.remove(imageUri)
+                                chatViewModel.imageUris.remove(imageUri)
                             })
                 }
             }
         }
-        BottomTextBar(viewModel, chatViewModel)
+        BottomTextBar(mainViewModel, chatViewModel, chatUiState)
     }
 }
 
 @OptIn(ExperimentalComposeUiApi::class)
 @Composable
-fun BottomTextBar(viewModel: MainViewModel, chatViewModel: ChatViewModel) {
+fun BottomTextBar(viewModel: MainViewModel, chatViewModel: ChatViewModel, chatUiState: ChatUiState) {
     val keyboardController = LocalSoftwareKeyboardController.current
+    var showFilePicker by remember { mutableStateOf(false) }
 
+    ImagePicker(showFilePicker) {
+        it?.let { chatViewModel.imageUris.add(it) }
+        showFilePicker = false
+    }
     Row(
         modifier = Modifier.background(borderColor).padding(vertical = 8.dp),
         verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.SpaceBetween
     ) {
         IconButton(onClick = {
-            if (viewModel.imageUris.size != 3) {
-                viewModel.imageUris.add(
-                    "robot_${(1..8).random()}.png",
-                )
+            if (!chatUiState.isLoading) {
+                if (chatViewModel.imageUris.size != 3) {
+                    showFilePicker = true
+                }
             }
-
         }) {
             Icon(
                 imageVector = Icons.Filled.Add, contentDescription = "upload", tint = whiteColor
             )
         }
         TextField(
-            value = viewModel.userText,
-            onValueChange = { viewModel.userText = it },
+            value = chatViewModel.userText,
+            onValueChange = { chatViewModel.userText = it },
             modifier = Modifier.weight(1f).background(borderColor),
             keyboardOptions = KeyboardOptions(capitalization = KeyboardCapitalization.Sentences),
             maxLines = 3,
@@ -215,36 +222,22 @@ fun BottomTextBar(viewModel: MainViewModel, chatViewModel: ChatViewModel) {
         )
         FloatingActionButton(containerColor = lightBorderColor,
             elevation = FloatingActionButtonDefaults.elevation(
-                defaultElevation = if (viewModel.isGenerating) 0.dp else 6.dp,
+                defaultElevation = if (chatUiState.isLoading) 0.dp else 6.dp,
                 pressedElevation = 0.dp
             ),
             modifier = Modifier.padding(horizontal = 8.dp),
             onClick = {
-                if (viewModel.userText.isNotEmpty()) {
+                if (chatViewModel.userText.isNotEmpty()) {
+                    chatViewModel.generateContentWithText(
+                        viewModel.groupList[viewModel.currentPos].groupId,
+                        chatViewModel.userText,
+                        viewModel.getApikeyLocalStorage(),
+                    )
                     keyboardController?.hide()
-                    chatViewModel.generateContentWithText(viewModel.userText, null)
-                    viewModel.userText = ""
+                    chatViewModel.userText = ""
                 }
-//                if (viewModel.isGenerating) {
-//
-//                }
-//                viewModel.isGenerating = true
-//                if (promptText.isNotBlank() && isGenerating.not()) {
-//                    mainViewModel.sendText(promptText, imageBitmaps)
-//                    promptText = ""
-//                    imageBitmaps.clear()
-//                    keyboardController?.hide()
-//                } else if (promptText.isBlank()) {
-//                    Toast.makeText(
-//                        context,
-//                        "Please enter a message",
-//                        Toast.LENGTH_SHORT
-//                    ).show()
-//                }
             }) {
-            AnimatedContent(
-                targetState = viewModel.isGenerating,
-            ) { generating ->
+            AnimatedContent(chatUiState.isLoading) { generating ->
                 if (generating) {
                     CircularProgressIndicator(
                         trackColor = whiteColor,
@@ -264,86 +257,126 @@ fun BottomTextBar(viewModel: MainViewModel, chatViewModel: ChatViewModel) {
 }
 
 @Composable
-fun MessageItem(
-    viewModel: MainViewModel,
-    isInComing: Boolean,
-    images: List<ImageBitmap>,
-    content: String,
-    modifier: Modifier = Modifier,
-) {
+fun MessageItem(chatMessage: ChatMessage) {
 
-    val cardShape by remember {
-        derivedStateOf {
-            if (isInComing) {
-                RoundedCornerShape(
-                    16.dp, 16.dp, 16.dp, 0.dp
-                )
-            } else {
-                RoundedCornerShape(
-                    16.dp, 16.dp, 0.dp, 16.dp
-                )
-            }
-        }
+    val isGEMINIMessage = chatMessage.participant != Role.YOU
+
+    val backgroundColor = when (chatMessage.participant) {
+        Role.GEMINI -> borderColor
+        Role.YOU -> borderColor
+        Role.ERROR -> errorContainer
+    }
+    val infiniteTransition = rememberInfiniteTransition(label = "")
+    val rotate by infiniteTransition.animateFloat(
+        initialValue = 0f,
+        targetValue = 360f,
+        animationSpec = infiniteRepeatable(
+            animation = tween(
+                durationMillis = 1000,
+                easing = EaseOutSine
+            )
+        ), label = ""
+    )
+    val horizontalAlignment = if (isGEMINIMessage) {
+        Alignment.Start
+    } else {
+        Alignment.End
+    }
+    val circleColors = listOf(
+        Color(0xFF5851D8),
+        Color(0xFF833AB4),
+        Color(0xFFC13584),
+        Color(0xFFE1306C),
+        Color(0xFFFD1D1D),
+        Color(0xFFF56040),
+        Color(0xFFF77737),
+        Color(0xFFFCAF45),
+        Color(0xFFFFDC80),
+        Color(0xFF5851D8)
+    )
+    val cardShape = if (isGEMINIMessage) {
+        RoundedCornerShape(
+            16.dp, 16.dp, 16.dp, 0.dp
+        )
+    } else {
+        RoundedCornerShape(
+            16.dp, 16.dp, 0.dp, 16.dp
+        )
     }
 
-    val cardPadding by remember {
-        derivedStateOf {
-            if (isInComing) {
-                PaddingValues(end = 24.dp)
-            } else {
-                PaddingValues(start = 24.dp)
-            }
-        }
+    val cardPadding = if (isGEMINIMessage) {
+        PaddingValues(end = 24.dp)
+    } else {
+        PaddingValues(start = 24.dp)
     }
 
-    Column(modifier = modifier.padding(vertical = 10.dp)) {
-        if (images.isNotEmpty()) {
-            LazyRow(
-                modifier = Modifier.fillMaxWidth(),
-                reverseLayout = true,
-                contentPadding = PaddingValues(horizontal = 8.dp),
-                horizontalArrangement = Arrangement.spacedBy(4.dp, Alignment.End)
-            ) {
-                items(images.size) { index ->
-//                    val image = images[index]
-//                    Image(
-//                        bitmap = image,
-//                        contentDescription = null,
-//                        modifier = Modifier
-//                            .height(60.dp)
-//                            .border(
-//                                width = 2.dp,
-//                                color = MaterialTheme.colorScheme.surfaceVariant,
-//                            )
-//                    )
-                }
-            }
-        }
-        Row(
-            horizontalArrangement = if (isInComing) Arrangement.Start else Arrangement.End,
-            verticalAlignment = Alignment.Top,
-            modifier = modifier.fillMaxWidth()
-        ) {
-            Card(
-                modifier = Modifier.wrapContentSize().padding(cardPadding),
-                shape = cardShape,
-                colors = CardDefaults.cardColors(
-                    containerColor = borderColor
-                )
-            ) {
-                Row(modifier = Modifier.padding(16.dp)) {
-                    SelectionContainer {
-                        Text(
-                            text = content,
-                            color = whiteColor,
-                            style = MaterialTheme.typography.bodyMedium
+    Column(
+        horizontalAlignment = horizontalAlignment,
+        modifier = Modifier
+            .padding(4.dp)
+            .fillMaxWidth()
+    ) {
+        Box(
+            modifier = Modifier.wrapContentSize().padding(cardPadding)
+                .clip(cardShape)
+                .padding(2.dp)
+                .drawWithContent {
+                    rotate(
+                        if (chatMessage.isPending) {
+                            rotate
+                        } else {
+                            0f
+                        }
+                    ) {
+                        drawCircle(
+                            brush = if (chatMessage.isPending && chatMessage.participant == Role.YOU) {
+                                Brush.sweepGradient(
+                                    circleColors
+                                )
+                            } else {
+                                Brush.linearGradient(
+                                    listOf(
+                                        backgroundColor,
+                                        backgroundColor
+                                    )
+                                )
+                            },
+                            radius = size.width,
+                            blendMode = BlendMode.SrcIn,
                         )
-//                        if (viewModel.allPlatform != TYPE.WEB){
-//                            com.mikepenz.markdown.compose.Markdown(content)
-//                        }
+                    }
+                    drawContent()
+                }.background(backgroundColor, cardShape)
+        ) {
+            Column(
+                modifier = Modifier.wrapContentSize().padding(10.dp)
+            ) {
+                if (chatMessage.images.isNotEmpty()) {
+                    LazyRow(
+                        modifier = Modifier.wrapContentSize().padding(bottom = 4.dp),
+                        reverseLayout = true,
+                        horizontalArrangement = Arrangement.spacedBy(4.dp, Alignment.End)
+                    ) {
+                        items(chatMessage.images) {
+                            val bitmap = it.toComposeImageBitmap()
+                            Image(
+                                bitmap,
+                                contentDescription = null,
+                                modifier = Modifier.height(192.dp).clip(RoundedCornerShape(16.dp)),
+                                contentScale = ContentScale.FillHeight,
+                            )
+                        }
                     }
                 }
+                SelectionContainer {
+                    Text(
+                        text = chatMessage.text,
+                        color = whiteColor,
+                        style = MaterialTheme.typography.bodyMedium,
+                    )
+                }
             }
         }
     }
+
 }

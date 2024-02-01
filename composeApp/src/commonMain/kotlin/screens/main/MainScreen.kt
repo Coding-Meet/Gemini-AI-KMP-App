@@ -23,7 +23,7 @@ import clipData
 import desktopweb.SideScreenDesktop
 import kotlinx.coroutines.launch
 import mobile.SideScreenMobile
-import models.Robot
+import models.Group
 import org.jetbrains.compose.resources.*
 import screens.chatscreen.DetailScreen
 import theme.*
@@ -31,18 +31,19 @@ import utils.*
 
 @Composable
 fun MainScreen(viewModel: MainViewModel) {
+    ApiKeyAlertDialogBox(viewModel)
     ChatAlertDialogBox(viewModel)
-    val sideScreen = if (viewModel.allPlatform == TYPE.MOBILE) {
-        SideScreenMobile(viewModel)
+    val sideScreen = if (viewModel.platformType == TYPE.MOBILE) {
+        SideScreenMobile()
     } else {
         SideScreenDesktop(viewModel)
     }
     when (viewModel.screens) {
         Screens.MAIN -> {
             sideScreen.SideRow {
-                TopBarLayout(viewModel) {
+                TopBarLayout(viewModel) { paddingValues ->
                     LazyColumn(
-                        Modifier.fillMaxSize().padding(it).background(lightBackgroundColor)
+                        Modifier.fillMaxSize().padding(paddingValues).background(lightBackgroundColor)
                     ) {
                         item {
                             TextField(
@@ -88,8 +89,19 @@ fun MainScreen(viewModel: MainViewModel) {
                             )
                             Button(
                                 onClick = {
-                                    viewModel.dialogTypeState = DialogType.NEW_CHAT
-                                    viewModel.isShowDialog = true
+                                    val apiKey = viewModel.getApikeyLocalStorage().trim()
+                                    if (apiKey.isNotEmpty()) {
+                                        if (apiKey.isValidApiKey()) {
+                                            viewModel.isChatShowDialog = true
+                                        }else{
+                                            viewModel.apiKeyText = apiKey
+                                            viewModel.isApiShowDialog = true
+                                        }
+                                    }else{
+                                        viewModel.apiKeyText = apiKey
+                                        viewModel.isApiShowDialog = true
+                                    }
+
                                 },
                                 modifier = Modifier.fillMaxWidth().padding(10.dp),
                                 colors = ButtonDefaults.buttonColors(
@@ -105,9 +117,9 @@ fun MainScreen(viewModel: MainViewModel) {
                                 Text(text = "New Chat")
                             }
                         }
-                        itemsIndexed(viewModel.robotList) { index, menuItem ->
+                        itemsIndexed(viewModel.groupList) { index, menuItem ->
                             UserLayout(menuItem) {
-                                if (viewModel.allPlatform == TYPE.MOBILE) {
+                                if (viewModel.platformType == TYPE.MOBILE) {
                                     viewModel.screens = Screens.DETAIL
                                 }
                                 viewModel.currentPos = index
@@ -155,9 +167,8 @@ fun TopBarLayout(
                 },
                 actions = {
                     IconButton(onClick = {
-                        viewModel.newChartRobotAndApiKeyText =  viewModel.getApikeyLocalStorage()
-                        viewModel.dialogTypeState = DialogType.API_KEY
-                        viewModel.isShowDialog = true
+                        viewModel.apiKeyText = viewModel.getApikeyLocalStorage()
+                        viewModel.isApiShowDialog = true
                     }) {
                         Icon(
                             imageVector = Icons.Filled.Settings,
@@ -177,7 +188,7 @@ fun TopBarLayout(
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun UserLayout(robot: Robot, onClick: () -> Unit) {
+fun UserLayout(group: Group, onClick: () -> Unit) {
     Card(
         modifier = Modifier
             .fillMaxWidth()
@@ -191,13 +202,13 @@ fun UserLayout(robot: Robot, onClick: () -> Unit) {
             contentColor = whiteColor
         )
     ) {
-        UserRow(robot, Modifier.padding(10.dp))
+        UserRow(group, Modifier.padding(10.dp))
     }
 }
 
 @OptIn(ExperimentalResourceApi::class)
 @Composable
-fun UserRow(robot: Robot, customModifier: Modifier = Modifier) {
+fun UserRow(group: Group, customModifier: Modifier = Modifier) {
     Row(
         Modifier
             .fillMaxWidth()
@@ -205,7 +216,7 @@ fun UserRow(robot: Robot, customModifier: Modifier = Modifier) {
         verticalAlignment = Alignment.CenterVertically
     ) {
         Image(
-            painter = painterResource(robot.icon), null,
+            painter = painterResource(group.icon), null,
             modifier = Modifier.size(50.dp)
         )
         Spacer(modifier = Modifier.width(10.dp))
@@ -214,13 +225,13 @@ fun UserRow(robot: Robot, customModifier: Modifier = Modifier) {
                 .weight(0.8f)
         ) {
             Text(
-                text = robot.robotName.capitalizeFirstLetter(),
+                text = group.groupName.capitalizeFirstLetter(),
                 style = MaterialTheme.typography.titleLarge,
                 maxLines = 1,
                 overflow = TextOverflow.Ellipsis
             )
             Text(
-                text = robot.date,
+                text = group.date,
                 style = MaterialTheme.typography.bodyMedium,
                 maxLines = 1,
                 overflow = TextOverflow.Ellipsis,
@@ -230,27 +241,16 @@ fun UserRow(robot: Robot, customModifier: Modifier = Modifier) {
     }
 }
 
-
 @OptIn(ExperimentalResourceApi::class)
 @Composable
-fun ChatAlertDialogBox(viewModel: MainViewModel) {
+fun ApiKeyAlertDialogBox(viewModel: MainViewModel) {
     val coroutine = rememberCoroutineScope()
     val clipboardManager = LocalClipboardManager.current
 
-    if (viewModel.isShowDialog) {
+    if (viewModel.isApiShowDialog) {
         AlertDialog(properties = DialogProperties(dismissOnBackPress = true, dismissOnClickOutside = false),
             icon = {
-                Icon(
-                    when (viewModel.dialogTypeState) {
-                        DialogType.NEW_CHAT -> {
-                            Icons.Default.Person
-                        }
-
-                        DialogType.API_KEY -> {
-                            Icons.Default.Settings
-                        }
-                    }, contentDescription = "robot"
-                )
+                Icon(Icons.Default.Settings, contentDescription = "setting")
             },
             containerColor = lightBackgroundColor,
             textContentColor = whiteColor,
@@ -258,27 +258,18 @@ fun ChatAlertDialogBox(viewModel: MainViewModel) {
             titleContentColor = whiteColor,
             title = {
                 Text(
-                    text =
-                    when (viewModel.dialogTypeState) {
-                        DialogType.NEW_CHAT -> "Add Robot"
-                        DialogType.API_KEY -> "Add Api Key"
-                    }
+                    text = "Add Api Key"
                 )
             },
             text = {
                 TextField(
-                    value = viewModel.newChartRobotAndApiKeyText,
-                    onValueChange = { viewModel.newChartRobotAndApiKeyText = it },
+                    value = viewModel.apiKeyText,
+                    onValueChange = { viewModel.apiKeyText = it },
                     modifier = Modifier.fillMaxWidth().padding(10.dp)
                         .background(borderColor),
                     keyboardOptions = KeyboardOptions(capitalization = KeyboardCapitalization.Sentences),
                     placeholder = {
-                        Text(
-                            when (viewModel.dialogTypeState) {
-                                DialogType.NEW_CHAT -> "Enter the Chat Name"
-                                DialogType.API_KEY -> "Enter the Api Key"
-                            }, color = textHintColor
-                        )
+                        Text("Enter the Api Key", color = textHintColor)
                     },
                     singleLine = true,
                     colors = TextFieldDefaults.colors(
@@ -296,52 +287,38 @@ fun ChatAlertDialogBox(viewModel: MainViewModel) {
                         selectionColors = TextSelectionColors(selectionColor, selectionColor)
                     ),
                     shape = RoundedCornerShape(10.dp),
-                    trailingIcon ={
-                        if (viewModel.dialogTypeState==DialogType.API_KEY){
-                            IconButton(onClick = {
-                                coroutine.launch {
-                                    clipData(clipboardManager)?.let {
-                                        viewModel.newChartRobotAndApiKeyText = it
-                                    }
+                    trailingIcon = {
+                        IconButton(onClick = {
+                            coroutine.launch {
+                                clipData(clipboardManager)?.let {
+                                    viewModel.apiKeyText = it
                                 }
-                            }) {
-                                Icon(
-                                    painter = painterResource("ic_paste.xml"),
-                                    contentDescription = "api key",
-                                    tint = whiteColor
-                                )
                             }
+                        }) {
+                            Icon(
+                                painter = painterResource("ic_paste.xml"),
+                                contentDescription = "api key",
+                                tint = whiteColor
+                            )
                         }
                     }
                 )
             },
             onDismissRequest = {
-                viewModel.newChartRobotAndApiKeyText = ""
-                viewModel.isShowDialog = false
+                viewModel.apiKeyText = ""
+                viewModel.isApiShowDialog = false
             },
 
             confirmButton = {
                 Button(
                     onClick = {
-                        if (viewModel.newChartRobotAndApiKeyText.trim().isNotEmpty()) {
-                            when (viewModel.dialogTypeState) {
-                                DialogType.NEW_CHAT -> {
-                                    val newRobot = Robot(
-                                        generateRandomKey(),
-                                        viewModel.newChartRobotAndApiKeyText.trim(),
-                                        currentDateTimeToString(),
-                                        "robot_${(1..8).random()}.png"
-                                    )
-                                    viewModel.robotList.add(newRobot)
-                                }
-
-                                DialogType.API_KEY -> {
-                                    viewModel.setApikeyLocalStorage()
-                                }
+                        if (viewModel.apiKeyText.trim().isNotEmpty()) {
+                            if (viewModel.apiKeyText.trim().isValidApiKey()) {
+                                viewModel.setApikeyLocalStorage(viewModel.apiKeyText.trim())
+                                viewModel.apiKeyText = ""
+                                viewModel.isApiShowDialog = false
                             }
                         }
-                        viewModel.newChartRobotAndApiKeyText = ""
-                        viewModel.isShowDialog = false
                     },
                     colors = ButtonDefaults.buttonColors(
                         containerColor = whiteColor,
@@ -354,8 +331,96 @@ fun ChatAlertDialogBox(viewModel: MainViewModel) {
             dismissButton = {
                 Button(
                     onClick = {
-                        viewModel.newChartRobotAndApiKeyText = ""
-                        viewModel.isShowDialog = false
+                        viewModel.apiKeyText = ""
+                        viewModel.isApiShowDialog = false
+                    },
+                    colors = ButtonDefaults.buttonColors(
+                        containerColor = whiteColor,
+                        contentColor = blackColor,
+                    ),
+                ) {
+                    Text("Cancel")
+                }
+            }
+        )
+    }
+}
+
+@Composable
+fun ChatAlertDialogBox(viewModel: MainViewModel) {
+    if (viewModel.isChatShowDialog) {
+        AlertDialog(properties = DialogProperties(dismissOnBackPress = true, dismissOnClickOutside = false),
+            icon = {
+                Icon(Icons.Default.Person, contentDescription = "robot")
+            },
+            containerColor = lightBackgroundColor,
+            textContentColor = whiteColor,
+            iconContentColor = whiteColor,
+            titleContentColor = whiteColor,
+            title = {
+                Text(text = "Add Robot")
+            },
+            text = {
+                TextField(
+                    value = viewModel.newGroupText,
+                    onValueChange = { viewModel.newGroupText = it },
+                    modifier = Modifier.fillMaxWidth().padding(10.dp)
+                        .background(borderColor),
+                    keyboardOptions = KeyboardOptions(capitalization = KeyboardCapitalization.Sentences),
+                    placeholder = {
+                        Text("Enter the Chat Name", color = textHintColor)
+                    },
+                    singleLine = true,
+                    colors = TextFieldDefaults.colors(
+                        unfocusedContainerColor = lightBorderColor,
+                        focusedContainerColor = lightBorderColor,
+                        focusedIndicatorColor = Color.Transparent,
+                        unfocusedIndicatorColor = Color.Transparent,
+                        focusedTextColor = whiteColor,
+                        unfocusedTextColor = whiteColor,
+                        focusedPlaceholderColor = whiteColor,
+                        unfocusedPlaceholderColor = whiteColor,
+                        unfocusedLabelColor = whiteColor,
+                        focusedLabelColor = whiteColor,
+                        cursorColor = whiteColor,
+                        selectionColors = TextSelectionColors(selectionColor, selectionColor)
+                    ),
+                    shape = RoundedCornerShape(10.dp),
+                )
+            },
+            onDismissRequest = {
+                viewModel.newGroupText = ""
+                viewModel.isChatShowDialog = false
+            },
+
+            confirmButton = {
+                Button(
+                    onClick = {
+                        if (viewModel.newGroupText.trim().isNotEmpty()) {
+                            val newGroup = Group(
+                                generateRandomKey(),
+                                viewModel.newGroupText.trim(),
+                                currentDateTimeToString(),
+                                "robot_${(1..8).random()}.png"
+                            )
+                            viewModel.groupList.add(newGroup)
+                        }
+                        viewModel.newGroupText = ""
+                        viewModel.isChatShowDialog = false
+                    },
+                    colors = ButtonDefaults.buttonColors(
+                        containerColor = whiteColor,
+                        contentColor = blackColor,
+                    ),
+                ) {
+                    Text("Save")
+                }
+            },
+            dismissButton = {
+                Button(
+                    onClick = {
+                        viewModel.newGroupText = ""
+                        viewModel.isChatShowDialog = false
                     },
                     colors = ButtonDefaults.buttonColors(
                         containerColor = whiteColor,

@@ -1,13 +1,12 @@
 import di.*
 import org.koin.core.context.startKoin
-import org.koin.dsl.KoinAppDeclaration
 
-fun initKoin(appDeclaration: KoinAppDeclaration = {}) =
+fun initKoin() =
 
     startKoin {
         modules(
-            nGeminiServiceModule,
-            nGeminiRepositoryModule,
+            geminiServiceModule,
+            geminiRepositoryModule,
             networkModule,
             useCaseModule,
             viewModelModule

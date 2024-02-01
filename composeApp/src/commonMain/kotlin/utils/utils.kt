@@ -3,47 +3,7 @@ package utils
 import kotlinx.datetime.Clock
 import kotlinx.datetime.TimeZone
 import kotlinx.datetime.toLocalDateTime
-import models.Robot
 import kotlin.random.Random
-
-
-enum class TYPE{
-    MOBILE,
-    DESKTOP,
-    WEB,
-}
-
-enum class DialogType{
-    NEW_CHAT,
-    API_KEY
-}
-
-enum class Screens{
-    MAIN,
-    DETAIL,
-    SETTING
-}
-
-val robots = listOf(
-    Robot(
-        "summarize",
-        "Generate text from text-only input",
-        "Sample app that summarizes text",
-        "ic_text.xml",
-    ),
-    Robot(
-        "photo_reasoning",
-        "Generate text from text-and-image input (multimodal)",
-        "Sample app for uploading images and asking about them",
-        "ic_image_text.xml",
-    ),
-    Robot(
-        "chat",
-        "Build multi-turn conversations (chat)",
-        "Sample app demonstrating a conversational UI",
-        "ic_chat.xml",
-    )
-)
 
 fun generateRandomKey(): String {
     val charPool = ('a' .. 'z') + ('A' .. 'Z') + ('0' .. '9')
@@ -82,4 +42,8 @@ fun String.capitalizeFirstLetter(): String {
 
     val firstChar = this[0].uppercaseChar()
     return "$firstChar${this.substring(1)}"
+}
+
+fun String.isValidApiKey(): Boolean {
+    return "AIza[0-9A-Za-z-_]{35}".toRegex().matches(this)
 }

@@ -32,7 +32,7 @@ ktor = "2.3.7"
 coroutines = "1.8.0-RC2"
 kermit = "2.0.2"
 animationAndroid = "1.5.4"
-
+buildkonfig = "0.15.1"
 
 [libraries]
 koin-compose = { module = "io.insert-koin:koin-compose", version.ref = "koinCompose" }
@@ -94,4 +94,5 @@ androidx-animation-android = { group = "androidx.compose.animation", name = "ani
 androidApplication = { id = "com.android.application", version.ref = "agp" }
 androidLibrary = { id = "com.android.library", version.ref = "agp" }
 jetbrainsCompose = { id = "org.jetbrains.compose", version.ref = "compose-plugin" }
+buildkonfig = { id = "com.codingfeline.buildkonfig", version.ref = "buildkonfig" }
 kotlinMultiplatform = { id = "org.jetbrains.kotlin.multiplatform", version.ref = "kotlin" }

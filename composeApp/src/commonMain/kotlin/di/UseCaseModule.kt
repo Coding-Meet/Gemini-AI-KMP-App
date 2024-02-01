@@ -1,8 +1,7 @@
 package di
 
 
-import domain.use_cases.GetContentUseCase
-import domain.use_cases.IGetContentUseCase
+import domain.use_cases.*
 import org.koin.dsl.module
 
 val useCaseModule = module {

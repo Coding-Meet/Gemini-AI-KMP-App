@@ -12,8 +12,8 @@ class MainApplication: Application() {
         startKoin {
             androidContext(this@MainApplication)
             modules(
-                nGeminiServiceModule,
-                nGeminiRepositoryModule,
+                geminiServiceModule,
+                geminiRepositoryModule,
                 networkModule,
                 useCaseModule,
                 viewModelModule

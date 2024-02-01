@@ -1,8 +1,8 @@
 
-import androidx.compose.runtime.remember
 import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.window.CanvasBasedWindow
 import org.jetbrains.skiko.wasm.onWasmReady
+import org.koin.mp.KoinPlatform
 import screens.main.MainViewModel
 
 @OptIn(ExperimentalComposeUiApi::class)
@@ -12,8 +12,8 @@ fun main() {
         CanvasBasedWindow   (
             title = "Gemini AI KMP App",
             canvasElementId = "ComposeTarget") {
-            val viewModel = remember { MainViewModel() }
-                App(viewModel)
+            val mainViewModel: MainViewModel = KoinPlatform.getKoin().get()
+            App(mainViewModel)
         }
     }
 }

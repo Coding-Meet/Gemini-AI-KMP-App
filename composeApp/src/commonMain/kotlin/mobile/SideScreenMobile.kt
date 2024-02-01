@@ -10,7 +10,7 @@ import theme.lightBackgroundColor
 import screens.main.MainViewModel
 
 
-class SideScreenMobile(viewModel: MainViewModel) : DistributeComp {
+class SideScreenMobile() : DistributeComp {
     @Composable
     override fun SideRow(content: @Composable () -> Unit) {
         Row(

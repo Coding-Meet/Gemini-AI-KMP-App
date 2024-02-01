@@ -1,11 +1,11 @@
 package di
 
 
-import data.respository.NGeminiRepositoryImp
-import domain.respository.NGeminiRepository
+import data.respository.GeminiRepositoryImp
+import domain.respository.GeminiRepository
 import org.koin.dsl.module
 
 
-val nGeminiRepositoryModule = module {
-    single<NGeminiRepository> { NGeminiRepositoryImp(get()) }
+val geminiRepositoryModule = module {
+    single<GeminiRepository> { GeminiRepositoryImp(get()) }
 }

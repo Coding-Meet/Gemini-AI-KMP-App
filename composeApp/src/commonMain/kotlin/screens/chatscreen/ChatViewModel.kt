@@ -1,15 +1,20 @@
 package screens.chatscreen
 
-import domain.models.ChatMessage
-import domain.models.Role
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateListOf
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.setValue
+import domain.model.ChatMessage
+import domain.model.Role
 import domain.use_cases.IGetContentUseCase
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.cancel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 import moe.tlaster.precompose.viewmodel.ViewModel
 import moe.tlaster.precompose.viewmodel.viewModelScope
+import org.koin.mp.KoinPlatform
+import utils.AppCoroutineDispatchers
+import utils.generateRandomKey
 
 
 class ChatViewModel(
@@ -18,76 +23,94 @@ class ChatViewModel(
 
     private val _chatUiState = MutableStateFlow(ChatUiState())
     val chatUiState = _chatUiState.asStateFlow()
+    private val appCoroutineDispatchers: AppCoroutineDispatchers = KoinPlatform.getKoin().get()
 
-    fun generateContentWithText(content: String, images: List<ByteArray>? = null) {
-        viewModelScope.launch(Dispatchers.Unconfined) {
+    var userText by mutableStateOf("")
+    val imageUris = mutableStateListOf<ByteArray>()
+
+    fun generateContentWithText(chatId: String, content: String, apiKey: String) {
+        val images = imageUris.toList()
+        imageUris.clear()
+        viewModelScope.launch(appCoroutineDispatchers.io) {
+            val userId = generateRandomKey()
             _chatUiState.value =
                 _chatUiState.value.copy(
-                    isLoading = true,
-                    isConnectionError = false
+                    isLoading = true
                 )
-            if (images != null) {
-                addToMessages(content, Role.USER, images)
-            }
+            addToMessages(chatId, userId, content, Role.YOU, isPending = true, isLoading = true, images)
             try {
-                _chatUiState.value =
-                    _chatUiState.value.copy(isLoading = true, isConnectionError = false)
-                val nGemini = getContentUseCase.getContentWithImage(content, images)
+                val gemini = getContentUseCase.getContentWithImage(content, apiKey, images)
                 val generatedContent =
-                    nGemini.candidates?.get(0)?.content?.parts?.get(0)?.text.toString()
-                updateLastBotMessage(generatedContent)
+                    if (gemini.candidates != null) {
+                        if (gemini.candidates.isNotEmpty()){
+                            gemini.candidates[0].content.parts[0].text
+                        }else{
+                            "Failed to generate content. Please try again."
+                        }
+                    } else {
+                        "Failed to generate content. Please try again."
+                    }
+                val botId = generateRandomKey()
+                handleContent(userId, false)
                 addToMessages(
+                    chatId,
+                    botId,
                     generatedContent,
-                    Role.MODEL,
+                    Role.GEMINI,
+                    isPending = false,
+                    isLoading = true,
                     emptyList()
                 )
                 _chatUiState.value =
                     _chatUiState.value.copy(isLoading = false)
             } catch (e: Exception) {
-                handleContentGenerationError()
+                val errorId = generateRandomKey()
+                handleContent(userId, false)
+                addToMessages(
+                    chatId,
+                    errorId,
+                    e.message ?: "Failed to generate content. Please try again.",
+                    Role.ERROR,
+                    isPending = false,
+                    isLoading = false,
+                    emptyList()
+                )
             }
         }
     }
 
 
-    private fun handleContentGenerationError() {
+    private fun handleContent(id: String, isPending: Boolean) {
+        val pos = _chatUiState.value.message.indexOfFirst {
+            it.id == id
+        }
+        _chatUiState.value.message[pos].isPending = isPending
         _chatUiState.value = _chatUiState.value.copy(
-            isLoading = false,
-            isConnectionError = true,
-            errorMessage = "Failed to generate content. Please try again."
+            message = _chatUiState.value.message
         )
     }
-
-
-    private fun updateLastBotMessage(text: String) {
-        val messages = _chatUiState.value.message.toMutableList()
-        if (messages.isNotEmpty() && messages.last()?.role == Role.MODEL.roleName) {
-            val last = messages.last()
-            val updatedMessage = last.copy(text = text)
-            messages[messages.lastIndex] = updatedMessage
-            _chatUiState.value = _chatUiState.value.copy(
-                message = messages,
-            )
-        }
-    }
-
 
     private fun addToMessages(
+        chatId: String,
+        id: String,
         text: String,
         sender: Role,
+        isPending: Boolean,
+        isLoading: Boolean,
         images: List<ByteArray>
     ) {
-        val newMessage = ChatMessage(text, images, sender.roleName)
+        val newMessage = ChatMessage(
+            id = id,
+            chatId = chatId,
+            text = text,
+            images = images,
+            participant = sender,
+            isPending = isPending
+        )
         _chatUiState.value = _chatUiState.value.copy(
             message = _chatUiState.value.message + newMessage,
-            isLoading = true,
-            images = images
+            isLoading = isLoading,
         )
     }
 
-
-    override fun onCleared() {
-        viewModelScope.cancel()
-        super.onCleared()
-    }
 }

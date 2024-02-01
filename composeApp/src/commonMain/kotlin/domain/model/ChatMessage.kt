@@ -1,19 +1,14 @@
-package domain.models
+package domain.model
 
-import kotlinx.serialization.Serializable
+enum class Role {
+    YOU, GEMINI, ERROR
+}
 
-
-@Serializable
 data class ChatMessage(
-    val text: String,
+    val id:String,
+    val chatId : String,
+    var text: String,
     val images: List<ByteArray> = emptyList(),
-    val role: String = Role.USER.roleName,
-) {
-    val isModel: Boolean
-        get() = role == Role.MODEL.roleName
-}
-
-enum class Role(val roleName: String) {
-    USER("You"),
-    MODEL("NGemini")
-}
+    var participant: Role = Role.YOU,
+    var isPending: Boolean = false
+)

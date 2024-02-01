@@ -5,36 +5,36 @@ import androidx.compose.runtime.*
 import androidx.compose.runtime.setValue
 import com.russhwolf.settings.*
 import getPlatform
-import models.Robot
+import models.Group
 import moe.tlaster.precompose.viewmodel.ViewModel
-import utils.DialogType
 import utils.Screens
+import com.coding.meet.gaminiaikmp.BuildKonfig
 
 class MainViewModel : ViewModel() {
 
-    val settings = Settings()
+    private val settings = Settings()
     var searchText by mutableStateOf("")
     var screens by mutableStateOf(Screens.MAIN)
-    var dialogTypeState by mutableStateOf(DialogType.NEW_CHAT)
-    var userText by mutableStateOf("")
-    var newChartRobotAndApiKeyText by mutableStateOf("")
-    val allPlatform = getPlatform().type
 
-    val imageUris = mutableStateListOf<String>()
+    var isChatShowDialog by mutableStateOf(false)
+    var newGroupText by mutableStateOf("")
 
-    var isShowDialog by mutableStateOf(false)
+    val platformType = getPlatform()
+
+    var isApiShowDialog by mutableStateOf(false)
+    var apiKeyText by mutableStateOf("")
+
     var currentPos by mutableStateOf(-1)
-    val robotList = mutableStateListOf<Robot>()
-    val isGenerating by mutableStateOf(false)
+    val groupList = mutableStateListOf<Group>()
     var isDesktopDrawerOpen by mutableStateOf(true)
 
 
-    fun setApikeyLocalStorage() {
-        settings["api_key"] = newChartRobotAndApiKeyText.trim()
+    fun setApikeyLocalStorage(apiKeyText :String) {
+        settings["GEMINI_API_KEY"] = apiKeyText
     }
 
     fun getApikeyLocalStorage() :String{
-        return settings.getString("api_key","AIzaSyBZ4r4qf_-G9lE1K3N7pHop499KkfdDEbM")
+        return settings.getString("GEMINI_API_KEY",BuildKonfig.GEMINI_API_KEY)
     }
 
 }

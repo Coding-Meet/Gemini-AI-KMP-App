@@ -1,13 +1,15 @@
 import org.jetbrains.compose.ExperimentalComposeLibrary
 import org.jetbrains.compose.desktop.application.dsl.TargetFormat
-import org.jetbrains.kotlin.gradle.targets.js.dsl.ExperimentalWasmDsl
+import com.codingfeline.buildkonfig.compiler.FieldSpec
 import org.jetbrains.kotlin.gradle.targets.js.yarn.YarnLockMismatchReport
 import org.jetbrains.kotlin.gradle.targets.js.yarn.YarnRootExtension
+import java.util.*
 
 plugins {
     alias(libs.plugins.kotlinMultiplatform)
     alias(libs.plugins.androidApplication)
     alias(libs.plugins.jetbrainsCompose)
+    alias(libs.plugins.buildkonfig)
     kotlin("plugin.serialization") version "1.9.21"
 //    id("app.cash.sqldelight") version "2.0.1"
 }
@@ -48,6 +50,9 @@ kotlin {
             // koin
 //            implementation(libs.koin.androidx.compose)
             implementation(libs.koin.android)
+
+            // file picker
+            implementation(libs.mpfilepicker)
         }
         commonMain.dependencies {
             implementation(compose.runtime)
@@ -63,9 +68,8 @@ kotlin {
             api(libs.precompose.viewmodel)
             api(libs.precompose.koin)
 
-//            implementation(libs.moko.mvvm)
+            // date time
             implementation(libs.kotlinx.datetime)
-            implementation(libs.mpfilepicker)
 
             // markdown text show
             implementation(libs.multiplatform.markdown.renderer)
@@ -103,6 +107,8 @@ kotlin {
 //            implementation(libs.sqlite.driver)
             implementation(libs.ktor.client.java)
 
+            // file picker
+            implementation(libs.mpfilepicker)
         }
 
         jsMain.dependencies {
@@ -169,7 +175,25 @@ compose.desktop {
         }
     }
 }
+buildkonfig {
+    packageName = "com.coding.meet.gaminiaikmp"
 
+    val localProperties =
+        Properties().apply {
+            val propsFile = rootProject.file("local.properties")
+            if (propsFile.exists()) {
+                load(propsFile.inputStream())
+            }
+        }
+
+    defaultConfigs {
+        buildConfigField(
+            FieldSpec.Type.STRING,
+            "GEMINI_API_KEY",
+            localProperties["GEMINI_API_KEY"]?.toString() ?: "",
+        )
+    }
+}
 compose.experimental {
     web.application {}
 }
