@@ -1,11 +1,12 @@
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.window.*
+import di.initKoin
 import org.koin.mp.KoinPlatform
-import screens.main.MainViewModel
+import presentation.screens.mainscreen.MainViewModel
 import java.awt.Dimension
 
 fun main() = application {
-    initKoin()
+    initKoin {}
     Window(
         onCloseRequest = ::exitApplication, state = WindowState(
             placement = WindowPlacement.Maximized,

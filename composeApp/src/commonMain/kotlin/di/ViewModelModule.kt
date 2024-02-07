@@ -1,9 +1,8 @@
 package di
 
-import AppCoroutineDispatchersImpl
 import org.koin.dsl.module
-import screens.chatscreen.ChatViewModel
-import screens.main.MainViewModel
+import presentation.screens.chatscreen.ChatViewModel
+import presentation.screens.mainscreen.MainViewModel
 import utils.AppCoroutineDispatchers
 
 val viewModelModule = module {

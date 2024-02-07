@@ -1,11 +1,8 @@
 package domain.model
 
-enum class Role {
-    YOU, GEMINI, ERROR
-}
 
 data class ChatMessage(
-    val id:String,
+    val messageId:String,
     val groupId : String,
     var text: String,
     val images: List<ByteArray> = emptyList(),

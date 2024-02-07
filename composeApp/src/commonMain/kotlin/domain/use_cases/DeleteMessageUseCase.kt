@@ -1,16 +1,11 @@
 package domain.use_cases
 
 import domain.respository.GeminiRepository
+import org.koin.core.component.KoinComponent
 
 
-interface IDeleteMessageUseCase {
+class DeleteMessageUseCase(private val geminiRepository: GeminiRepository) : KoinComponent {
     suspend fun deleteAllMessage(
-        groupId: String
-    )
-}
-
-class DeleteMessageUseCase(private val geminiRepository: GeminiRepository) : IDeleteMessageUseCase {
-    override  suspend fun deleteAllMessage(
         groupId: String
     ) {
         geminiRepository.deleteAllMessage(groupId)

@@ -9,16 +9,8 @@ class MainApplication: Application() {
 
     override fun onCreate() {
         super.onCreate()
-        startKoin {
+        initKoin {
             androidContext(this@MainApplication)
-            modules(
-                geminiServiceModule,
-                geminiRepositoryModule,
-                networkModule,
-                useCaseModule,
-                viewModelModule,
-                platformModule()
-            )
         }
     }
 

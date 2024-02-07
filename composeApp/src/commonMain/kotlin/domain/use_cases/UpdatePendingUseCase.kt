@@ -1,17 +1,10 @@
 package domain.use_cases
 
 import domain.respository.GeminiRepository
+import org.koin.core.component.KoinComponent
 
-
-interface IUpdatePendingUseCase {
+class UpdatePendingUseCase(private val geminiRepository: GeminiRepository) : KoinComponent {
     suspend fun updatePending(
-        messageId: String,
-        isPending: Boolean
-    )
-}
-
-class UpdatePendingUseCase(private val geminiRepository: GeminiRepository) : IUpdatePendingUseCase {
-    override suspend fun updatePending(
         messageId: String,
         isPending: Boolean
     ) {

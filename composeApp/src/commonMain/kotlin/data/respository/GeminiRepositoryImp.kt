@@ -5,7 +5,7 @@ import com.coding.meet.gaminiaikmp.GroupChat
 import com.coding.meet.gaminiaikmp.Message
 import data.mapper.toGemini
 import data.network.GeminiService
-import database.SharedDatabase
+import data.database.SharedDatabase
 import domain.model.ChatMessage
 import domain.model.Gemini
 import domain.model.Group
@@ -40,11 +40,11 @@ class GeminiRepositoryImp(
     }
 
     override suspend fun insertMessage(
-        id: String, groupId: String, text: String, images: List<ByteArray>, participant: Role, isPending: Boolean
+        messageId: String, groupId: String, text: String, images: List<ByteArray>, participant: Role, isPending: Boolean
     ) {
         sharedDatabase { appDatabase ->
             appDatabase.appDatabaseQueries.insertMessage(
-                Message(id, groupId, text, images, participant, isPending)
+                Message(messageId, groupId, text, images, participant, isPending)
             )
         }
     }

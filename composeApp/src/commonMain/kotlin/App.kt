@@ -1,11 +1,10 @@
 import androidx.compose.material.MaterialTheme
 import androidx.compose.runtime.Composable
-import screens.main.MainScreen
-import screens.main.MainViewModel
+import presentation.screens.mainscreen.*
 
 @Composable
-fun App(viewModel: MainViewModel) {
+fun App(mainViewModel: MainViewModel) {
     MaterialTheme {
-        MainScreen(viewModel)
+        MainScreen(mainViewModel)
     }
 }

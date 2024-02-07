@@ -20,7 +20,7 @@ interface GeminiRepository {
     )
 
     suspend fun insertMessage(
-        id: String,
+        messageId: String,
         groupId: String,
         text: String,
         images: List<ByteArray>,

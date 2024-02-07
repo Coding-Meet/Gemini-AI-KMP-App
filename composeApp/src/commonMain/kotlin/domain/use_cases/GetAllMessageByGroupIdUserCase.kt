@@ -2,13 +2,11 @@ package domain.use_cases
 
 import domain.model.ChatMessage
 import domain.respository.GeminiRepository
+import org.koin.core.component.KoinComponent
 
-interface IGetAllMessageByGroupIdUserCase {
-    suspend fun getMessageListByGroupId(groupId:String): List<ChatMessage>
-}
 
-class GetAllMessageByGroupIdUserCase(private val geminiRepository: GeminiRepository) : IGetAllMessageByGroupIdUserCase {
-    override suspend fun getMessageListByGroupId(groupId:String): List<ChatMessage> {
+class GetAllMessageByGroupIdUserCase(private val geminiRepository: GeminiRepository) : KoinComponent {
+    suspend fun getMessageListByGroupId(groupId:String): List<ChatMessage> {
         return geminiRepository.getMessageListByGroupId(groupId)
     }
 

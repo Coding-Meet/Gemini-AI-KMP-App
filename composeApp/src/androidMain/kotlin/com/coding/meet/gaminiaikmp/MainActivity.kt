@@ -8,7 +8,7 @@ import androidx.activity.compose.setContent
 import androidx.compose.ui.graphics.toArgb
 import org.koin.mp.KoinPlatform
 import utils.Screens
-import screens.main.MainViewModel
+import presentation.screens.mainscreen.MainViewModel
 import theme.borderColor
 
 class MainActivity : ComponentActivity() {
