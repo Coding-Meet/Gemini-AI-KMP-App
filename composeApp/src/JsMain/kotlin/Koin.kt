@@ -8,6 +8,7 @@ fun initKoin() =
             geminiRepositoryModule,
             networkModule,
             useCaseModule,
-            viewModelModule
+            viewModelModule,
+            platformModule()
         )
     }

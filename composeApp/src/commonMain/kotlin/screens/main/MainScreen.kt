@@ -15,6 +15,7 @@ import androidx.compose.ui.*
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.platform.LocalClipboardManager
+import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.text.input.KeyboardCapitalization
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.*
@@ -23,16 +24,20 @@ import clipData
 import desktopweb.SideScreenDesktop
 import kotlinx.coroutines.launch
 import mobile.SideScreenMobile
-import models.Group
+import domain.model.Group
 import org.jetbrains.compose.resources.*
+import org.koin.mp.KoinPlatform
+import screens.chatscreen.ChatViewModel
 import screens.chatscreen.DetailScreen
 import theme.*
 import utils.*
 
 @Composable
 fun MainScreen(viewModel: MainViewModel) {
+    val groupUiState by viewModel.uiState.collectAsState()
+    val chatViewModel: ChatViewModel = KoinPlatform.getKoin().get()
     ApiKeyAlertDialogBox(viewModel)
-    ChatAlertDialogBox(viewModel)
+    NewChatAlertDialogBox(viewModel)
     val sideScreen = if (viewModel.platformType == TYPE.MOBILE) {
         SideScreenMobile()
     } else {
@@ -92,12 +97,12 @@ fun MainScreen(viewModel: MainViewModel) {
                                     val apiKey = viewModel.getApikeyLocalStorage().trim()
                                     if (apiKey.isNotEmpty()) {
                                         if (apiKey.isValidApiKey()) {
-                                            viewModel.isChatShowDialog = true
-                                        }else{
+                                            viewModel.isNewChatShowDialog = true
+                                        } else {
                                             viewModel.apiKeyText = apiKey
                                             viewModel.isApiShowDialog = true
                                         }
-                                    }else{
+                                    } else {
                                         viewModel.apiKeyText = apiKey
                                         viewModel.isApiShowDialog = true
                                     }
@@ -117,12 +122,14 @@ fun MainScreen(viewModel: MainViewModel) {
                                 Text(text = "New Chat")
                             }
                         }
-                        itemsIndexed(viewModel.groupList) { index, menuItem ->
-                            UserLayout(menuItem) {
+                        itemsIndexed(groupUiState.data) { index, groupItem ->
+                            UserLayout(groupItem, viewModel.currentPos == index) {
                                 if (viewModel.platformType == TYPE.MOBILE) {
                                     viewModel.screens = Screens.DETAIL
                                 }
                                 viewModel.currentPos = index
+                                chatViewModel.groupId = groupItem.groupId
+                                chatViewModel.getMessageList(true)
                             }
                         }
                     }
@@ -134,12 +141,14 @@ fun MainScreen(viewModel: MainViewModel) {
         Screens.DETAIL -> {
             DetailScreen(viewModel)
         }
-
-        Screens.SETTING -> {
-
+    }
+    DisposableEffect(Unit) {
+        onDispose {
+            if (chatViewModel.failedUserId.isNotEmpty()){
+                chatViewModel.handleError(chatViewModel.failedUserId, null)
+            }
         }
     }
-
 }
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -188,7 +197,7 @@ fun TopBarLayout(
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun UserLayout(group: Group, onClick: () -> Unit) {
+fun UserLayout(group: Group, isSelected: Boolean, onClick: () -> Unit) {
     Card(
         modifier = Modifier
             .fillMaxWidth()
@@ -198,7 +207,7 @@ fun UserLayout(group: Group, onClick: () -> Unit) {
             onClick()
         },
         colors = CardDefaults.cardColors(
-            containerColor = borderColor,
+            containerColor = if (isSelected) selectedBGColor else borderColor,
             contentColor = whiteColor
         )
     ) {
@@ -241,12 +250,12 @@ fun UserRow(group: Group, customModifier: Modifier = Modifier) {
     }
 }
 
-@OptIn(ExperimentalResourceApi::class)
+@OptIn(ExperimentalResourceApi::class, ExperimentalComposeUiApi::class)
 @Composable
 fun ApiKeyAlertDialogBox(viewModel: MainViewModel) {
     val coroutine = rememberCoroutineScope()
     val clipboardManager = LocalClipboardManager.current
-
+    val keyboardController = LocalSoftwareKeyboardController.current
     if (viewModel.isApiShowDialog) {
         AlertDialog(properties = DialogProperties(dismissOnBackPress = true, dismissOnClickOutside = false),
             icon = {
@@ -307,6 +316,7 @@ fun ApiKeyAlertDialogBox(viewModel: MainViewModel) {
             onDismissRequest = {
                 viewModel.apiKeyText = ""
                 viewModel.isApiShowDialog = false
+                keyboardController?.hide()
             },
 
             confirmButton = {
@@ -317,6 +327,7 @@ fun ApiKeyAlertDialogBox(viewModel: MainViewModel) {
                                 viewModel.setApikeyLocalStorage(viewModel.apiKeyText.trim())
                                 viewModel.apiKeyText = ""
                                 viewModel.isApiShowDialog = false
+                                keyboardController?.hide()
                             }
                         }
                     },
@@ -333,6 +344,7 @@ fun ApiKeyAlertDialogBox(viewModel: MainViewModel) {
                     onClick = {
                         viewModel.apiKeyText = ""
                         viewModel.isApiShowDialog = false
+                        keyboardController?.hide()
                     },
                     colors = ButtonDefaults.buttonColors(
                         containerColor = whiteColor,
@@ -346,9 +358,11 @@ fun ApiKeyAlertDialogBox(viewModel: MainViewModel) {
     }
 }
 
+@OptIn(ExperimentalComposeUiApi::class)
 @Composable
-fun ChatAlertDialogBox(viewModel: MainViewModel) {
-    if (viewModel.isChatShowDialog) {
+fun NewChatAlertDialogBox(viewModel: MainViewModel) {
+    if (viewModel.isNewChatShowDialog) {
+        val keyboardController = LocalSoftwareKeyboardController.current
         AlertDialog(properties = DialogProperties(dismissOnBackPress = true, dismissOnClickOutside = false),
             icon = {
                 Icon(Icons.Default.Person, contentDescription = "robot")
@@ -390,23 +404,24 @@ fun ChatAlertDialogBox(viewModel: MainViewModel) {
             },
             onDismissRequest = {
                 viewModel.newGroupText = ""
-                viewModel.isChatShowDialog = false
+                viewModel.isNewChatShowDialog = false
+                keyboardController?.hide()
             },
 
             confirmButton = {
                 Button(
                     onClick = {
                         if (viewModel.newGroupText.trim().isNotEmpty()) {
-                            val newGroup = Group(
+                            viewModel.addNewGroup(
                                 generateRandomKey(),
                                 viewModel.newGroupText.trim(),
                                 currentDateTimeToString(),
                                 "robot_${(1..8).random()}.png"
                             )
-                            viewModel.groupList.add(newGroup)
                         }
                         viewModel.newGroupText = ""
-                        viewModel.isChatShowDialog = false
+                        viewModel.isNewChatShowDialog = false
+                        keyboardController?.hide()
                     },
                     colors = ButtonDefaults.buttonColors(
                         containerColor = whiteColor,
@@ -420,7 +435,8 @@ fun ChatAlertDialogBox(viewModel: MainViewModel) {
                 Button(
                     onClick = {
                         viewModel.newGroupText = ""
-                        viewModel.isChatShowDialog = false
+                        viewModel.isNewChatShowDialog = false
+                        keyboardController?.hide()
                     },
                     colors = ButtonDefaults.buttonColors(
                         containerColor = whiteColor,

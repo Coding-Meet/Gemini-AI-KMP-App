@@ -1,4 +1,4 @@
-package models
+package domain.model
 
 data class Group(
     val groupId: String,

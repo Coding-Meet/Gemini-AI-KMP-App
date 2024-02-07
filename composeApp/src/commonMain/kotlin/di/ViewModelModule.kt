@@ -8,6 +8,6 @@ import utils.AppCoroutineDispatchers
 
 val viewModelModule = module {
     single<AppCoroutineDispatchers> { AppCoroutineDispatchersImpl() }
-    single { MainViewModel() }
-    single { ChatViewModel(get()) }
+    single { MainViewModel(get(),get(),get()) }
+    single { ChatViewModel(get(),get(),get(),get(),get(),get(),get()) }
 }

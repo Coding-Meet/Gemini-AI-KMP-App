@@ -21,13 +21,17 @@ import androidx.compose.ui.graphics.*
 import androidx.compose.ui.graphics.drawscope.rotate
 import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.text.input.KeyboardCapitalization
 import androidx.compose.ui.unit.*
+import androidx.compose.ui.window.DialogProperties
 import domain.model.ChatMessage
 import domain.model.Role
-import models.Group
+import domain.model.Group
+import kotlinx.coroutines.delay
 import org.koin.mp.KoinPlatform
+import screens.main.GroupUiState
 import screens.main.UserRow
 import theme.*
 import utils.Screens
@@ -37,31 +41,38 @@ import toComposeImageBitmap
 
 
 @Composable
-fun DetailScreen(viewModel: MainViewModel) {
+fun DetailScreen(mainViewModel: MainViewModel) {
     val chatViewModel: ChatViewModel = KoinPlatform.getKoin().get()
 
     val chatUiState by chatViewModel.chatUiState.collectAsState()
-
+    val groupUiState by mainViewModel.uiState.collectAsState()
+    DeleteChatAlertDialogBox(chatViewModel, mainViewModel)
     Column(
         Modifier.fillMaxHeight().background(lightBackgroundColor),
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
-        if (viewModel.groupList.isNotEmpty() && viewModel.currentPos != -1) {
-            UserBarLayout(viewModel, chatViewModel, chatUiState, viewModel.groupList[viewModel.currentPos]) {
+        if (groupUiState.data.isNotEmpty() && mainViewModel.currentPos != -1) {
+            UserBarLayout(
+                mainViewModel,
+                chatViewModel,
+                chatUiState,
+                groupUiState,
+                groupUiState.data[mainViewModel.currentPos]
+            ) {
                 Row(
                     verticalAlignment = Alignment.CenterVertically
                 ) {
-                    if (viewModel.platformType != TYPE.MOBILE) {
+                    if (mainViewModel.platformType != TYPE.MOBILE) {
                         IconButton(
                             onClick = {
-                                viewModel.isDesktopDrawerOpen = !viewModel.isDesktopDrawerOpen
+                                mainViewModel.isDesktopDrawerOpen = !mainViewModel.isDesktopDrawerOpen
                             },
                             modifier = Modifier.size(30.dp, 80.dp)
                                 .background(borderColor, RoundedCornerShape(10))
                                 .clip(RoundedCornerShape(10))
                         ) {
                             Icon(
-                                imageVector = if (viewModel.isDesktopDrawerOpen) {
+                                imageVector = if (mainViewModel.isDesktopDrawerOpen) {
                                     Icons.Default.KeyboardArrowRight
                                 } else {
                                     Icons.Default.KeyboardArrowLeft
@@ -71,17 +82,19 @@ fun DetailScreen(viewModel: MainViewModel) {
                             )
                         }
                     }
-                    val lazyListState = rememberLazyListState()
-                    LazyColumn(
-                        Modifier.fillMaxSize().background(lightBackgroundColor),
-                        lazyListState,
-                        reverseLayout = true,
-                        contentPadding = PaddingValues(horizontal = 10.dp),
-                    ) {
-                        items(chatUiState.message.filter {
-                            it.chatId == viewModel.groupList[viewModel.currentPos].groupId
-                        }.reversed()) {
-                            MessageItem(it)
+                    if (chatUiState.isLoading) {
+                        LoadingAnimation(Modifier.fillMaxWidth().wrapContentSize())
+                    } else {
+                        val lazyListState = rememberLazyListState()
+                        LazyColumn(
+                            Modifier.fillMaxSize().background(lightBackgroundColor),
+                            lazyListState,
+                            reverseLayout = true,
+                            contentPadding = PaddingValues(horizontal = 10.dp),
+                        ) {
+                            items(chatUiState.message) {
+                                MessageItem(it)
+                            }
                         }
                     }
                 }
@@ -100,6 +113,7 @@ fun UserBarLayout(
     mainViewModel: MainViewModel,
     chatViewModel: ChatViewModel,
     chatUiState: ChatUiState,
+    groupUiState: GroupUiState,
     group: Group,
     content: @Composable () -> Unit,
 ) {
@@ -119,9 +133,7 @@ fun UserBarLayout(
             },
             actions = {
                 IconButton(onClick = {
-                    mainViewModel.groupList.remove(group)
-                    mainViewModel.currentPos = -1
-                    mainViewModel.screens = Screens.MAIN
+                    chatViewModel.isDeleteShowDialog = true
                 }) {
                     Icon(
                         imageVector = Icons.Filled.Delete,
@@ -133,7 +145,9 @@ fun UserBarLayout(
             scrollBehavior = scrollBehavior,
         )
         Row(
-            modifier = Modifier.weight(1f)
+            modifier = Modifier.weight(1f),
+            horizontalArrangement = if (chatUiState.isLoading) Arrangement.Center else Arrangement.Start,
+            verticalAlignment = if (chatUiState.isLoading) Alignment.CenterVertically else Alignment.Top,
         ) {
             content()
         }
@@ -165,13 +179,146 @@ fun UserBarLayout(
                 }
             }
         }
-        BottomTextBar(mainViewModel, chatViewModel, chatUiState)
+        BottomTextBar(mainViewModel, chatViewModel, chatUiState, groupUiState)
+    }
+}
+
+@Composable
+fun LoadingAnimation(
+    modifier: Modifier = Modifier,
+    circleSize: Dp = 25.dp,
+    circleColor: Color = lightBorderColor,
+    spaceBetween: Dp = 10.dp,
+    travelDistance: Dp = 20.dp
+) {
+    val circles = listOf(
+        remember { Animatable(initialValue = 0f) },
+        remember { Animatable(initialValue = 0f) },
+        remember { Animatable(initialValue = 0f) }
+    )
+
+    circles.forEachIndexed { index, animatable ->
+        LaunchedEffect(key1 = animatable) {
+            delay(index * 100L)
+            animatable.animateTo(
+                targetValue = 1f,
+                animationSpec = infiniteRepeatable(
+                    animation = keyframes {
+                        durationMillis = 1200
+                        0.0f at 0 with LinearOutSlowInEasing
+                        1.0f at 300 with LinearOutSlowInEasing
+                        0.0f at 600 with LinearOutSlowInEasing
+                        0.0f at 1200 with LinearOutSlowInEasing
+                    },
+                    repeatMode = RepeatMode.Restart
+                )
+            )
+        }
+    }
+
+    val circleValues = circles.map { it.value }
+    val distance = with(LocalDensity.current) { travelDistance.toPx() }
+
+    Row(
+        modifier = modifier,
+        horizontalArrangement = Arrangement.spacedBy(spaceBetween)
+    ) {
+        circleValues.forEach { value ->
+            Box(
+                modifier = Modifier
+                    .size(circleSize)
+                    .graphicsLayer {
+                        translationY = -value * distance
+                    }
+                    .background(
+                        color = circleColor,
+                        shape = CircleShape
+                    )
+            )
+        }
+    }
+
+}
+
+@Composable
+fun DeleteChatAlertDialogBox(chatViewModel: ChatViewModel, mainViewModel: MainViewModel) {
+    if (chatViewModel.isDeleteShowDialog) {
+        AlertDialog(
+            properties = DialogProperties(dismissOnBackPress = true, dismissOnClickOutside = false),
+            icon = {
+                Icon(Icons.Default.Delete, contentDescription = "delete")
+            },
+            containerColor = lightBackgroundColor,
+            textContentColor = whiteColor,
+            iconContentColor = whiteColor,
+            titleContentColor = whiteColor,
+            title = {
+                Text(text = "Delete Messages")
+            },
+            text = {
+                Text(text = "Are you sure you want to delete all messages?")
+            },
+            onDismissRequest = {
+                chatViewModel.isDeleteShowDialog = false
+            },
+
+            confirmButton = {
+                Button(
+                    onClick = {
+                        chatViewModel.deleteAllMessage()
+                        chatViewModel.isDeleteShowDialog = false
+                    },
+                    colors = ButtonDefaults.buttonColors(
+                        containerColor = redColor,
+                        contentColor = whiteColor,
+                    ),
+                ) {
+                    Text("Delete All Message")
+                }
+
+                Button(
+                    onClick = {
+                        chatViewModel.deleteGroupWithMessage(){
+                            chatViewModel.isDeleteShowDialog = false
+                            mainViewModel.currentPos = -1
+                            mainViewModel.screens = Screens.MAIN
+                            mainViewModel.getGroupList()
+                        }
+                    },
+                    colors = ButtonDefaults.buttonColors(
+                        containerColor = redColor,
+                        contentColor = whiteColor,
+                    ),
+                ) {
+                    Text("Delete Group with All Message")
+                }
+
+            },
+            dismissButton = {
+                Button(
+                    onClick = {
+                        chatViewModel.isDeleteShowDialog = false
+                    },
+                    colors = ButtonDefaults.buttonColors(
+                        containerColor = whiteColor,
+                        contentColor = blackColor,
+                    ),
+                ) {
+                    Text("Cancel")
+                }
+            }
+        )
     }
 }
 
 @OptIn(ExperimentalComposeUiApi::class)
 @Composable
-fun BottomTextBar(viewModel: MainViewModel, chatViewModel: ChatViewModel, chatUiState: ChatUiState) {
+fun BottomTextBar(
+    viewModel: MainViewModel,
+    chatViewModel: ChatViewModel,
+    chatUiState: ChatUiState,
+    groupUiState: GroupUiState
+) {
     val keyboardController = LocalSoftwareKeyboardController.current
     var showFilePicker by remember { mutableStateOf(false) }
 
@@ -185,7 +332,7 @@ fun BottomTextBar(viewModel: MainViewModel, chatViewModel: ChatViewModel, chatUi
         horizontalArrangement = Arrangement.SpaceBetween
     ) {
         IconButton(onClick = {
-            if (!chatUiState.isLoading) {
+            if (!chatUiState.isApiLoading) {
                 if (chatViewModel.imageUris.size != 3) {
                     showFilePicker = true
                 }
@@ -222,14 +369,14 @@ fun BottomTextBar(viewModel: MainViewModel, chatViewModel: ChatViewModel, chatUi
         )
         FloatingActionButton(containerColor = lightBorderColor,
             elevation = FloatingActionButtonDefaults.elevation(
-                defaultElevation = if (chatUiState.isLoading) 0.dp else 6.dp,
+                defaultElevation = if (chatUiState.isApiLoading) 0.dp else 6.dp,
                 pressedElevation = 0.dp
             ),
             modifier = Modifier.padding(horizontal = 8.dp),
             onClick = {
                 if (chatViewModel.userText.isNotEmpty()) {
                     chatViewModel.generateContentWithText(
-                        viewModel.groupList[viewModel.currentPos].groupId,
+                        groupUiState.data[viewModel.currentPos].groupId,
                         chatViewModel.userText,
                         viewModel.getApikeyLocalStorage(),
                     )
@@ -237,7 +384,7 @@ fun BottomTextBar(viewModel: MainViewModel, chatViewModel: ChatViewModel, chatUi
                     chatViewModel.userText = ""
                 }
             }) {
-            AnimatedContent(chatUiState.isLoading) { generating ->
+            AnimatedContent(chatUiState.isApiLoading) { generating ->
                 if (generating) {
                     CircularProgressIndicator(
                         trackColor = whiteColor,
@@ -264,7 +411,7 @@ fun MessageItem(chatMessage: ChatMessage) {
     val backgroundColor = when (chatMessage.participant) {
         Role.GEMINI -> borderColor
         Role.YOU -> borderColor
-        Role.ERROR -> errorContainer
+        Role.ERROR -> redColor
     }
     val infiniteTransition = rememberInfiniteTransition(label = "")
     val rotate by infiniteTransition.animateFloat(

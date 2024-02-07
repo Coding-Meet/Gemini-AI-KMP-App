@@ -11,7 +11,7 @@ plugins {
     alias(libs.plugins.jetbrainsCompose)
     alias(libs.plugins.buildkonfig)
     kotlin("plugin.serialization") version "1.9.21"
-//    id("app.cash.sqldelight") version "2.0.1"
+    id("app.cash.sqldelight") version "2.0.1"
 }
 
 kotlin {
@@ -42,13 +42,12 @@ kotlin {
             implementation(libs.compose.ui.tooling.preview)
             implementation(libs.androidx.activity.compose)
 
-//            api(libs.spotlight.android)
-//            implementation(libs.sqldelight.android.driver)
+            api(libs.spotlight.android)
+            implementation(libs.sqldelight.android.driver)
 
             implementation(libs.ktor.client.okhttp)
 
             // koin
-//            implementation(libs.koin.androidx.compose)
             implementation(libs.koin.android)
 
             // file picker
@@ -78,9 +77,9 @@ kotlin {
             implementation(libs.multiplatform.settings.no.arg)
 
             // SQLDelight
-//            implementation(libs.spotlight)
-//            implementation(libs.sqldelight.coroutine.ext)
-//            implementation(libs.sqldelight.primitive.adapters)
+            implementation(libs.spotlight)
+            implementation(libs.sqldelight.coroutine.ext)
+            implementation(libs.sqldelight.primitive.adapters)
 
             //Kermit  for logging
             implementation(libs.kermit)
@@ -103,8 +102,9 @@ kotlin {
         }
         desktopMain.dependencies {
             implementation(compose.desktop.currentOs)
-//
-//            implementation(libs.sqlite.driver)
+
+            implementation(libs.sqlite.driver)
+
             implementation(libs.ktor.client.java)
 
             // file picker
@@ -115,21 +115,22 @@ kotlin {
             implementation(compose.html.core)
 
             implementation(libs.ktor.client.js)
+            implementation(libs.web.worker.driver)
+            implementation(devNpm("copy-webpack-plugin", "9.1.0"))
+            implementation(npm("@cashapp/sqldelight-sqljs-worker", "2.0.1"))
+            implementation(npm("sql.js", "1.8.0"))
 
-//            implementation(libs.web.worker.driver)
-//            implementation(devNpm("copy-webpack-plugin", "9.1.0"))
-//            implementation(npm("@cashapp/sqldelight-sqljs-worker", "2.0.0"))
-//            implementation(npm("sql.js", "1.8.0"))
         }
     }
 }
-//sqldelight {
-//    databases {
-//        create("GeminiApiChatDB") {
-//            packageName.set("com.coding.meet.gaminiaikmp")
-//        }
-//    }
-//}
+sqldelight {
+    databases {
+        create("GeminiApiChatDB") {
+            packageName.set("com.coding.meet.gaminiaikmp")
+            generateAsync.set(true)
+        }
+    }
+}
 android {
     namespace = "com.coding.meet.gaminiaikmp"
     compileSdk = libs.versions.android.compileSdk.get().toInt()
@@ -203,3 +204,7 @@ rootProject.plugins.withType(org.jetbrains.kotlin.gradle.targets.js.yarn.YarnPlu
     rootProject.the<YarnRootExtension>().reportNewYarnLock = false // true
     rootProject.the<YarnRootExtension>().yarnLockAutoReplace = false // true
 }
+// Workaround yarn concurrency issue - https://youtrack.jetbrains.com/issue/KT-43320
+//tasks.withType(org.jetbrains.kotlin.gradle.targets.js.npm.tasks.KotlinNpmInstallTask::class.java).configureEach {
+//    args.addAll(listOf("--mutex", "file:${file("../build/.yarn-mutex")}"))
+//}

@@ -11,6 +11,5 @@ enum class TYPE{
 
 enum class Screens{
     MAIN,
-    DETAIL,
-    SETTING
+    DETAIL
 }

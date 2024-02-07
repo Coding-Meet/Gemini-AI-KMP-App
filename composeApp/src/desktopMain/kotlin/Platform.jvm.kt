@@ -1,4 +1,5 @@
-import androidx.compose.runtime.*
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.graphics.ImageBitmap
 import androidx.compose.ui.graphics.toComposeImageBitmap
 import androidx.compose.ui.platform.ClipboardManager
@@ -13,12 +14,6 @@ import utils.TYPE
 
 actual fun getPlatform(): TYPE = TYPE.DESKTOP
 
-//actual suspend fun provideDbDriver(
-//    schema: SqlSchema<QueryResult.AsyncValue<Unit>>
-//): SqlDriver {
-//    return JdbcSqliteDriver(JdbcSqliteDriver.IN_MEMORY)
-//        .also { schema.create(it).await() }
-//}
 actual suspend fun clipData(clipboardManager: ClipboardManager): String? {
     return clipboardManager.getText()?.text.toString().trim()
 }
@@ -33,7 +28,7 @@ actual class AppCoroutineDispatchersImpl actual constructor() : AppCoroutineDisp
 }
 
 @Composable
-actual fun ImagePicker(showFilePicker:Boolean,onResult: (ByteArray?) -> Unit) {
+actual fun ImagePicker(showFilePicker: Boolean, onResult: (ByteArray?) -> Unit) {
     val scope = rememberCoroutineScope()
     val fileType = listOf("jpg", "png")
     FilePicker(show = showFilePicker, fileExtensions = fileType) { file ->

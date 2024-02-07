@@ -6,7 +6,7 @@ enum class Role {
 
 data class ChatMessage(
     val id:String,
-    val chatId : String,
+    val groupId : String,
     var text: String,
     val images: List<ByteArray> = emptyList(),
     var participant: Role = Role.YOU,

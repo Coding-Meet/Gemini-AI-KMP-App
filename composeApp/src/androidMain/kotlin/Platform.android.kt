@@ -2,7 +2,7 @@ import android.graphics.BitmapFactory
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.PickVisualMediaRequest
 import androidx.activity.result.contract.ActivityResultContracts
-import androidx.compose.runtime.*
+import androidx.compose.runtime.Composable
 import androidx.compose.ui.graphics.ImageBitmap
 import androidx.compose.ui.graphics.asImageBitmap
 import androidx.compose.ui.platform.ClipboardManager
@@ -15,18 +15,6 @@ import utils.TYPE
 
 actual fun getPlatform(): TYPE = TYPE.MOBILE
 
-//actual suspend fun provideDbDriver(
-//    schema: SqlSchema<QueryResult.AsyncValue<Unit>>
-//): SqlDriver {
-//    val mainSchema = GeminiApiChatDB.Schema
-//
-//    return AndroidSqliteDriver(mainSchema, KoinPlatform.getKoin().get(), "gemini_api_chat",
-//        callback = object : AndroidSqliteDriver.Callback(mainSchema) {
-//            override fun onOpen(db: SupportSQLiteDatabase) {
-//                db.setForeignKeyConstraintsEnabled(true)
-//            }
-//        })
-//}
 actual suspend fun clipData(clipboardManager: ClipboardManager): String? {
     return clipboardManager.getText()?.text.toString().trim()
 }

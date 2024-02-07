@@ -16,7 +16,8 @@ class MainApplication: Application() {
                 geminiRepositoryModule,
                 networkModule,
                 useCaseModule,
-                viewModelModule
+                viewModelModule,
+                platformModule()
             )
         }
     }

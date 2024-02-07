@@ -1,9 +1,12 @@
+import domain.model.Role;
 import kotlin.Boolean;
+import kotlin.ByteArray;
+import kotlin.collections.List;
 
-CREATE TABLE IF NOT EXISTS Chat(
-    chatId TEXT UNIQUE PRIMARY KEY NOT NULL,
-    createdAt TEXT NOT NULL,
+CREATE TABLE GroupChat(
+    groupId TEXT UNIQUE PRIMARY KEY NOT NULL,
     title TEXT NOT NULL,
+    date TEXT NOT NULL,
     image TEXT NOT NULL
 );
 
@@ -12,24 +15,39 @@ CREATE TABLE IF NOT EXISTS Message(
     messageId TEXT PRIMARY KEY NOT NULL,
     chatId TEXT NOT NULL,
     content TEXT NOT NULL,
-    isAiResponse INTEGER AS Boolean NOT NULL DEFAULT 0,
-    timestamp TEXT NOT NULL,
-    FOREIGN KEY (chatId) REFERENCES Chat(chatId)
+    images TEXT AS List<ByteArray> NOT NULL,
+    participant TEXT AS Role NOT NULL,
+    isPending INTEGER AS Boolean NOT NULL DEFAULT 0,
+    FOREIGN KEY (chatId) REFERENCES GroupChat(groupId)
 );
 
-getChatById:
+getAllGroup:
+SELECT *
+FROM GroupChat;
+
+getChatByGroupId:
 SELECT *
 FROM Message
 WHERE chatId = :chatId;
+
+updateMessageByMessageId:
+UPDATE Message
+SET isPending = ?
+WHERE messageId = :messageId;
 
 insertMessage:
 INSERT INTO Message
 VALUES ?;
 
-deleteChatById:
-DELETE FROM Chat
-WHERE chatId = :chatId;
+insertGroup:
+INSERT INTO GroupChat
+VALUES ?;
 
-deleteMessagesByChatId:
+deleteAllMessage:
 DELETE FROM Message
 WHERE chatId = :chatId;
+
+deleteGroupWithMessage{
+  DELETE FROM Message WHERE chatId = :groupId;
+  DELETE FROM GroupChat  WHERE groupId = :groupId;
+ }
