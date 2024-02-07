@@ -20,38 +20,10 @@ import utils.TYPE
 import kotlin.coroutines.resume
 import kotlin.coroutines.resumeWithException
 import kotlin.coroutines.suspendCoroutine
-import kotlin.js.Promise
 
 actual fun getPlatform(): TYPE = TYPE.WEB
 
 
-//actual fun sqlDriverFactory(driver: (SqlDriver) -> Unit) {
-//    val mainDriver = WebWorkerDriver(
-//        Worker(
-//            js("""new URL("@cashapp/sqldelight-sqljs-worker/sqljs.worker.js", import.meta.url)""")
-//        )
-//    )
-//    GlobalScope.promise {
-//        println("start")
-//            GeminiApiChatDB.Schema.awaitCreate(mainDriver)
-//        println("completed"+mainDriver.toString())
-//        GeminiApiChatDB(mainDriver)
-//        driver(mainDriver)
-//    }
-//}
-// Extension function to convert a Kotlin coroutine to a JavaScript Promise
-fun CoroutineScope.promise(block: suspend () -> Unit): Promise<Unit> {
-    return Promise { resolve, reject ->
-        launch {
-            async {
-            block()
-
-            }.invokeOnCompletion {
-            resolve(Unit)
-            }
-        }
-    }
-}
 actual class AppCoroutineDispatchersImpl actual constructor() : AppCoroutineDispatchers {
     override val io: CoroutineDispatcher
         get() = Dispatchers.Default

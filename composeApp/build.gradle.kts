@@ -130,6 +130,7 @@ sqldelight {
             generateAsync.set(true)
         }
     }
+    linkSqlite = true
 }
 android {
     namespace = "com.coding.meet.gaminiaikmp"
