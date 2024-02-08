@@ -48,13 +48,18 @@ fun BottomTextBar(
         verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.SpaceBetween
     ) {
-        IconButton(onClick = {
-            if (!chatUiState.isApiLoading) {
-                if (chatViewModel.imageUris.size != 3) {
-                    showFilePicker = true
+        IconButton(
+            modifier = Modifier.padding(horizontal = 8.dp),
+            colors = IconButtonDefaults.iconButtonColors(
+                containerColor = lightBorderColor
+            ),
+            onClick = {
+                if (!chatUiState.isApiLoading) {
+                    if (chatViewModel.imageUris.size != 3) {
+                        showFilePicker = true
+                    }
                 }
-            }
-        }) {
+            }) {
             Icon(
                 imageVector = Icons.Filled.Add, contentDescription = "upload", tint = whiteColor
             )
@@ -87,10 +92,6 @@ fun BottomTextBar(
         FloatingActionButton(
             containerColor = lightBorderColor,
             shape = CutCornerShape(20.dp),
-            elevation = FloatingActionButtonDefaults.elevation(
-                defaultElevation = if (chatUiState.isApiLoading) 0.dp else 6.dp,
-                pressedElevation = 0.dp
-            ),
             modifier = Modifier.padding(horizontal = 8.dp),
             onClick = {
                 if (chatViewModel.messageId.isNotEmpty()) {

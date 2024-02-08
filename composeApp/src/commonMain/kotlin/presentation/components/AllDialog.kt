@@ -81,7 +81,11 @@ fun ApiKeyAlertDialogBox(mainViewModel: MainViewModel) {
                     ),
                     shape = RoundedCornerShape(10.dp),
                     trailingIcon = {
-                        IconButton(onClick = {
+                        IconButton(
+                            colors = IconButtonDefaults.iconButtonColors(
+                                containerColor = lightBorderColor
+                            ),
+                            onClick = {
                             coroutine.launch {
                                 clipData(clipboardManager)?.let {
                                     mainViewModel.apiKeyText = it

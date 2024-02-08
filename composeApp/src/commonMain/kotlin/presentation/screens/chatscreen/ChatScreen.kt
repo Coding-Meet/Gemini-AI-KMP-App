@@ -51,9 +51,15 @@ fun ChatScreen(
                 GroupRowLayout(group)
             },
             actions = {
-                IconButton(onClick = {
-                    chatViewModel.isDeleteShowDialog = true
-                }) {
+                IconButton(
+                    colors = IconButtonDefaults.iconButtonColors(
+                        containerColor = lightBorderColor
+                    ),
+                    onClick = {
+                        if (!chatUiState.isApiLoading) {
+                            chatViewModel.isDeleteShowDialog = true
+                        }
+                    }) {
                     Icon(
                         imageVector = Icons.Filled.Delete,
                         contentDescription = "delete",

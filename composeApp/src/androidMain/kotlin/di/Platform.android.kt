@@ -9,8 +9,10 @@ import androidx.compose.ui.graphics.ImageBitmap
 import androidx.compose.ui.graphics.asImageBitmap
 import androidx.compose.ui.platform.ClipboardManager
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.text.AnnotatedString
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.Dispatchers
+import presentation.components.CommonTextComposable
 import utils.AppCoroutineDispatchers
 import utils.TYPE
 
@@ -20,7 +22,9 @@ actual fun getPlatform(): TYPE = TYPE.MOBILE
 actual suspend fun clipData(clipboardManager: ClipboardManager): String? {
     return clipboardManager.getText()?.text.toString().trim()
 }
-
+actual suspend fun setClipData(clipboardManager: ClipboardManager,message:String) {
+    return clipboardManager.setText(AnnotatedString(message))
+}
 actual class AppCoroutineDispatchersImpl actual constructor() : AppCoroutineDispatchers {
     override val io: CoroutineDispatcher
         get() = Dispatchers.IO
@@ -51,4 +55,9 @@ actual fun ImagePicker(showFilePicker: Boolean, onResult: (ByteArray?) -> Unit) 
 
 actual fun ByteArray.toComposeImageBitmap(): ImageBitmap {
     return BitmapFactory.decodeByteArray(this, 0, size).asImageBitmap()
+}
+
+@Composable
+actual fun TextComposable(message:String,isGEMINIMessage:Boolean) {
+    CommonTextComposable(message,isGEMINIMessage)
 }

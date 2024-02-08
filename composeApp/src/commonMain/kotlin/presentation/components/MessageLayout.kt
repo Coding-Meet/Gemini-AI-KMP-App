@@ -7,11 +7,12 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.text.ClickableText
 import androidx.compose.foundation.text.selection.SelectionContainer
-import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Text
+import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -21,18 +22,30 @@ import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.drawscope.rotate
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalClipboardManager
+import androidx.compose.ui.text.AnnotatedString
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
+import di.TextComposable
+import di.setClipData
 import di.toComposeImageBitmap
 import domain.model.ChatMessage
 import domain.model.Role
+import kotlinx.coroutines.launch
+import org.jetbrains.compose.resources.ExperimentalResourceApi
+import org.jetbrains.compose.resources.painterResource
 import theme.borderColor
+import theme.lightBorderColor
 import theme.redColor
 import theme.whiteColor
 
 
+@OptIn(ExperimentalResourceApi::class)
 @Composable
 fun MessageItem(chatMessage: ChatMessage) {
-
+    val coroutineScope = rememberCoroutineScope()
+    val clipboardManager = LocalClipboardManager.current
     val isGEMINIMessage = chatMessage.participant != Role.YOU
 
     val backgroundColor = when (chatMessage.participant) {
@@ -123,7 +136,7 @@ fun MessageItem(chatMessage: ChatMessage) {
                 }.background(backgroundColor, cardShape)
         ) {
             Column(
-                modifier = Modifier.wrapContentSize().padding(10.dp)
+                modifier = Modifier.wrapContentSize()
             ) {
                 if (chatMessage.images.isNotEmpty()) {
                     LazyRow(
@@ -142,13 +155,38 @@ fun MessageItem(chatMessage: ChatMessage) {
                         }
                     }
                 }
-                SelectionContainer {
-                    Text(
-                        text = chatMessage.text,
-                        color = whiteColor,
-                        style = MaterialTheme.typography.bodyMedium,
-                    )
+
+                TextComposable(chatMessage.text, isGEMINIMessage)
+                if (isGEMINIMessage) {
+                    Box(
+                        Modifier.fillMaxWidth(),
+                    ) {
+                        Text(
+                            "by Gemini",
+                            color = whiteColor,
+                            fontSize = 18.sp,
+                            modifier = Modifier.align(Alignment.CenterStart).padding(start = 10.dp),
+                            fontWeight = FontWeight.Bold
+                        )
+                        IconButton(
+                            modifier = Modifier.align(Alignment.CenterEnd),
+                            colors = IconButtonDefaults.iconButtonColors(
+                                containerColor = lightBorderColor
+                            ),
+                            onClick = {
+                                coroutineScope.launch {
+                                    setClipData(clipboardManager, chatMessage.text)
+                                }
+                            }) {
+                            Icon(
+                                painterResource("ic_paste.xml"),
+                                contentDescription = "copy",
+                                tint = whiteColor
+                            )
+                        }
+                    }
                 }
+
             }
         }
     }

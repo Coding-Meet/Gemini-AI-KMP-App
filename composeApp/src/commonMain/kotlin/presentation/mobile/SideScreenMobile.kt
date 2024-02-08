@@ -11,7 +11,7 @@ import theme.lightBackgroundColor
 
 class SideScreenMobile() : DistributeComp {
     @Composable
-    override fun SideRow(content: @Composable () -> Unit) {
+    override fun ContentComposable(content: @Composable () -> Unit) {
         Row(
             modifier = Modifier.fillMaxSize().background(lightBackgroundColor)
         ) {

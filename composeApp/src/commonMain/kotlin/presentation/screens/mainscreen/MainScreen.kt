@@ -28,7 +28,7 @@ fun MainScreen(mainViewModel: MainViewModel) {
     }
     when (mainViewModel.screens) {
         Screens.MAIN -> {
-            sideScreen.SideRow {
+            sideScreen.ContentComposable {
                 TopBarLayout(mainViewModel) { paddingValues ->
                     LazyColumn(
                         Modifier.fillMaxSize().padding(paddingValues).background(lightBackgroundColor)

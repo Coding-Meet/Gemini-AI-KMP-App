@@ -52,6 +52,9 @@ kotlin {
 
             // file picker
             implementation(libs.mpfilepicker)
+
+            // markdown
+            implementation("com.mikepenz:multiplatform-markdown-renderer-android:0.12.0")
         }
         commonMain.dependencies {
             implementation(compose.runtime)
@@ -109,6 +112,9 @@ kotlin {
 
             // file picker
             implementation(libs.mpfilepicker)
+
+            // markdown
+            implementation("com.mikepenz:multiplatform-markdown-renderer-jvm:0.12.0")
         }
 
         jsMain.dependencies {

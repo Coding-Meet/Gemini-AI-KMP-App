@@ -4,7 +4,7 @@ import androidx.compose.runtime.Composable
 
 interface DistributeComp {
     @Composable
-    fun SideRow(
+    fun ContentComposable(
         content: @Composable () -> Unit,
     )
 

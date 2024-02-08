@@ -14,7 +14,7 @@ import presentation.screens.mainscreen.MainViewModel
 
 class SideScreenDesktop(private val mainViewModel: MainViewModel) : DistributeComp {
     @Composable
-    override fun SideRow(content: @Composable () -> Unit) {
+    override fun ContentComposable(content: @Composable () -> Unit) {
         Row(
             modifier = Modifier.fillMaxSize().background(lightBackgroundColor)
                 .padding(20.dp)

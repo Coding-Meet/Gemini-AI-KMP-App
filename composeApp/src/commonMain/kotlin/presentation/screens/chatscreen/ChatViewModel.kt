@@ -4,6 +4,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
+import domain.model.ChatMessage
 import domain.model.Role
 import domain.use_cases.*
 import kotlinx.coroutines.delay
@@ -67,22 +68,18 @@ class ChatViewModel(
     }
 
     fun deleteAllMessage() {
-        if (!_chatUiState.value.isApiLoading) {
-            viewModelScope.launch(appCoroutineDispatchers.io) {
-                deleteMessageUseCase.deleteAllMessage(groupId)
-                getMessageList(true)
-            }
+        viewModelScope.launch(appCoroutineDispatchers.io) {
+            deleteMessageUseCase.deleteAllMessage(groupId)
+            getMessageList(true)
         }
     }
 
     fun deleteGroupWithMessage(
         deleteGroup: () -> Unit
     ) {
-        if (!_chatUiState.value.isApiLoading) {
-            viewModelScope.launch(appCoroutineDispatchers.io) {
-                deleteGroupWithMessageUseCase.deleteGroupWithMessage(groupId)
-                deleteGroup()
-            }
+        viewModelScope.launch(appCoroutineDispatchers.io) {
+            deleteGroupWithMessageUseCase.deleteGroupWithMessage(groupId)
+            deleteGroup()
         }
     }
 

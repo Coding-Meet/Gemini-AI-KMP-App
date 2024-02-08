@@ -30,7 +30,7 @@ fun TopBarLayout(
         modifier = Modifier.nestedScroll(scrollBehavior.nestedScrollConnection),
         floatingActionButton = {
             ExtendedFloatingActionButton(
-                contentColor =    whiteColor,
+                contentColor =  whiteColor,
                 containerColor = lightBorderColor,
                 elevation = FloatingActionButtonDefaults.elevation(
                     defaultElevation = 6.dp,
@@ -75,7 +75,11 @@ fun TopBarLayout(
                     )
                 },
                 actions = {
-                    IconButton(onClick = {
+                    IconButton(
+                        colors = IconButtonDefaults.iconButtonColors(
+                            containerColor = lightBorderColor
+                        ),
+                        onClick = {
                         mainViewModel.apiKeyText = mainViewModel.getApikeyLocalStorage()
                         mainViewModel.isApiShowDialog = true
                     }) {
