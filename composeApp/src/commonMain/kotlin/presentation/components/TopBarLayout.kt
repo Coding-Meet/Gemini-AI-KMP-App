@@ -36,7 +36,6 @@ fun TopBarLayout(
                     defaultElevation = 6.dp,
                     pressedElevation = 0.dp
                 ),
-                shape = CutCornerShape(20.dp),
                 onClick = {
                     val apiKey = mainViewModel.getApikeyLocalStorage().trim()
                     if (apiKey.isNotEmpty()) {
