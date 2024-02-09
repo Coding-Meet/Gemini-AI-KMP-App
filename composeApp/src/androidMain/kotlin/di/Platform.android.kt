@@ -15,6 +15,9 @@ import kotlinx.coroutines.Dispatchers
 import presentation.components.CommonTextComposable
 import utils.AppCoroutineDispatchers
 import utils.TYPE
+import java.io.IOException
+import java.net.InetSocketAddress
+import java.net.Socket
 
 
 actual fun getPlatform(): TYPE = TYPE.MOBILE
@@ -60,4 +63,15 @@ actual fun ByteArray.toComposeImageBitmap(): ImageBitmap {
 @Composable
 actual fun TextComposable(message:String,isGEMINIMessage:Boolean) {
     CommonTextComposable(message,isGEMINIMessage)
+}
+
+actual fun isNetworkAvailable(): Boolean {
+    return try {
+        val socket = Socket()
+        socket.connect(InetSocketAddress("google.com", 80), 1500)
+        socket.close()
+        true
+    } catch (e: IOException) {
+        false
+    }
 }

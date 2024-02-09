@@ -1,7 +1,7 @@
 package domain.model
 
 data class Gemini(
-    val candidates: List<Candidate>? = null
+    val candidates: List<Candidate> = emptyList()
 ) {
     data class Candidate(
         val content: Content,

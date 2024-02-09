@@ -109,3 +109,7 @@ private suspend fun importImage(): ByteArray? = suspendCoroutine { cont ->
 actual fun ByteArray.toComposeImageBitmap(): ImageBitmap {
     return Image.makeFromEncoded(this).toComposeImageBitmap()
 }
+
+actual fun isNetworkAvailable(): Boolean {
+    return window.navigator.onLine
+}

@@ -22,6 +22,7 @@ import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.text.input.KeyboardCapitalization
 import androidx.compose.ui.unit.dp
 import di.ImagePicker
+import di.isNetworkAvailable
 import presentation.screens.chatscreen.ChatUiState
 import presentation.screens.chatscreen.ChatViewModel
 import presentation.screens.mainscreen.GroupUiState
@@ -89,19 +90,22 @@ fun BottomTextBar(
             ),
             shape = RoundedCornerShape(10.dp)
         )
-        FloatingActionButton(
-            containerColor = lightBorderColor,
-            shape = CutCornerShape(20.dp),
+        IconButton(
             modifier = Modifier.padding(horizontal = 8.dp),
+            colors = IconButtonDefaults.iconButtonColors(
+                containerColor = lightBorderColor
+            ),
             onClick = {
                 if (chatViewModel.messageId.isNotEmpty()) {
-                    chatViewModel.generateContentWithText(
-                        groupUiState.data[mainViewModel.currentPos].groupId,
-                        chatViewModel.messageId,
-                        mainViewModel.getApikeyLocalStorage(),
-                    )
-                    keyboardController?.hide()
-                    chatViewModel.messageId = ""
+                    if (isNetworkAvailable()) {
+                        chatViewModel.generateContentWithText(
+                            groupUiState.data[mainViewModel.currentPos].groupId,
+                            chatViewModel.messageId,
+                            mainViewModel.getApikeyLocalStorage(),
+                        )
+                        keyboardController?.hide()
+                        chatViewModel.messageId = ""
+                    }
                 }
             }) {
             AnimatedContent(chatUiState.isApiLoading) { generating ->

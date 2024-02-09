@@ -4,7 +4,6 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
-import domain.model.ChatMessage
 import domain.model.Role
 import domain.use_cases.*
 import kotlinx.coroutines.delay
@@ -97,16 +96,7 @@ class ChatViewModel(
             addToMessages(groupId, messageId, content, Role.YOU, isPending = true, images)
             try {
                 val gemini = getContentUseCase.getContentWithImage(content, apiKey, images)
-                val generatedContent =
-                    if (gemini.candidates != null) {
-                        if (gemini.candidates.isNotEmpty()) {
-                            gemini.candidates[0].content.parts[0].text
-                        } else {
-                            "Failed to generate content. Please try again."
-                        }
-                    } else {
-                        "Failed to generate content. Please try again."
-                    }
+                val generatedContent = gemini.candidates[0].content.parts[0].text
                 val botId = generateRandomKey()
                 handleContent(messageId, false)
                 failedMessageId = ""
@@ -122,24 +112,33 @@ class ChatViewModel(
                     _chatUiState.value.copy(isApiLoading = false)
                 }
             } catch (e: Exception) {
-                handleError(messageId, e.message)
+                val errorMessage = if (e.message != null) {
+                    if (e.message.toString().contains("Illegal input: Field")) {
+                        "Failed to generate content. Please try again."
+                    } else {
+                        e.message.toString()
+                    }
+                } else {
+                    "Failed to generate content. Please try again."
+                }
+                handleError(messageId, errorMessage)
             }
         }
     }
 
-    fun handleError(messageId: String, errorMessage: String?) {
+    fun handleError(messageId: String, errorMessage: String) {
         viewModelScope.launch(appCoroutineDispatchers.io) {
             updatePendingUseCase.updatePending(messageId, false)
-            failedMessageId = ""
             val errorId = generateRandomKey()
             addToMessages(
                 groupId,
                 errorId,
-                errorMessage ?: "Failed to generate content. Please try again.",
+                errorMessage,
                 Role.ERROR,
                 isPending = false,
                 emptyList()
             )
+            failedMessageId = ""
             _chatUiState.update {
                 _chatUiState.value.copy(isApiLoading = false)
             }

@@ -18,3 +18,5 @@ expect class AppCoroutineDispatchersImpl() : AppCoroutineDispatchers
 
 @Composable
 expect fun TextComposable(message:String,isGEMINIMessage:Boolean)
+
+expect  fun isNetworkAvailable(): Boolean

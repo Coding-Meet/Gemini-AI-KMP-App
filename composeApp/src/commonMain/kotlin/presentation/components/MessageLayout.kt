@@ -7,8 +7,6 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.foundation.text.ClickableText
-import androidx.compose.foundation.text.selection.SelectionContainer
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -23,7 +21,6 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.drawscope.rotate
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalClipboardManager
-import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -162,7 +159,7 @@ fun MessageItem(chatMessage: ChatMessage) {
                         Modifier.fillMaxWidth(),
                     ) {
                         Text(
-                            "by Gemini",
+                            if (chatMessage.participant == Role.GEMINI) "by Gemini" else "by Error",
                             color = whiteColor,
                             fontSize = 18.sp,
                             modifier = Modifier.align(Alignment.CenterStart).padding(start = 10.dp),

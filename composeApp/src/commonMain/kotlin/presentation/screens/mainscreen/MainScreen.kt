@@ -56,7 +56,7 @@ fun MainScreen(mainViewModel: MainViewModel) {
     DisposableEffect(Unit) {
         onDispose {
             if (chatViewModel.failedMessageId.isNotEmpty()){
-                chatViewModel.handleError(chatViewModel.failedMessageId, null)
+                chatViewModel.handleError(chatViewModel.failedMessageId, "Failed to generate content. Please try again.")
             }
         }
     }
