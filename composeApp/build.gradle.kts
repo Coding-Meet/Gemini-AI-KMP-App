@@ -211,7 +211,3 @@ rootProject.plugins.withType(org.jetbrains.kotlin.gradle.targets.js.yarn.YarnPlu
     rootProject.the<YarnRootExtension>().reportNewYarnLock = false // true
     rootProject.the<YarnRootExtension>().yarnLockAutoReplace = false // true
 }
-// Workaround yarn concurrency issue - https://youtrack.jetbrains.com/issue/KT-43320
-//tasks.withType(org.jetbrains.kotlin.gradle.targets.js.npm.tasks.KotlinNpmInstallTask::class.java).configureEach {
-//    args.addAll(listOf("--mutex", "file:${file("../build/.yarn-mutex")}"))
-//}

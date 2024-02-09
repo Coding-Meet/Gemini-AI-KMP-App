@@ -21,6 +21,7 @@ fun MainScreen(mainViewModel: MainViewModel) {
     val chatViewModel: ChatViewModel = KoinPlatform.getKoin().get()
     ApiKeyAlertDialogBox(mainViewModel)
     NewChatAlertDialogBox(mainViewModel)
+    AlertDialogLayout(mainViewModel)
     val sideScreen = if (mainViewModel.platformType == TYPE.MOBILE) {
         SideScreenMobile()
     } else {
@@ -35,12 +36,23 @@ fun MainScreen(mainViewModel: MainViewModel) {
                     ) {
                         itemsIndexed(groupUiState.data) { index, groupItem ->
                             GroupLayout(groupItem, mainViewModel.currentPos == index) {
-                                if (mainViewModel.platformType == TYPE.MOBILE) {
-                                    mainViewModel.screens = Screens.DETAIL
+                                val apiKey = mainViewModel.getApikeyLocalStorage().trim()
+                                if (apiKey.isNotEmpty()) {
+                                    if (apiKey.isValidApiKey()) {
+                                        if (mainViewModel.platformType == TYPE.MOBILE) {
+                                            mainViewModel.screens = Screens.DETAIL
+                                        }
+                                        mainViewModel.currentPos = index
+                                        chatViewModel.groupId = groupItem.groupId
+                                        chatViewModel.getMessageList(true)
+                                    } else {
+                                        mainViewModel.apiKeyText = apiKey
+                                        mainViewModel.isApiShowDialog = true
+                                    }
+                                } else {
+                                    mainViewModel.apiKeyText = apiKey
+                                    mainViewModel.isApiShowDialog = true
                                 }
-                                mainViewModel.currentPos = index
-                                chatViewModel.groupId = groupItem.groupId
-                                chatViewModel.getMessageList(true)
                             }
                         }
                     }

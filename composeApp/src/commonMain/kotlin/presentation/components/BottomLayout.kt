@@ -5,7 +5,6 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.shape.CutCornerShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.text.selection.TextSelectionColors
@@ -58,7 +57,15 @@ fun BottomTextBar(
                 if (!chatUiState.isApiLoading) {
                     if (chatViewModel.imageUris.size != 3) {
                         showFilePicker = true
+                    }else{
+                        mainViewModel.alertTitleText = "Images Limit Reached"
+                        mainViewModel.alertDescText = "You can only select up to 3 images."
+                        mainViewModel.isAlertDialogShow = true
                     }
+                }else{
+                    mainViewModel.alertTitleText = "API Call in Progress"
+                    mainViewModel.alertDescText = "Please wait while there is already an API call going on, so please be patient."
+                    mainViewModel.isAlertDialogShow = true
                 }
             }) {
             Icon(
@@ -66,8 +73,8 @@ fun BottomTextBar(
             )
         }
         TextField(
-            value = chatViewModel.messageId,
-            onValueChange = { chatViewModel.messageId = it },
+            value = chatViewModel.message,
+            onValueChange = { chatViewModel.message = it },
             modifier = Modifier.weight(1f).background(borderColor),
             keyboardOptions = KeyboardOptions(capitalization = KeyboardCapitalization.Sentences),
             maxLines = 3,
@@ -96,16 +103,30 @@ fun BottomTextBar(
                 containerColor = lightBorderColor
             ),
             onClick = {
-                if (chatViewModel.messageId.isNotEmpty()) {
-                    if (isNetworkAvailable()) {
-                        chatViewModel.generateContentWithText(
-                            groupUiState.data[mainViewModel.currentPos].groupId,
-                            chatViewModel.messageId,
-                            mainViewModel.getApikeyLocalStorage(),
-                        )
-                        keyboardController?.hide()
-                        chatViewModel.messageId = ""
+                if (!chatUiState.isApiLoading) {
+                    if (chatViewModel.message.isNotEmpty()) {
+                        if (isNetworkAvailable()) {
+                            chatViewModel.generateContentWithText(
+                                groupUiState.data[mainViewModel.currentPos].groupId,
+                                chatViewModel.message,
+                                mainViewModel.getApikeyLocalStorage(),
+                            )
+                            keyboardController?.hide()
+                            chatViewModel.message = ""
+                        } else {
+                            mainViewModel.alertTitleText = "Network Issue"
+                            mainViewModel.alertDescText = "Please check your internet connection and try again."
+                            mainViewModel.isAlertDialogShow = true
+                        }
+                    } else {
+                        mainViewModel.alertTitleText = "Message"
+                        mainViewModel.alertDescText = "Please enter a message before sending."
+                        mainViewModel.isAlertDialogShow = true
                     }
+                }else{
+                    mainViewModel.alertTitleText = "API Call in Progress"
+                    mainViewModel.alertDescText = "Please wait while there is already an API call going on, so please be patient."
+                    mainViewModel.isAlertDialogShow = true
                 }
             }) {
             AnimatedContent(chatUiState.isApiLoading) { generating ->

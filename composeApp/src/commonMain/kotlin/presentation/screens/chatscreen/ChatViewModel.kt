@@ -30,7 +30,7 @@ class ChatViewModel(
     private val _chatUiState = MutableStateFlow(ChatUiState())
     val chatUiState = _chatUiState.asStateFlow()
 
-    var messageId by mutableStateOf("")
+    var message by mutableStateOf("")
     val imageUris = mutableStateListOf<ByteArray>()
 
     var isDeleteShowDialog by mutableStateOf(false)

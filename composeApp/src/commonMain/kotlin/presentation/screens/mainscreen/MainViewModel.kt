@@ -8,7 +8,6 @@ import di.getPlatform
 import moe.tlaster.precompose.viewmodel.ViewModel
 import utils.Screens
 import com.coding.meet.gaminiaikmp.BuildKonfig
-import domain.model.Group
 import domain.use_cases.*
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -35,6 +34,10 @@ class MainViewModel(
 
     var isApiShowDialog by mutableStateOf(false)
     var apiKeyText by mutableStateOf("")
+
+    var isAlertDialogShow by mutableStateOf(false)
+    var alertTitleText by mutableStateOf("")
+    var alertDescText by mutableStateOf("")
 
     var currentPos by mutableStateOf(-1)
     var isDesktopDrawerOpen by mutableStateOf(true)

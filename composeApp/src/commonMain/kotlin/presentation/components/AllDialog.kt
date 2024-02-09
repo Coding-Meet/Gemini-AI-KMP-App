@@ -9,6 +9,7 @@ import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.text.selection.TextSelectionColors
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Delete
+import androidx.compose.material.icons.filled.Info
 import androidx.compose.material.icons.filled.Person
 import androidx.compose.material.icons.filled.Settings
 import androidx.compose.material3.*
@@ -117,7 +118,15 @@ fun ApiKeyAlertDialogBox(mainViewModel: MainViewModel) {
                                 mainViewModel.apiKeyText = ""
                                 mainViewModel.isApiShowDialog = false
                                 keyboardController?.hide()
+                            }else{
+                                mainViewModel.alertTitleText = "Invalid API Key"
+                                mainViewModel.alertDescText = "The API Key you entered is not valid. Please enter a valid API Key."
+                                mainViewModel.isAlertDialogShow = true
                             }
+                        } else {
+                            mainViewModel.alertTitleText = "Missing API Key"
+                            mainViewModel.alertDescText = "An API Key is required to proceed. Please enter your API Key."
+                            mainViewModel.isAlertDialogShow = true
                         }
                     },
                     colors = ButtonDefaults.buttonColors(
@@ -209,10 +218,14 @@ fun NewChatAlertDialogBox(mainViewModel: MainViewModel) {
                                 currentDateTimeToString(),
                                 "robot_${(1..8).random()}.png"
                             )
+                            mainViewModel.newGroupText = ""
+                            mainViewModel.isNewChatShowDialog = false
+                            keyboardController?.hide()
+                        }else{
+                            mainViewModel.alertTitleText = "Group Name"
+                            mainViewModel.alertDescText = "Group Name is Required"
+                            mainViewModel.isAlertDialogShow = true
                         }
-                        mainViewModel.newGroupText = ""
-                        mainViewModel.isNewChatShowDialog = false
-                        keyboardController?.hide()
                     },
                     colors = ButtonDefaults.buttonColors(
                         containerColor = whiteColor,
@@ -313,6 +326,46 @@ fun DeleteChatAlertDialogBox(chatViewModel: ChatViewModel, mainViewModel: MainVi
                     Text("Cancel")
                 }
             }
+        )
+    }
+}
+
+@Composable
+fun AlertDialogLayout(mainViewModel: MainViewModel) {
+    if (mainViewModel.isAlertDialogShow) {
+        AlertDialog(
+            properties = DialogProperties(dismissOnBackPress = true, dismissOnClickOutside = false),
+            icon = {
+                Icon(Icons.Default.Info, contentDescription = "info")
+            },
+            containerColor = lightBackgroundColor,
+            textContentColor = whiteColor,
+            iconContentColor = whiteColor,
+            titleContentColor = whiteColor,
+            title = {
+                Text(text = mainViewModel.alertTitleText)
+            },
+            text = {
+                Text(text = mainViewModel.alertDescText)
+            },
+            onDismissRequest = {
+                mainViewModel.isAlertDialogShow= false
+            },
+
+            confirmButton = {
+                Button(
+                    shape = CutCornerShape(20.dp),
+                    onClick = {
+                        mainViewModel.isAlertDialogShow = false
+                    },
+                    colors = ButtonDefaults.buttonColors(
+                        containerColor = whiteColor,
+                        contentColor = blackColor,
+                    ),
+                ) {
+                    Text("Cancel")
+                }
+            },
         )
     }
 }

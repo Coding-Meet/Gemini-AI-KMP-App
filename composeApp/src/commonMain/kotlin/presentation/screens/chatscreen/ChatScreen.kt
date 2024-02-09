@@ -58,6 +58,10 @@ fun ChatScreen(
                     onClick = {
                         if (!chatUiState.isApiLoading) {
                             chatViewModel.isDeleteShowDialog = true
+                        }else{
+                            mainViewModel.alertTitleText = "API Call in Progress"
+                            mainViewModel.alertDescText = "Please wait while there is already an API call going on, so please be patient."
+                            mainViewModel.isAlertDialogShow = true
                         }
                     }) {
                     Icon(
