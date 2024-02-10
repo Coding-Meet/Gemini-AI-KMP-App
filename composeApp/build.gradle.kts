@@ -55,6 +55,9 @@ kotlin {
 
             // markdown
             // implementation("com.mikepenz:multiplatform-markdown-renderer-android:0.12.0")
+
+            // kstore
+            implementation(libs.kstore.file)
         }
         commonMain.dependencies {
             implementation(compose.runtime)
@@ -101,7 +104,8 @@ kotlin {
                 api(logging)
             }
 
-
+            // kstore
+            implementation(libs.kstore)
         }
         desktopMain.dependencies {
             implementation(compose.desktop.currentOs)
@@ -115,6 +119,9 @@ kotlin {
 
             // markdown
             // implementation("com.mikepenz:multiplatform-markdown-renderer-jvm:0.12.0")
+
+            // kstore
+            implementation(libs.kstore.file)
         }
 
         jsMain.dependencies {
@@ -126,6 +133,8 @@ kotlin {
             implementation(npm("@cashapp/sqldelight-sqljs-worker", "2.0.1"))
             implementation(npm("sql.js", "1.8.0"))
 
+            // kstore
+            implementation(libs.kstore.storage)
         }
     }
 }

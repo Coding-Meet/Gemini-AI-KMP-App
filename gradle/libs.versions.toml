@@ -33,6 +33,8 @@ coroutines = "1.8.0-RC2"
 kermit = "2.0.2"
 animationAndroid = "1.5.4"
 buildkonfig = "0.15.1"
+kstore = "0.7.1"
+
 
 [libraries]
 koin-compose = { module = "io.insert-koin:koin-compose", version.ref = "koinCompose" }
@@ -89,6 +91,10 @@ sqldelight-native-driver = {module = "app.cash.sqldelight:native-driver", versio
 web-worker-driver = { module = "app.cash.sqldelight:web-worker-driver", version.ref = "sqldelight" }
 sqlite-driver = { module = "app.cash.sqldelight:sqlite-driver", version.ref = "sqldelight" }
 androidx-animation-android = { group = "androidx.compose.animation", name = "animation-android", version.ref = "animationAndroid" }
+
+kstore = { module = "io.github.xxfast:kstore", version.ref = "kstore" }
+kstore-file = { module = "io.github.xxfast:kstore-file", version.ref = "kstore" }
+kstore-storage = { module = "io.github.xxfast:kstore-storage", version.ref = "kstore" }
 
 [plugins]
 androidApplication = { id = "com.android.application", version.ref = "agp" }

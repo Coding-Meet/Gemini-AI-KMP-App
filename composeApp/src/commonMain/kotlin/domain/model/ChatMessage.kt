@@ -1,6 +1,9 @@
 package domain.model
 
+import kotlinx.serialization.Serializable
 
+
+@Serializable
 data class ChatMessage(
     val messageId:String,
     val groupId : String,

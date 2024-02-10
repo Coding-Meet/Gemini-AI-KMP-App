@@ -7,6 +7,8 @@ pluginManagement {
         google()
         gradlePluginPortal()
         mavenCentral()
+        // or for snapshot builds
+        maven("https://s01.oss.sonatype.org/content/repositories/snapshots/")
     }
 }
 
@@ -15,6 +17,8 @@ dependencyResolutionManagement {
         google()
         mavenCentral()
         maven("https://maven.pkg.jetbrains.space/public/p/compose/dev")
+        // or for snapshot builds
+        maven("https://s01.oss.sonatype.org/content/repositories/snapshots/")
     }
 }
 

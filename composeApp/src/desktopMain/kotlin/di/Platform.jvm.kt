@@ -7,6 +7,9 @@ import androidx.compose.ui.graphics.toComposeImageBitmap
 import androidx.compose.ui.platform.ClipboardManager
 import androidx.compose.ui.text.AnnotatedString
 import com.darkrockstudios.libraries.mpfilepicker.FilePicker
+import domain.model.ChatMessage
+import domain.model.Group
+import io.github.xxfast.kstore.KStore
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -65,4 +68,8 @@ actual fun isNetworkAvailable(): Boolean {
     } catch (e: IOException) {
         false
     }
+}
+actual suspend fun readGroupKStore(readFun :suspend (KStore<List<Group>>) -> Unit) {
+}
+actual suspend fun readChatMessageKStore(readFun :suspend (KStore<List<ChatMessage>>) -> Unit) {
 }

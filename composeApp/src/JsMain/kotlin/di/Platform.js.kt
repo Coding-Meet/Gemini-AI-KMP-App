@@ -8,21 +8,19 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.ImageBitmap
 import androidx.compose.ui.graphics.toComposeImageBitmap
 import androidx.compose.ui.platform.ClipboardManager
-import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.ui.unit.dp
+import domain.model.ChatMessage
+import domain.model.Group
+import io.github.xxfast.kstore.KStore
+import io.github.xxfast.kstore.storage.storeOf
 import kotlinx.browser.document
 import kotlinx.browser.window
 import kotlinx.coroutines.*
-import org.intellij.markdown.flavours.commonmark.CommonMarkFlavourDescriptor
-import org.intellij.markdown.html.HtmlGenerator
-import org.intellij.markdown.parser.MarkdownParser
 import org.jetbrains.skia.Image
 import org.khronos.webgl.ArrayBuffer
 import org.khronos.webgl.Uint8Array
 import org.khronos.webgl.get
 import org.w3c.dom.HTMLInputElement
-import org.w3c.dom.asList
-import org.w3c.dom.parsing.DOMParser
 import org.w3c.files.FileReader
 import org.w3c.files.get
 import theme.whiteColor
@@ -112,4 +110,13 @@ actual fun ByteArray.toComposeImageBitmap(): ImageBitmap {
 
 actual fun isNetworkAvailable(): Boolean {
     return window.navigator.onLine
+}
+
+actual suspend fun readGroupKStore(readFun : suspend(KStore<List<Group>>) -> Unit){
+    val store: KStore<List<Group>> = storeOf(key = "group_db")
+    readFun(store)
+}
+actual suspend fun readChatMessageKStore(readFun : suspend(KStore<List<ChatMessage>>) -> Unit) {
+    val store: KStore<List<ChatMessage>> = storeOf(key = "chat_db")
+    readFun(store)
 }

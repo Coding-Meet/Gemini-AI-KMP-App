@@ -1,6 +1,9 @@
 package di
 
+import android.content.Context
 import android.graphics.BitmapFactory
+import android.net.ConnectivityManager
+import android.net.NetworkCapabilities
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.PickVisualMediaRequest
 import androidx.activity.result.contract.ActivityResultContracts
@@ -10,24 +13,26 @@ import androidx.compose.ui.graphics.asImageBitmap
 import androidx.compose.ui.platform.ClipboardManager
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.AnnotatedString
+import domain.model.ChatMessage
+import domain.model.Group
+import io.github.xxfast.kstore.KStore
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.Dispatchers
+import org.koin.mp.KoinPlatform
 import presentation.components.CommonTextComposable
 import utils.AppCoroutineDispatchers
 import utils.TYPE
-import java.io.IOException
-import java.net.InetSocketAddress
-import java.net.Socket
-
 
 actual fun getPlatform(): TYPE = TYPE.MOBILE
 
 actual suspend fun clipData(clipboardManager: ClipboardManager): String? {
     return clipboardManager.getText()?.text.toString().trim()
 }
-actual suspend fun setClipData(clipboardManager: ClipboardManager,message:String) {
+
+actual suspend fun setClipData(clipboardManager: ClipboardManager, message: String) {
     return clipboardManager.setText(AnnotatedString(message))
 }
+
 actual class AppCoroutineDispatchersImpl actual constructor() : AppCoroutineDispatchers {
     override val io: CoroutineDispatcher
         get() = Dispatchers.IO
@@ -39,7 +44,7 @@ actual class AppCoroutineDispatchersImpl actual constructor() : AppCoroutineDisp
 
 @Composable
 actual fun ImagePicker(showFilePicker: Boolean, onResult: (ByteArray?) -> Unit) {
-   val context = LocalContext.current
+    val context = LocalContext.current
 
     val pickMedia = rememberLauncherForActivityResult(
         ActivityResultContracts.PickVisualMedia()
@@ -61,17 +66,20 @@ actual fun ByteArray.toComposeImageBitmap(): ImageBitmap {
 }
 
 @Composable
-actual fun TextComposable(message:String,isGEMINIMessage:Boolean) {
-    CommonTextComposable(message,isGEMINIMessage)
+actual fun TextComposable(message: String, isGEMINIMessage: Boolean) {
+    CommonTextComposable(message, isGEMINIMessage)
 }
 
 actual fun isNetworkAvailable(): Boolean {
-    return try {
-        val socket = Socket()
-        socket.connect(InetSocketAddress("google.com", 80), 1500)
-        socket.close()
-        true
-    } catch (e: IOException) {
-        false
+    val context: Context = KoinPlatform.getKoin().get()
+    val connectivityManager = context.getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
+    val activeNetwork = connectivityManager.activeNetwork ?: return false
+    val cap = connectivityManager.getNetworkCapabilities(activeNetwork) ?: return false
+    return when {
+        cap.hasTransport(NetworkCapabilities.TRANSPORT_WIFI) -> true
+        cap.hasTransport(NetworkCapabilities.TRANSPORT_CELLULAR) -> true
+        else -> false
     }
 }
+actual suspend fun readGroupKStore(readFun: suspend (KStore<List<Group>>) -> Unit) {}
+actual suspend fun readChatMessageKStore(readFun: suspend (KStore<List<ChatMessage>>) -> Unit) {}
