@@ -58,6 +58,9 @@ kotlin {
 
             // kstore
             implementation(libs.kstore.file)
+
+            // Splash API
+            implementation(libs.androidx.core.splashscreen)
         }
         commonMain.dependencies {
             implementation(compose.runtime)
@@ -189,6 +192,16 @@ compose.desktop {
             targetFormats(TargetFormat.Dmg, TargetFormat.Msi, TargetFormat.Deb)
             packageName = "com.coding.meet.gaminiaikmp"
             packageVersion = "1.0.0"
+
+            macOS {
+                iconFile.set(project.file("gemini_logo.icns"))
+            }
+            windows {
+                iconFile.set(project.file("gemini_logo.ico"))
+            }
+            linux {
+                iconFile.set(project.file("gemini_logo.png"))
+            }
         }
     }
 }

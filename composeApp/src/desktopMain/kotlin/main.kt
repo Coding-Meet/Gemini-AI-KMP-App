@@ -1,4 +1,5 @@
 import androidx.compose.ui.Alignment
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.window.*
 import di.initKoin
 import org.koin.mp.KoinPlatform
@@ -11,7 +12,8 @@ fun main() = application {
         onCloseRequest = ::exitApplication, state = WindowState(
             placement = WindowPlacement.Maximized,
             position = WindowPosition(Alignment.Center)
-        ), title = "Gemini-AI-KMP-App"
+        ), title = "Gemini AI KMP App",
+        icon = painterResource("gemini_logo.svg")
     ) {
         window.minimumSize = Dimension(1280, 768)
 
