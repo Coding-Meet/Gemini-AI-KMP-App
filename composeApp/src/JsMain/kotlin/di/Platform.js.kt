@@ -8,6 +8,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.ImageBitmap
 import androidx.compose.ui.graphics.toComposeImageBitmap
 import androidx.compose.ui.platform.ClipboardManager
+import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.unit.dp
 import domain.model.ChatMessage
 import domain.model.Group
@@ -60,6 +61,7 @@ actual fun TextComposable(message:String,isGEMINIMessage:Boolean) {
         ),
         text = message,
         color = whiteColor,
+        fontFamily = FontFamily.Cursive,
         style = MaterialTheme.typography.bodyMedium,
     )
 }

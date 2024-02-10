@@ -8,6 +8,7 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.input.nestedscroll.nestedScroll
+import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import presentation.screens.mainscreen.MainViewModel
@@ -46,7 +47,9 @@ fun TopBarLayout(
                     }
                 },
                 text = {
-                    Text(text = "New Group")
+                    Text(text = "New Group",
+                        fontFamily = FontFamily.Cursive,
+                    )
                 },
                 icon = {
                     Icon(
@@ -65,8 +68,8 @@ fun TopBarLayout(
                     Text(
                         "Chats",
                         maxLines = 1,
-                        overflow = TextOverflow.Ellipsis
-                    )
+                        overflow = TextOverflow.Ellipsis,
+                        fontFamily = FontFamily.Cursive,)
                 },
                 actions = {
                     IconButton(

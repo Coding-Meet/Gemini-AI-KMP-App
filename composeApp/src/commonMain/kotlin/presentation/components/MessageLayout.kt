@@ -21,6 +21,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.drawscope.rotate
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalClipboardManager
+import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -163,8 +164,10 @@ fun MessageItem(chatMessage: ChatMessage) {
                             color = whiteColor,
                             fontSize = 18.sp,
                             modifier = Modifier.align(Alignment.CenterStart).padding(start = 10.dp),
-                            fontWeight = FontWeight.Bold
-                        )
+                            fontWeight = FontWeight.Bold,
+                            fontFamily = FontFamily.Cursive,
+
+                            )
                         IconButton(
                             modifier = Modifier.align(Alignment.CenterEnd),
                             colors = IconButtonDefaults.iconButtonColors(

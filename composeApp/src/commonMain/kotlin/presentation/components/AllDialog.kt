@@ -20,6 +20,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalClipboardManager
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
+import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.input.KeyboardCapitalization
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.DialogProperties
@@ -52,8 +53,8 @@ fun ApiKeyAlertDialogBox(mainViewModel: MainViewModel) {
             titleContentColor = whiteColor,
             title = {
                 Text(
-                    text = "Add Api Key"
-                )
+                    text = "Add Api Key",
+                    fontFamily = FontFamily.Cursive)
             },
             text = {
                 TextField(
@@ -63,7 +64,9 @@ fun ApiKeyAlertDialogBox(mainViewModel: MainViewModel) {
                         .background(borderColor),
                     keyboardOptions = KeyboardOptions(capitalization = KeyboardCapitalization.Sentences),
                     placeholder = {
-                        Text("Enter the Api Key", color = textHintColor)
+                        Text("Enter the Api Key",
+                            fontFamily = FontFamily.Cursive,
+                            color = textHintColor)
                     },
                     singleLine = true,
                     colors = TextFieldDefaults.colors(
@@ -134,7 +137,9 @@ fun ApiKeyAlertDialogBox(mainViewModel: MainViewModel) {
                         contentColor = blackColor,
                     ),
                 ) {
-                    Text("Save")
+                    Text("Save",
+                        fontFamily = FontFamily.Cursive,
+                    )
                 }
             },
             dismissButton = {
@@ -150,7 +155,9 @@ fun ApiKeyAlertDialogBox(mainViewModel: MainViewModel) {
                         contentColor = blackColor,
                     ),
                 ) {
-                    Text("Cancel")
+                    Text("Cancel",
+                        fontFamily = FontFamily.Cursive,
+                    )
                 }
             }
         )
@@ -171,7 +178,9 @@ fun NewChatAlertDialogBox(mainViewModel: MainViewModel) {
             iconContentColor = whiteColor,
             titleContentColor = whiteColor,
             title = {
-                Text(text = "New Group")
+                Text(text = "New Group",
+                    fontFamily = FontFamily.Cursive,
+                )
             },
             text = {
                 TextField(
@@ -181,7 +190,9 @@ fun NewChatAlertDialogBox(mainViewModel: MainViewModel) {
                         .background(borderColor),
                     keyboardOptions = KeyboardOptions(capitalization = KeyboardCapitalization.Sentences),
                     placeholder = {
-                        Text("Enter the Chat Name", color = textHintColor)
+                        Text("Enter the Chat Name", color = textHintColor,
+                            fontFamily = FontFamily.Cursive,
+                        )
                     },
                     singleLine = true,
                     colors = TextFieldDefaults.colors(
@@ -232,7 +243,9 @@ fun NewChatAlertDialogBox(mainViewModel: MainViewModel) {
                         contentColor = blackColor,
                     ),
                 ) {
-                    Text("Save")
+                    Text("Save",
+                        fontFamily = FontFamily.Cursive,
+                    )
                 }
             },
             dismissButton = {
@@ -248,7 +261,9 @@ fun NewChatAlertDialogBox(mainViewModel: MainViewModel) {
                         contentColor = blackColor,
                     ),
                 ) {
-                    Text("Cancel")
+                    Text("Cancel",
+                        fontFamily = FontFamily.Cursive,
+                    )
                 }
             }
         )
@@ -269,10 +284,14 @@ fun DeleteChatAlertDialogBox(chatViewModel: ChatViewModel, mainViewModel: MainVi
             iconContentColor = whiteColor,
             titleContentColor = whiteColor,
             title = {
-                Text(text = "Delete Messages")
+                Text(text = "Delete Messages",
+                    fontFamily = FontFamily.Cursive,
+                )
             },
             text = {
-                Text(text = "Are you sure you want to delete all messages?")
+                Text(text = "Are you sure you want to delete all messages?",
+                    fontFamily = FontFamily.Cursive,
+                )
             },
             onDismissRequest = {
                 chatViewModel.isDeleteShowDialog = false
@@ -290,7 +309,9 @@ fun DeleteChatAlertDialogBox(chatViewModel: ChatViewModel, mainViewModel: MainVi
                         contentColor = whiteColor,
                     ),
                 ) {
-                    Text("Delete All Message")
+                    Text("Delete All Message",
+                        fontFamily = FontFamily.Cursive,
+                    )
                 }
 
                 Button(
@@ -308,7 +329,9 @@ fun DeleteChatAlertDialogBox(chatViewModel: ChatViewModel, mainViewModel: MainVi
                         contentColor = whiteColor,
                     ),
                 ) {
-                    Text("Delete Group with All Message")
+                    Text("Delete Group with All Message",
+                        fontFamily = FontFamily.Cursive,
+                    )
                 }
 
             },
@@ -323,7 +346,9 @@ fun DeleteChatAlertDialogBox(chatViewModel: ChatViewModel, mainViewModel: MainVi
                         contentColor = blackColor,
                     ),
                 ) {
-                    Text("Cancel")
+                    Text("Cancel",
+                        fontFamily = FontFamily.Cursive,
+                    )
                 }
             }
         )
@@ -343,10 +368,14 @@ fun AlertDialogLayout(mainViewModel: MainViewModel) {
             iconContentColor = whiteColor,
             titleContentColor = whiteColor,
             title = {
-                Text(text = mainViewModel.alertTitleText)
+                Text(text = mainViewModel.alertTitleText,
+                    fontFamily = FontFamily.Cursive,
+                )
             },
             text = {
-                Text(text = mainViewModel.alertDescText)
+                Text(text = mainViewModel.alertDescText,
+                    fontFamily = FontFamily.Cursive,
+                )
             },
             onDismissRequest = {
                 mainViewModel.isAlertDialogShow= false
@@ -363,7 +392,9 @@ fun AlertDialogLayout(mainViewModel: MainViewModel) {
                         contentColor = blackColor,
                     ),
                 ) {
-                    Text("Cancel")
+                    Text("Cancel",
+                        fontFamily = FontFamily.Cursive,
+                    )
                 }
             },
         )

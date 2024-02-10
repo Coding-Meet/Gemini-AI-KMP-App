@@ -6,6 +6,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.unit.dp
 import theme.whiteColor
 
@@ -18,8 +19,9 @@ fun CommonTextComposable(message: String, isGEMINIMessage: Boolean) {
                 start = 10.dp,
                 top = 10.dp,
                 end = 10.dp,
-                bottom = if (isGEMINIMessage) 3.dp else 10.dp
+                bottom = if (isGEMINIMessage) 3.dp else 10.dp,
             ),
+            fontFamily = FontFamily.Cursive,
             color = whiteColor,
             text = message,
             style = MaterialTheme.typography.bodyMedium,

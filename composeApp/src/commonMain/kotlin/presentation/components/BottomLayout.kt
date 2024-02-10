@@ -18,6 +18,7 @@ import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
+import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.input.KeyboardCapitalization
 import androidx.compose.ui.unit.dp
 import di.ImagePicker
@@ -79,7 +80,9 @@ fun BottomTextBar(
             keyboardOptions = KeyboardOptions(capitalization = KeyboardCapitalization.Sentences),
             maxLines = 3,
             placeholder = {
-                Text("Type a message", color = textHintColor)
+                Text("Type a message", color = textHintColor,
+                    fontFamily = FontFamily.Cursive,
+                )
             },
             colors = TextFieldDefaults.colors(
                 unfocusedContainerColor = lightBorderColor,

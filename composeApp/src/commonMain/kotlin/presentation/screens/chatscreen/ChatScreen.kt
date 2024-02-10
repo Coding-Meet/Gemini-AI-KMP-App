@@ -106,10 +106,17 @@ fun ChatScreen(
                     Modifier.fillMaxSize().background(lightBackgroundColor),
                     lazyListState,
                     reverseLayout = true,
+                    verticalArrangement =  if (chatUiState.message.isEmpty()) Arrangement.Center else Arrangement.Bottom,
                     contentPadding = PaddingValues(horizontal = 10.dp),
                 ) {
-                    items(chatUiState.message) {
-                        MessageItem(it)
+                    if (chatUiState.message.isNotEmpty()) {
+                        items(chatUiState.message) {
+                            MessageItem(it)
+                        }
+                    }else{
+                        item {
+                            WelcomeScreen()
+                        }
                     }
                 }
             }

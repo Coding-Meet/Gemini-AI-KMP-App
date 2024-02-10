@@ -3,7 +3,6 @@ package presentation.screens.detailscreen
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxHeight
-import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
@@ -11,11 +10,11 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import org.koin.mp.KoinPlatform
 import presentation.components.DeleteChatAlertDialogBox
+import presentation.components.WelcomeScreen
 import presentation.screens.chatscreen.ChatScreen
 import presentation.screens.chatscreen.ChatViewModel
 import presentation.screens.mainscreen.MainViewModel
 import theme.lightBackgroundColor
-import theme.whiteColor
 
 @Composable
 fun DetailScreen(mainViewModel: MainViewModel) {
@@ -37,9 +36,7 @@ fun DetailScreen(mainViewModel: MainViewModel) {
                 groupUiState.data[mainViewModel.currentPos]
             )
         } else {
-            Column {
-                Text("Welcome To Gemini Ai Kmp App", color = whiteColor)
-            }
+           WelcomeScreen()
         }
     }
 }
