@@ -32,8 +32,10 @@ fun MainScreen(mainViewModel: MainViewModel) {
             sideScreen.ContentComposable {
                 TopBarLayout(mainViewModel) { paddingValues ->
                     LazyColumn(
-                        Modifier.fillMaxSize().padding(paddingValues).background(lightBackgroundColor)
+                        Modifier.fillMaxSize().padding(paddingValues).background(lightBackgroundColor),
+                        verticalArrangement =  if (groupUiState.data.isEmpty()) Arrangement.Center else Arrangement.Top,
                     ) {
+
                         itemsIndexed(groupUiState.data) { index, groupItem ->
                             GroupLayout(groupItem, mainViewModel.currentPos == index) {
                                 val apiKey = mainViewModel.getApikeyLocalStorage().trim()
@@ -55,6 +57,13 @@ fun MainScreen(mainViewModel: MainViewModel) {
                                 }
                             }
                         }
+                        if (mainViewModel.platformType == TYPE.MOBILE) {
+                            if (groupUiState.data.isEmpty()) {
+                                item {
+                                    WelcomeScreen()
+                                }
+                            }
+                        }
                     }
                 }
 
@@ -67,8 +76,11 @@ fun MainScreen(mainViewModel: MainViewModel) {
     }
     DisposableEffect(Unit) {
         onDispose {
-            if (chatViewModel.failedMessageId.isNotEmpty()){
-                chatViewModel.handleError(chatViewModel.failedMessageId, "Failed to generate content. Please try again.")
+            if (chatViewModel.failedMessageId.isNotEmpty()) {
+                chatViewModel.handleError(
+                    chatViewModel.failedMessageId,
+                    "Failed to generate content. Please try again."
+                )
             }
         }
     }

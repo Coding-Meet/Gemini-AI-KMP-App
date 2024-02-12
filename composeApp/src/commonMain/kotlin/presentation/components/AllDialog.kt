@@ -3,7 +3,6 @@ package presentation.components
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.shape.CutCornerShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.text.selection.TextSelectionColors
@@ -20,7 +19,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalClipboardManager
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
-import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.input.KeyboardCapitalization
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.DialogProperties
@@ -52,9 +50,7 @@ fun ApiKeyAlertDialogBox(mainViewModel: MainViewModel) {
             iconContentColor = whiteColor,
             titleContentColor = whiteColor,
             title = {
-                Text(
-                    text = "Add Api Key",
-                    fontFamily = FontFamily.Cursive)
+                Text(text = "Add Api Key")
             },
             text = {
                 TextField(
@@ -64,9 +60,7 @@ fun ApiKeyAlertDialogBox(mainViewModel: MainViewModel) {
                         .background(borderColor),
                     keyboardOptions = KeyboardOptions(capitalization = KeyboardCapitalization.Sentences),
                     placeholder = {
-                        Text("Enter the Api Key",
-                            fontFamily = FontFamily.Cursive,
-                            color = textHintColor)
+                        Text("Enter the Api Key", color = textHintColor)
                     },
                     singleLine = true,
                     colors = TextFieldDefaults.colors(
@@ -90,12 +84,12 @@ fun ApiKeyAlertDialogBox(mainViewModel: MainViewModel) {
                                 containerColor = lightBorderColor
                             ),
                             onClick = {
-                            coroutine.launch {
-                                clipData(clipboardManager)?.let {
-                                    mainViewModel.apiKeyText = it
+                                coroutine.launch {
+                                    clipData(clipboardManager)?.let {
+                                        mainViewModel.apiKeyText = it
+                                    }
                                 }
-                            }
-                        }) {
+                            }) {
                             Icon(
                                 painter = painterResource("ic_paste.xml"),
                                 contentDescription = "api key",
@@ -113,7 +107,7 @@ fun ApiKeyAlertDialogBox(mainViewModel: MainViewModel) {
 
             confirmButton = {
                 Button(
-                    shape = CutCornerShape(20.dp),
+                    shape = RoundedCornerShape(20.dp),
                     onClick = {
                         if (mainViewModel.apiKeyText.trim().isNotEmpty()) {
                             if (mainViewModel.apiKeyText.trim().isValidApiKey()) {
@@ -121,14 +115,16 @@ fun ApiKeyAlertDialogBox(mainViewModel: MainViewModel) {
                                 mainViewModel.apiKeyText = ""
                                 mainViewModel.isApiShowDialog = false
                                 keyboardController?.hide()
-                            }else{
+                            } else {
                                 mainViewModel.alertTitleText = "Invalid API Key"
-                                mainViewModel.alertDescText = "The API Key you entered is not valid. Please enter a valid API Key."
+                                mainViewModel.alertDescText =
+                                    "The API Key you entered is not valid. Please enter a valid API Key."
                                 mainViewModel.isAlertDialogShow = true
                             }
                         } else {
                             mainViewModel.alertTitleText = "Missing API Key"
-                            mainViewModel.alertDescText = "An API Key is required to proceed. Please enter your API Key."
+                            mainViewModel.alertDescText =
+                                "An API Key is required to proceed. Please enter your API Key."
                             mainViewModel.isAlertDialogShow = true
                         }
                     },
@@ -137,14 +133,12 @@ fun ApiKeyAlertDialogBox(mainViewModel: MainViewModel) {
                         contentColor = blackColor,
                     ),
                 ) {
-                    Text("Save",
-                        fontFamily = FontFamily.Cursive,
-                    )
+                    Text("Save")
                 }
             },
             dismissButton = {
                 Button(
-                    shape = CutCornerShape(20.dp),
+                    shape = RoundedCornerShape(20.dp),
                     onClick = {
                         mainViewModel.apiKeyText = ""
                         mainViewModel.isApiShowDialog = false
@@ -155,9 +149,7 @@ fun ApiKeyAlertDialogBox(mainViewModel: MainViewModel) {
                         contentColor = blackColor,
                     ),
                 ) {
-                    Text("Cancel",
-                        fontFamily = FontFamily.Cursive,
-                    )
+                    Text("Cancel")
                 }
             }
         )
@@ -178,9 +170,7 @@ fun NewChatAlertDialogBox(mainViewModel: MainViewModel) {
             iconContentColor = whiteColor,
             titleContentColor = whiteColor,
             title = {
-                Text(text = "New Group",
-                    fontFamily = FontFamily.Cursive,
-                )
+                Text(text = "New Group")
             },
             text = {
                 TextField(
@@ -190,9 +180,7 @@ fun NewChatAlertDialogBox(mainViewModel: MainViewModel) {
                         .background(borderColor),
                     keyboardOptions = KeyboardOptions(capitalization = KeyboardCapitalization.Sentences),
                     placeholder = {
-                        Text("Enter the Chat Name", color = textHintColor,
-                            fontFamily = FontFamily.Cursive,
-                        )
+                        Text("Enter the Chat Name", color = textHintColor)
                     },
                     singleLine = true,
                     colors = TextFieldDefaults.colors(
@@ -220,7 +208,7 @@ fun NewChatAlertDialogBox(mainViewModel: MainViewModel) {
 
             confirmButton = {
                 Button(
-                    shape = CutCornerShape(20.dp),
+                    shape = RoundedCornerShape(20.dp),
                     onClick = {
                         if (mainViewModel.newGroupText.trim().isNotEmpty()) {
                             mainViewModel.addNewGroup(
@@ -232,7 +220,7 @@ fun NewChatAlertDialogBox(mainViewModel: MainViewModel) {
                             mainViewModel.newGroupText = ""
                             mainViewModel.isNewChatShowDialog = false
                             keyboardController?.hide()
-                        }else{
+                        } else {
                             mainViewModel.alertTitleText = "Group Name"
                             mainViewModel.alertDescText = "Group Name is Required"
                             mainViewModel.isAlertDialogShow = true
@@ -243,14 +231,12 @@ fun NewChatAlertDialogBox(mainViewModel: MainViewModel) {
                         contentColor = blackColor,
                     ),
                 ) {
-                    Text("Save",
-                        fontFamily = FontFamily.Cursive,
-                    )
+                    Text("Save")
                 }
             },
             dismissButton = {
                 Button(
-                    shape = CutCornerShape(20.dp),
+                    shape = RoundedCornerShape(20.dp),
                     onClick = {
                         mainViewModel.newGroupText = ""
                         mainViewModel.isNewChatShowDialog = false
@@ -261,9 +247,7 @@ fun NewChatAlertDialogBox(mainViewModel: MainViewModel) {
                         contentColor = blackColor,
                     ),
                 ) {
-                    Text("Cancel",
-                        fontFamily = FontFamily.Cursive,
-                    )
+                    Text("Cancel")
                 }
             }
         )
@@ -284,14 +268,10 @@ fun DeleteChatAlertDialogBox(chatViewModel: ChatViewModel, mainViewModel: MainVi
             iconContentColor = whiteColor,
             titleContentColor = whiteColor,
             title = {
-                Text(text = "Delete Messages",
-                    fontFamily = FontFamily.Cursive,
-                )
+                Text(text = "Delete Messages")
             },
             text = {
-                Text(text = "Are you sure you want to delete all messages?",
-                    fontFamily = FontFamily.Cursive,
-                )
+                Text(text = "Are you sure you want to delete all messages?")
             },
             onDismissRequest = {
                 chatViewModel.isDeleteShowDialog = false
@@ -299,7 +279,7 @@ fun DeleteChatAlertDialogBox(chatViewModel: ChatViewModel, mainViewModel: MainVi
 
             confirmButton = {
                 Button(
-                    shape = CutCornerShape(20.dp),
+                    shape = RoundedCornerShape(20.dp),
                     onClick = {
                         chatViewModel.deleteAllMessage()
                         chatViewModel.isDeleteShowDialog = false
@@ -309,15 +289,13 @@ fun DeleteChatAlertDialogBox(chatViewModel: ChatViewModel, mainViewModel: MainVi
                         contentColor = whiteColor,
                     ),
                 ) {
-                    Text("Delete All Message",
-                        fontFamily = FontFamily.Cursive,
-                    )
+                    Text("Delete All Message")
                 }
 
                 Button(
-                    shape = CutCornerShape(20.dp),
+                    shape = RoundedCornerShape(20.dp),
                     onClick = {
-                        chatViewModel.deleteGroupWithMessage{
+                        chatViewModel.deleteGroupWithMessage {
                             chatViewModel.isDeleteShowDialog = false
                             mainViewModel.currentPos = -1
                             mainViewModel.screens = Screens.MAIN
@@ -329,15 +307,13 @@ fun DeleteChatAlertDialogBox(chatViewModel: ChatViewModel, mainViewModel: MainVi
                         contentColor = whiteColor,
                     ),
                 ) {
-                    Text("Delete Group with All Message",
-                        fontFamily = FontFamily.Cursive,
-                    )
+                    Text("Delete Group with All Message")
                 }
 
             },
             dismissButton = {
                 Button(
-                    shape = CutCornerShape(20.dp),
+                    shape = RoundedCornerShape(20.dp),
                     onClick = {
                         chatViewModel.isDeleteShowDialog = false
                     },
@@ -346,9 +322,7 @@ fun DeleteChatAlertDialogBox(chatViewModel: ChatViewModel, mainViewModel: MainVi
                         contentColor = blackColor,
                     ),
                 ) {
-                    Text("Cancel",
-                        fontFamily = FontFamily.Cursive,
-                    )
+                    Text("Cancel")
                 }
             }
         )
@@ -368,22 +342,18 @@ fun AlertDialogLayout(mainViewModel: MainViewModel) {
             iconContentColor = whiteColor,
             titleContentColor = whiteColor,
             title = {
-                Text(text = mainViewModel.alertTitleText,
-                    fontFamily = FontFamily.Cursive,
-                )
+                Text(text = mainViewModel.alertTitleText)
             },
             text = {
-                Text(text = mainViewModel.alertDescText,
-                    fontFamily = FontFamily.Cursive,
-                )
+                Text(text = mainViewModel.alertDescText)
             },
             onDismissRequest = {
-                mainViewModel.isAlertDialogShow= false
+                mainViewModel.isAlertDialogShow = false
             },
 
             confirmButton = {
                 Button(
-                    shape = CutCornerShape(20.dp),
+                    shape = RoundedCornerShape(20.dp),
                     onClick = {
                         mainViewModel.isAlertDialogShow = false
                     },
@@ -392,9 +362,7 @@ fun AlertDialogLayout(mainViewModel: MainViewModel) {
                         contentColor = blackColor,
                     ),
                 ) {
-                    Text("Cancel",
-                        fontFamily = FontFamily.Cursive,
-                    )
+                    Text("Cancel")
                 }
             },
         )

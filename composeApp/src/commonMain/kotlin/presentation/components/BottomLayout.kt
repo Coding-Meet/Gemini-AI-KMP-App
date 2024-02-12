@@ -18,7 +18,6 @@ import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
-import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.input.KeyboardCapitalization
 import androidx.compose.ui.unit.dp
 import di.ImagePicker
@@ -58,14 +57,15 @@ fun BottomTextBar(
                 if (!chatUiState.isApiLoading) {
                     if (chatViewModel.imageUris.size != 3) {
                         showFilePicker = true
-                    }else{
+                    } else {
                         mainViewModel.alertTitleText = "Images Limit Reached"
                         mainViewModel.alertDescText = "You can only select up to 3 images."
                         mainViewModel.isAlertDialogShow = true
                     }
-                }else{
+                } else {
                     mainViewModel.alertTitleText = "API Call in Progress"
-                    mainViewModel.alertDescText = "Please wait while there is already an API call going on, so please be patient."
+                    mainViewModel.alertDescText =
+                        "Please wait while there is already an API call going on, so please be patient."
                     mainViewModel.isAlertDialogShow = true
                 }
             }) {
@@ -80,8 +80,8 @@ fun BottomTextBar(
             keyboardOptions = KeyboardOptions(capitalization = KeyboardCapitalization.Sentences),
             maxLines = 3,
             placeholder = {
-                Text("Type a message", color = textHintColor,
-                    fontFamily = FontFamily.Cursive,
+                Text(
+                    "Type a message", color = textHintColor
                 )
             },
             colors = TextFieldDefaults.colors(
@@ -126,9 +126,10 @@ fun BottomTextBar(
                         mainViewModel.alertDescText = "Please enter a message before sending."
                         mainViewModel.isAlertDialogShow = true
                     }
-                }else{
+                } else {
                     mainViewModel.alertTitleText = "API Call in Progress"
-                    mainViewModel.alertDescText = "Please wait while there is already an API call going on, so please be patient."
+                    mainViewModel.alertDescText =
+                        "Please wait while there is already an API call going on, so please be patient."
                     mainViewModel.isAlertDialogShow = true
                 }
             }) {

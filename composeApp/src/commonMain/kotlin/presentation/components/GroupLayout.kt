@@ -6,7 +6,6 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import domain.model.Group
@@ -59,19 +58,13 @@ fun GroupRowLayout(group: Group, customModifier: Modifier = Modifier) {
                 text = group.groupName.capitalizeFirstLetter(),
                 style = MaterialTheme.typography.titleLarge,
                 maxLines = 1,
-                overflow = TextOverflow.Ellipsis,
-                fontFamily = FontFamily.Cursive,
-
-                )
+                overflow = TextOverflow.Ellipsis)
             Text(
                 text = group.date,
                 style = MaterialTheme.typography.bodyMedium,
                 maxLines = 1,
                 overflow = TextOverflow.Ellipsis,
-                modifier = Modifier.padding(top = 8.dp),
-                fontFamily = FontFamily.Cursive,
-
-                )
+                modifier = Modifier.padding(top = 8.dp))
         }
     }
 }

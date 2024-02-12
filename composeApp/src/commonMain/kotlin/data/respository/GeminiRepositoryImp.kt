@@ -37,12 +37,22 @@ class GeminiRepositoryImp(
     override suspend fun insertGroup(
         groupId: String, groupName: String, date: String, icon: String
     ) {
-        sharedDatabase { appDatabase ->
-            appDatabase.appDatabaseQueries.insertGroup(
-                GroupChat = GroupChat(
-                    groupId, groupName, date, icon
+        if (platform == TYPE.WEB) {
+            readGroupKStore {
+                it.plus(
+                    Group(
+                        groupId, groupName, date, icon
+                    )
                 )
-            )
+            }
+        }else{
+            sharedDatabase { appDatabase ->
+                appDatabase.appDatabaseQueries.insertGroup(
+                    GroupChat = GroupChat(
+                        groupId, groupName, date, icon
+                    )
+                )
+            }
         }
 
     }

@@ -80,7 +80,7 @@ kotlin {
             implementation(libs.kotlinx.datetime)
 
             // markdown text show
-            implementation(libs.multiplatform.markdown.renderer)
+            //implementation(libs.multiplatform.markdown.renderer)
 
             // local storage like share preference
             implementation(libs.multiplatform.settings.no.arg)

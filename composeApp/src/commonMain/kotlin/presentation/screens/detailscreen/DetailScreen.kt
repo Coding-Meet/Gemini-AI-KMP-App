@@ -14,7 +14,7 @@ import presentation.components.WelcomeScreen
 import presentation.screens.chatscreen.ChatScreen
 import presentation.screens.chatscreen.ChatViewModel
 import presentation.screens.mainscreen.MainViewModel
-import theme.lightBackgroundColor
+import theme.*
 
 @Composable
 fun DetailScreen(mainViewModel: MainViewModel) {
@@ -36,7 +36,7 @@ fun DetailScreen(mainViewModel: MainViewModel) {
                 groupUiState.data[mainViewModel.currentPos]
             )
         } else {
-           WelcomeScreen()
+            WelcomeScreen()
         }
     }
 }
