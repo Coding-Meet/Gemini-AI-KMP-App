@@ -1,6 +1,6 @@
 # Gemini AI KMP App - Chat with Gemini AI 💬✨
 
-[![Gemini AI KMP App Preview](image/app_thumbnail.png)](https://www.youtube.com/watch?v=EDbxJkgJDf8)
+[![Gemini AI KMP App Preview](image/Gemini-AI-KMP-App.png)](https://youtu.be/YhWhR6IVs_Y)
 
 Click the image above to watch a demo of the Gemini AI KMP App on YouTube.
 
