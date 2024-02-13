@@ -35,6 +35,17 @@ kotlin {
 
     jvm("desktop")
 
+    listOf(
+        iosX64(),
+        iosArm64(),
+        iosSimulatorArm64()
+    ).forEach { iosTarget ->
+        iosTarget.binaries.framework {
+            baseName = "ComposeApp"
+            isStatic = true
+        }
+    }
+
     sourceSets {
         val desktopMain by getting
 
@@ -122,6 +133,19 @@ kotlin {
 
             // markdown
             // implementation("com.mikepenz:multiplatform-markdown-renderer-jvm:0.12.0")
+
+            // kstore
+            implementation(libs.kstore.file)
+        }
+        iosMain.dependencies {
+            // sqlite
+            implementation(libs.sqldelight.native.driver)
+
+            // ktor
+            implementation(libs.ktor.client.darwin)
+
+            // file picker
+            implementation(libs.mpfilepicker)
 
             // kstore
             implementation(libs.kstore.file)
