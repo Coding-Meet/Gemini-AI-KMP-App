@@ -13,7 +13,7 @@ expect suspend fun clipData(clipboardManager: ClipboardManager): String?
 expect suspend fun setClipData(clipboardManager: ClipboardManager,message:String)
 
 @Composable
-expect fun ImagePicker(showFilePicker: Boolean, onResult: (ByteArray?) -> Unit)
+expect fun ImagePicker(showFilePicker: Boolean,onDismissDialog : () -> Unit, onResult: (ByteArray?) -> Unit)
 
 expect fun ByteArray.toComposeImageBitmap(): ImageBitmap
 

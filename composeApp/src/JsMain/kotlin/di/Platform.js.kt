@@ -66,12 +66,13 @@ actual fun TextComposable(message:String,isGEMINIMessage:Boolean) {
     )
 }
 @Composable
-actual fun ImagePicker(showFilePicker: Boolean, onResult: (ByteArray?) -> Unit) {
+actual fun ImagePicker(showFilePicker: Boolean, onDismissDialog : () -> Unit, onResult: (ByteArray?) -> Unit) {
     val scope = rememberCoroutineScope()
     if (showFilePicker) {
         scope.launch {
             onResult(importImage())
         }
+        onDismissDialog()
     }
 }
 
@@ -79,7 +80,7 @@ private suspend fun importImage(): ByteArray? = suspendCoroutine { cont ->
     try {
         val input = document.createElement("input").apply {
             setAttribute("type", "file")
-            setAttribute("accept", "image/*")
+            setAttribute("accept",  "image/jpeg, image/png, image/jpg")
         } as HTMLInputElement
 
         input.onchange = {

@@ -39,10 +39,11 @@ fun BottomTextBar(
     val keyboardController = LocalSoftwareKeyboardController.current
     var showFilePicker by remember { mutableStateOf(false) }
 
-    ImagePicker(showFilePicker) {
-        it?.let { chatViewModel.imageUris.add(it) }
+    ImagePicker(showFilePicker,{
         showFilePicker = false
-    }
+    }, {
+        it?.let { chatViewModel.imageUris.add(it) }
+    })
     Row(
         modifier = Modifier.background(borderColor).padding(vertical = 8.dp),
         verticalAlignment = Alignment.CenterVertically,

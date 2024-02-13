@@ -40,13 +40,14 @@ actual class AppCoroutineDispatchersImpl actual constructor() : AppCoroutineDisp
 }
 
 @Composable
-actual fun ImagePicker(showFilePicker: Boolean, onResult: (ByteArray?) -> Unit) {
+actual fun ImagePicker(showFilePicker: Boolean,onDismissDialog : () -> Unit, onResult: (ByteArray?) -> Unit) {
     val scope = rememberCoroutineScope()
-    val fileType = listOf("jpg", "png")
+    val fileType = listOf("jpg", "jpeg","png")
     FilePicker(show = showFilePicker, fileExtensions = fileType) { file ->
         scope.launch {
             file?.getFileByteArray()?.let { onResult(it) }
         }
+        onDismissDialog()
 
     }
 }
