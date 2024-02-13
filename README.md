@@ -29,16 +29,16 @@ changing the Gemini API key.
 <tr>
    <td>🖥️ Desktop </td>
    <td>
-      <a href=""><img src="https://img.shields.io/badge/Windows-black.svg?style=for-the-badge&logo=windows" alt="window"></a>
-      <a href=""><img src="https://img.shields.io/badge/MacOS-black.svg?style=for-the-badge&logo=apple" alt="macos"></a>
-      <a href=""><img src="https://img.shields.io/badge/Linux-black.svg?style=for-the-badge&logo=linux" alt="linux"></a>
+      <a href="https://github.com/Coding-Meet/Gemini-AI-KMP-App/releases"><img src="https://img.shields.io/badge/Windows-black.svg?style=for-the-badge&logo=windows" alt="window"></a>
+      <a href="https://github.com/Coding-Meet/Gemini-AI-KMP-App/releases"><img src="https://img.shields.io/badge/MacOS-black.svg?style=for-the-badge&logo=apple" alt="macos"></a>
+      <a href="https://github.com/Coding-Meet/Gemini-AI-KMP-App/releases"><img src="https://img.shields.io/badge/Linux-black.svg?style=for-the-badge&logo=linux" alt="linux"></a>
    </td>
 </tr>
 
 <tr>
    <td>🌎 Web</td>
    <td>
-      <a href=""><img src="https://img.shields.io/badge/View%20Live-black.svg?style=for-the-badge&logo=internetexplorer" alt="website"></a>
+      <a href="https://coding-meet.github.io/Gemini-AI-KMP-App/"><img src="https://img.shields.io/badge/View%20Live-black.svg?style=for-the-badge&logo=internetexplorer" alt="website"></a>
    </td>
 </tr>
 
