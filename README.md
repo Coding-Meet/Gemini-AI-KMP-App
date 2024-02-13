@@ -22,7 +22,7 @@ changing the Gemini API key.
 <tr>
    <td>📱 Mobile </td>
    <td>
-      <a href=""><img src="https://img.shields.io/badge/Android-black.svg?style=for-the-badge&logo=android" alt="android"></a>
+      <a href="https://github.com/Coding-Meet/Gemini-AI-KMP-App/releases"><img src="https://img.shields.io/badge/Android-black.svg?style=for-the-badge&logo=android" alt="android"></a>
    </td>
 </tr>
 
