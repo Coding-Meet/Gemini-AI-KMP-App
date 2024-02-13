@@ -135,15 +135,16 @@ GEMINI_API_KEY=YOUR_API_KEY
     <td><img src="image/android/android1.png" alt="android"></td>
     <td><img src="image/android/android2.png" alt="android"></td>
     <td><img src="image/android/android3.png" alt="android"></td>
-    <td><img src="image/android/android4.png" alt="android"></td>
-    <td><img src="image/android/android5.png" alt="android"></td>
    </tr>
    <tr>
+    <td><img src="image/android/android4.png" alt="android"></td>
+    <td><img src="image/android/android5.png" alt="android"></td>
     <td><img src="image/android/android6.png" alt="android"></td>
+   </tr>
+   <tr>
     <td><img src="image/android/android7.png" alt="android"></td>
     <td><img src="image/android/android8.png" alt="android"></td>
     <td><img src="image/android/android9.png" alt="android"></td>
-    <td><img src="image/android/android10.png" alt="android"></td>
    </tr>
 </table>
 
@@ -197,7 +198,7 @@ GEMINI_API_KEY=YOUR_API_KEY
    </tr>
 </table>
 
-## WebSite
+## Website
 
 <table>
    <tr>
