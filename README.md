@@ -134,16 +134,20 @@ GEMINI_API_KEY=YOUR_API_KEY
    <tr>
     <td><img src="image/android/android1.png" alt="android"></td>
     <td><img src="image/android/android2.png" alt="android"></td>
-    <td><img src="image/android/android3.png" alt="android"></td>
    </tr>
    <tr>
+    <td><img src="image/android/android3.png" alt="android"></td>
     <td><img src="image/android/android4.png" alt="android"></td>
+   </tr>
+   <tr>
     <td><img src="image/android/android5.png" alt="android"></td>
     <td><img src="image/android/android6.png" alt="android"></td>
    </tr>
    <tr>
     <td><img src="image/android/android7.png" alt="android"></td>
     <td><img src="image/android/android8.png" alt="android"></td>
+       </tr>
+   <tr>
     <td><img src="image/android/android9.png" alt="android"></td>
    </tr>
 </table>
@@ -153,22 +157,32 @@ GEMINI_API_KEY=YOUR_API_KEY
 <table>
   <tr>
     <td><img src="image/windows/win1.png" alt="win"></td>
+      </tr>
+  <tr>
     <td><img src="image/windows/win2.png" alt="win"></td>
   </tr>
   <tr>
     <td><img src="image/windows/win3.png" alt="win"></td>
+      </tr>
+  <tr>
     <td><img src="image/windows/win4.png" alt="win"></td>
   </tr>
   <tr>
     <td><img src="image/windows/win5.png" alt="win"></td>
+      </tr>
+  <tr>
     <td><img src="image/windows/win6.png" alt="win"></td>
   </tr>
   <tr>
     <td><img src="image/windows/win7.png" alt="win"></td>
+      </tr>
+  <tr>
     <td><img src="image/windows/win8.png" alt="win"></td>
   </tr>
   <tr>
     <td><img src="image/windows/win9.png" alt="win"></td>
+      </tr>
+  <tr>
     <td><img src="image/windows/win10.png" alt="win"></td>
   </tr>
 </table>
@@ -178,22 +192,32 @@ GEMINI_API_KEY=YOUR_API_KEY
 <table>
    <tr>
       <td><img src="image/mac/mac1.jpeg" alt="mac"></td>
+       </tr>
+  <tr>
       <td><img src="image/mac/mac2.png" alt="mac"></td>
    </tr>
    <tr>
       <td><img src="image/mac/mac3.jpeg" alt="mac"></td>
+       </tr>
+  <tr>
       <td><img src="image/mac/mac4.jpeg" alt="mac"></td>
    </tr>
    <tr>
       <td><img src="image/mac/mac5.jpeg" alt="mac"></td>
+       </tr>
+  <tr>
       <td><img src="image/mac/mac6.jpeg" alt="mac"></td>
    </tr>
    <tr>
       <td><img src="image/mac/mac7.jpeg" alt="mac"></td>
+       </tr>
+  <tr>
       <td><img src="image/mac/mac8.jpeg" alt="mac"></td>
    </tr>
    <tr>
       <td><img src="image/mac/mac9.jpeg" alt="mac"></td>
+       </tr>
+  <tr>
       <td><img src="image/mac/mac10.jpeg" alt="mac"></td>
    </tr>
 </table>
@@ -203,22 +227,32 @@ GEMINI_API_KEY=YOUR_API_KEY
 <table>
    <tr>
       <td><img src="image/web/web1.png" alt="web"></td>
+       </tr>
+  <tr>
       <td><img src="image/web/web2.png" alt="web"></td>
    </tr>
    <tr>
       <td><img src="image/web/web3.png" alt="web"></td>
+       </tr>
+  <tr>
       <td><img src="image/web/web4.png" alt="web"></td>
    </tr>
    <tr>
       <td><img src="image/web/web5.png" alt="web"></td>
+       </tr>
+  <tr>
       <td><img src="image/web/web6.png" alt="web"></td>
    </tr>
    <tr>
       <td><img src="image/web/web7.png" alt="web"></td>
+       </tr>
+  <tr>
       <td><img src="image/web/web8.png" alt="web"></td>
    </tr>
    <tr>
       <td><img src="image/web/web9.png" alt="web"></td>
+       </tr>
+  <tr>
       <td><img src="image/web/web10.png" alt="web"></td>
    </tr>
 </table>
