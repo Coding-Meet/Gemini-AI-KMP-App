@@ -1,6 +1,7 @@
 package data.respository
 
 
+import app.cash.sqldelight.async.coroutines.awaitAsList
 import com.coding.meet.gaminiaikmp.GroupChat
 import com.coding.meet.gaminiaikmp.Message
 import data.mapper.toGemini
@@ -106,7 +107,7 @@ class GeminiRepositoryImp(
             }
         } else {
             sharedDatabase { appDatabase ->
-                groupList.addAll(appDatabase.appDatabaseQueries.getAllGroup().executeAsList().map {
+                groupList.addAll(appDatabase.appDatabaseQueries.getAllGroup().awaitAsList().map {
                     Group(
                         it.groupId,
                         it.title,
@@ -127,7 +128,7 @@ class GeminiRepositoryImp(
             }
         } else {
             sharedDatabase { appDatabase ->
-                chatList.addAll(appDatabase.appDatabaseQueries.getChatByGroupId(groupId).executeAsList().map {
+                chatList.addAll(appDatabase.appDatabaseQueries.getChatByGroupId(groupId).awaitAsList().map {
                     ChatMessage(
                         it.messageId,
                         it.chatId,

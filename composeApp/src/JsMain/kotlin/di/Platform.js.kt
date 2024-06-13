@@ -44,10 +44,10 @@ actual class AppCoroutineDispatchersImpl actual constructor() : AppCoroutineDisp
 }
 
 actual suspend fun clipData(clipboardManager: ClipboardManager): String? {
-    return window.navigator.clipboard.readText().await().toString().trim()
+    return window.navigator.clipboard.readText().toString().trim()
 }
 actual suspend fun setClipData(clipboardManager: ClipboardManager,message:String){
-    window.navigator.clipboard.writeText(message).await()
+    window.navigator.clipboard.writeText(message)
 }
 
 @Composable

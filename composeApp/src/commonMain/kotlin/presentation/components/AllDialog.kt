@@ -14,7 +14,6 @@ import androidx.compose.material.icons.filled.Settings
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.rememberCoroutineScope
-import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalClipboardManager
@@ -23,8 +22,8 @@ import androidx.compose.ui.text.input.KeyboardCapitalization
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.DialogProperties
 import di.clipData
+import gemini_ai_kmp_app.composeapp.generated.resources.*
 import kotlinx.coroutines.launch
-import org.jetbrains.compose.resources.ExperimentalResourceApi
 import org.jetbrains.compose.resources.painterResource
 import presentation.screens.chatscreen.ChatViewModel
 import presentation.screens.mainscreen.MainViewModel
@@ -34,7 +33,6 @@ import utils.currentDateTimeToString
 import utils.generateRandomKey
 import utils.isValidApiKey
 
-@OptIn(ExperimentalResourceApi::class, ExperimentalComposeUiApi::class)
 @Composable
 fun ApiKeyAlertDialogBox(mainViewModel: MainViewModel) {
     val coroutine = rememberCoroutineScope()
@@ -91,7 +89,7 @@ fun ApiKeyAlertDialogBox(mainViewModel: MainViewModel) {
                                 }
                             }) {
                             Icon(
-                                painter = painterResource("ic_paste.xml"),
+                                painter = painterResource(Res.drawable.ic_paste),
                                 contentDescription = "api key",
                                 tint = whiteColor
                             )
@@ -156,7 +154,7 @@ fun ApiKeyAlertDialogBox(mainViewModel: MainViewModel) {
     }
 }
 
-@OptIn(ExperimentalComposeUiApi::class)
+
 @Composable
 fun NewChatAlertDialogBox(mainViewModel: MainViewModel) {
     if (mainViewModel.isNewChatShowDialog) {

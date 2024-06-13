@@ -15,3 +15,9 @@ config.plugins.push(
         ]
     })
 );
+config.module.rules.push({
+ enforce: 'pre',
+ test: /\.js$/,
+ loader: 'source-map-loader',
+ exclude: /node_modules/,
+});

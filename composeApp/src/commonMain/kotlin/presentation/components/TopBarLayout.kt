@@ -59,6 +59,7 @@ fun TopBarLayout(
             TopAppBar(
                 colors = TopAppBarDefaults.topAppBarColors(
                     containerColor = borderColor,
+                    scrolledContainerColor = borderColor,
                     titleContentColor = whiteColor,
                 ),
                 title = {

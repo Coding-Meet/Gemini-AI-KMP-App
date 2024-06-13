@@ -6,7 +6,7 @@ import androidx.compose.ui.graphics.ImageBitmap
 import androidx.compose.ui.graphics.toComposeImageBitmap
 import androidx.compose.ui.platform.ClipboardManager
 import androidx.compose.ui.text.AnnotatedString
-import com.darkrockstudios.libraries.mpfilepicker.FilePicker
+import androidx.compose.ui.window.AwtWindow
 import domain.model.ChatMessage
 import domain.model.Group
 import io.github.xxfast.kstore.KStore
@@ -17,6 +17,9 @@ import org.jetbrains.skia.Image
 import presentation.components.CommonTextComposable
 import utils.AppCoroutineDispatchers
 import utils.TYPE
+import java.awt.Dialog
+import java.awt.FileDialog
+import java.io.File
 import java.io.IOException
 import java.net.InetSocketAddress
 import java.net.Socket
@@ -27,9 +30,11 @@ actual fun getPlatform(): TYPE = TYPE.DESKTOP
 actual suspend fun clipData(clipboardManager: ClipboardManager): String? {
     return clipboardManager.getText()?.text.toString().trim()
 }
-actual suspend fun setClipData(clipboardManager: ClipboardManager,message:String) {
+
+actual suspend fun setClipData(clipboardManager: ClipboardManager, message: String) {
     return clipboardManager.setText(AnnotatedString(message))
 }
+
 actual class AppCoroutineDispatchersImpl actual constructor() : AppCoroutineDispatchers {
     override val io: CoroutineDispatcher
         get() = Dispatchers.IO
@@ -40,24 +45,43 @@ actual class AppCoroutineDispatchersImpl actual constructor() : AppCoroutineDisp
 }
 
 @Composable
-actual fun ImagePicker(showFilePicker: Boolean,onDismissDialog : () -> Unit, onResult: (ByteArray?) -> Unit) {
+actual fun ImagePicker(showFilePicker: Boolean, onDismissDialog: () -> Unit, onResult: (ByteArray?) -> Unit) {
     val scope = rememberCoroutineScope()
-    val fileType = listOf("jpg", "jpeg","png")
-    FilePicker(show = showFilePicker, fileExtensions = fileType) { file ->
-        scope.launch {
-            file?.getFileByteArray()?.let { onResult(it) }
+    val parent: Dialog? = null
+    AwtWindow(showFilePicker, create = {
+        object : FileDialog(parent, "Choose a file", LOAD) {
+            override fun setVisible(value: Boolean) {
+                super.setVisible(value)
+                if (value) {
+                    file?.let { fileName ->
+                        scope.launch {
+                            val imageFile = File(directory, fileName)
+                            if (imageFile.extension in listOf("jpg", "jpeg", "png")) {
+                                try {
+                                    onResult(imageFile.readBytes())
+                                } catch (e: Exception) {
+                                    e.printStackTrace()
+                                }
+                            }
+                        }
+                        onDismissDialog()
+                    }
+                } else {
+                    onDismissDialog()
+                }
+            }
         }
+    }, dispose = {
         onDismissDialog()
-
-    }
+    })
 }
 
 actual fun ByteArray.toComposeImageBitmap(): ImageBitmap {
     return Image.makeFromEncoded(this).toComposeImageBitmap()
 }
 @Composable
-actual fun TextComposable(message:String,isGEMINIMessage:Boolean) {
-    CommonTextComposable(message,isGEMINIMessage)
+actual fun TextComposable(message: String, isGEMINIMessage: Boolean) {
+    CommonTextComposable(message, isGEMINIMessage)
 }
 
 actual fun isNetworkAvailable(): Boolean {

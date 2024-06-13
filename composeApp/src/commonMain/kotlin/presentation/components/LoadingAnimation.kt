@@ -41,10 +41,10 @@ fun LoadingAnimation(
                 animationSpec = infiniteRepeatable(
                     animation = keyframes {
                         durationMillis = 1200
-                        0.0f at 0 with LinearOutSlowInEasing
-                        1.0f at 300 with LinearOutSlowInEasing
-                        0.0f at 600 with LinearOutSlowInEasing
-                        0.0f at 1200 with LinearOutSlowInEasing
+                        0.0f at 0 using LinearOutSlowInEasing
+                        1.0f at 300 using LinearOutSlowInEasing
+                        0.0f at 600 using LinearOutSlowInEasing
+                        0.0f at 1200 using LinearOutSlowInEasing
                     },
                     repeatMode = RepeatMode.Restart
                 )

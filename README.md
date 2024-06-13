@@ -1,4 +1,4 @@
-# Gemini AI KMP App - Chat with Gemini AI 💬✨
+# Gemini AI Kotlin Multiplatform App - Chat with Gemini AI 💬✨
 
 [![Gemini AI KMP App Preview](image/Gemini-AI-KMP-App.png)](https://youtu.be/YhWhR6IVs_Y)
 

@@ -9,12 +9,11 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.text.selection.TextSelectionColors
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.Send
 import androidx.compose.material.icons.filled.Add
-import androidx.compose.material.icons.filled.Send
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
-import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
@@ -28,7 +27,6 @@ import presentation.screens.mainscreen.GroupUiState
 import presentation.screens.mainscreen.MainViewModel
 import theme.*
 
-@OptIn(ExperimentalComposeUiApi::class)
 @Composable
 fun BottomTextBar(
     mainViewModel: MainViewModel,
@@ -43,6 +41,7 @@ fun BottomTextBar(
         showFilePicker = false
     }, {
         it?.let { chatViewModel.imageUris.add(it) }
+        showFilePicker = false
     })
     Row(
         modifier = Modifier.background(borderColor).padding(vertical = 8.dp),
@@ -142,7 +141,7 @@ fun BottomTextBar(
                     )
                 } else {
                     Icon(
-                        imageVector = Icons.Filled.Send,
+                        imageVector = Icons.AutoMirrored.Filled.Send,
                         contentDescription = "send",
                         tint = whiteColor
                     )

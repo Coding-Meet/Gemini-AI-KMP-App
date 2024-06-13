@@ -9,6 +9,7 @@ plugins {
     alias(libs.plugins.kotlinMultiplatform)
     alias(libs.plugins.androidApplication)
     alias(libs.plugins.jetbrainsCompose)
+    alias(libs.plugins.compose.compiler)
     alias(libs.plugins.buildkonfig)
     kotlin("plugin.serialization") version "1.9.21"
     id("app.cash.sqldelight") version "2.0.1"
@@ -43,6 +44,7 @@ kotlin {
         iosTarget.binaries.framework {
             baseName = "ComposeApp"
             isStatic = true
+            linkerOpts.add("-lsqlite3")
         }
     }
 
@@ -50,7 +52,7 @@ kotlin {
         val desktopMain by getting
 
         androidMain.dependencies {
-            implementation(libs.compose.ui.tooling.preview)
+            implementation(compose.preview)
             implementation(libs.androidx.activity.compose)
 
             api(libs.spotlight.android)
@@ -60,12 +62,6 @@ kotlin {
 
             // koin
             implementation(libs.koin.android)
-
-            // file picker
-            implementation(libs.mpfilepicker)
-
-            // markdown
-            // implementation("com.mikepenz:multiplatform-markdown-renderer-android:0.12.0")
 
             // kstore
             implementation(libs.kstore.file)
@@ -79,8 +75,8 @@ kotlin {
             implementation(compose.material)
             implementation(compose.ui)
             implementation(compose.material3)
-            @OptIn(ExperimentalComposeLibrary::class) implementation(compose.components.resources)
-
+            implementation(compose.components.resources)
+            implementation(compose.components.uiToolingPreview)
 
             // precompose
             api(libs.precompose)
@@ -89,9 +85,6 @@ kotlin {
 
             // date time
             implementation(libs.kotlinx.datetime)
-
-            // markdown text show
-            //implementation(libs.multiplatform.markdown.renderer)
 
             // local storage like share preference
             implementation(libs.multiplatform.settings.no.arg)
@@ -118,6 +111,9 @@ kotlin {
                 api(logging)
             }
 
+            // markdown
+            implementation(libs.multiplatform.markdown.renderer)
+
             // kstore
             implementation(libs.kstore)
         }
@@ -127,12 +123,6 @@ kotlin {
             implementation(libs.sqlite.driver)
 
             implementation(libs.ktor.client.java)
-
-            // file picker
-            implementation(libs.mpfilepicker)
-
-            // markdown
-            // implementation("com.mikepenz:multiplatform-markdown-renderer-jvm:0.12.0")
 
             // kstore
             implementation(libs.kstore.file)
@@ -246,10 +236,11 @@ buildkonfig {
             "GEMINI_API_KEY",
             localProperties["GEMINI_API_KEY"]?.toString() ?: "",
         )
+        buildConfigField(
+            FieldSpec.Type.BOOLEAN,
+            "isDebug", "false"
+        )
     }
-}
-compose.experimental {
-    web.application {}
 }
 
 rootProject.plugins.withType(org.jetbrains.kotlin.gradle.targets.js.yarn.YarnPlugin::class.java) {

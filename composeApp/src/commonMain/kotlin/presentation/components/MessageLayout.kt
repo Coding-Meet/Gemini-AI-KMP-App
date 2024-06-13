@@ -29,16 +29,13 @@ import di.setClipData
 import di.toComposeImageBitmap
 import domain.model.ChatMessage
 import domain.model.Role
+import gemini_ai_kmp_app.composeapp.generated.resources.Res
+import gemini_ai_kmp_app.composeapp.generated.resources.ic_paste
 import kotlinx.coroutines.launch
-import org.jetbrains.compose.resources.ExperimentalResourceApi
 import org.jetbrains.compose.resources.painterResource
-import theme.borderColor
-import theme.lightBorderColor
-import theme.redColor
-import theme.whiteColor
+import theme.*
 
 
-@OptIn(ExperimentalResourceApi::class)
 @Composable
 fun MessageItem(chatMessage: ChatMessage) {
     val coroutineScope = rememberCoroutineScope()
@@ -175,7 +172,8 @@ fun MessageItem(chatMessage: ChatMessage) {
                                 }
                             }) {
                             Icon(
-                                painterResource("ic_paste.xml"),
+                                painterResource(
+                                    Res.drawable.ic_paste),
                                 contentDescription = "copy",
                                 tint = whiteColor
                             )

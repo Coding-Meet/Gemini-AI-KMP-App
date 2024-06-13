@@ -12,12 +12,11 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import org.jetbrains.compose.resources.ExperimentalResourceApi
+import gemini_ai_kmp_app.composeapp.generated.resources.*
 import org.jetbrains.compose.resources.painterResource
 import theme.*
 
 
-@OptIn(ExperimentalResourceApi::class)
 @Composable
 fun WelcomeScreen() {
     Column(
@@ -25,7 +24,7 @@ fun WelcomeScreen() {
         verticalArrangement = Arrangement.Center,
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
-        Image(painter = painterResource("logo.png"), contentDescription = "logo")
+        Image(painter = painterResource(Res.drawable.logo), contentDescription = "logo")
         Text(
             "Welcome To Gemini AI KMP App",
             
@@ -48,31 +47,31 @@ fun WelcomeScreen() {
         ) {
             item {
                 Image(
-                    painter = painterResource("jetpack.png"),
+                    painter = painterResource(Res.drawable.jetpack),
                     contentDescription = "jetpack"
                 )
             }
             item {
                 Image(
-                    painter = painterResource("android.png"),
+                    painter = painterResource(Res.drawable.android),
                     contentDescription = "Android"
                 )
             }
             item {
                 Image(
-                    painter = painterResource("apple.png"),
+                    painter = painterResource(Res.drawable.apple),
                     contentDescription = "iOS",
                 )
             }
             item {
                 Image(
-                    painter = painterResource("java.png"),
+                    painter = painterResource(Res.drawable.java),
                     contentDescription = "Desktop",
                 )
             }
             item {
                 Image(
-                    painter = painterResource("wasm.png"),
+                    painter = painterResource(Res.drawable.wasm),
                     contentDescription = "Web",
                 )
             }

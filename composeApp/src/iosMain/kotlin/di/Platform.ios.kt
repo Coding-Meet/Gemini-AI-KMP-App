@@ -10,6 +10,10 @@ import com.darkrockstudios.libraries.mpfilepicker.FilePicker
 import domain.model.ChatMessage
 import domain.model.Group
 import io.github.xxfast.kstore.KStore
+import kotlinx.cinterop.BetaInteropApi
+import kotlinx.cinterop.ExperimentalForeignApi
+import kotlinx.cinterop.ObjCObjectVar
+import kotlinx.cinterop.nativeHeap
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.IO
@@ -20,14 +24,13 @@ import platform.Foundation.NSURL
 import platform.Foundation.NSURLRequest
 import platform.Foundation.sendSynchronousRequest
 import platform.Foundation.NSError
-import platform.Foundation.NSErrorDomain
 import platform.Foundation.NSURLConnection
 import presentation.components.CommonTextComposable
 import utils.AppCoroutineDispatchers
 import utils.TYPE
 
 
-actual fun getPlatform(): TYPE = TYPE.IOS
+actual fun getPlatform(): TYPE = TYPE.MOBILE
 
 actual suspend fun clipData(clipboardManager: ClipboardManager): String? {
     return clipboardManager.getText()?.text.toString().trim()
@@ -66,27 +69,27 @@ actual fun TextComposable(message:String,isGEMINIMessage:Boolean) {
     CommonTextComposable(message,isGEMINIMessage)
 }
 
+@OptIn(ExperimentalForeignApi::class, BetaInteropApi::class)
 actual fun isNetworkAvailable(): Boolean {
     val url = NSURL.URLWithString("https://www.google.com")
-    val request = NSURLRequest.requestWithURL(url)
+    val request = url?.let { NSURLRequest.requestWithURL(it) }
 
-    val response: AutoreleasingUnsafeMutablePointer<NSURLResponse?> = null
-    val error: AutoreleasingUnsafeMutablePointer<NSError?> = null
+    val responsePtr = nativeHeap.alloc<ObjCObjectVar<NSURLResponse?>>().ptr
+    val errorPtr = nativeHeap.alloc<ObjCObjectVar<NSError?>>().ptr
 
-    val data = NSURLConnection.sendSynchronousRequest(request, response, error)
+    val data = request?.let { NSURLConnection.sendSynchronousRequest(it, responsePtr, errorPtr) }
+    val response = responsePtr.pointed.value
+    val error = errorPtr.pointed.value
 
-    if (data != null && (response != null && response.pointed !is NSHTTPURLResponse)) {
-        return true
-    } else {
-        val nsError = error?.pointed
-        if (nsError != null && nsError.domain == NSErrorDomain.NSURLErrorDomain) {
-            return nsError.code != -1009
-        }
+    nativeHeap.free(responsePtr)
+    nativeHeap.free(errorPtr)
+
+    return when {
+        data != null && response is NSHTTPURLResponse -> true
+        error != null -> false
+        else -> false
     }
-
-    return false
 }
 actual suspend fun readGroupKStore(readFun :suspend (KStore<List<Group>>) -> Unit) {
 }
-actual suspend fun readChatMessageKStore(readFun :suspend (KStore<List<ChatMessage>>) -> Unit) {
-}
+actual suspend fun readChatMessageKStore(readFun :suspend (KStore<List<ChatMessage>>) -> Unit) {}

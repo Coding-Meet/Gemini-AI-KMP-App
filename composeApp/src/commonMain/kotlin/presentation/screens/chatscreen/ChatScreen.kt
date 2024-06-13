@@ -11,6 +11,9 @@ import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.ArrowBack
+import androidx.compose.material.icons.automirrored.filled.KeyboardArrowLeft
+import androidx.compose.material.icons.automirrored.filled.KeyboardArrowRight
 import androidx.compose.material.icons.filled.*
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
@@ -43,8 +46,27 @@ fun ChatScreen(
         modifier = Modifier.nestedScroll(scrollBehavior.nestedScrollConnection),
     ) {
         TopAppBar(
+            navigationIcon = {
+                if (mainViewModel.platformType == TYPE.MOBILE) {
+                    IconButton(
+                        colors = IconButtonDefaults.iconButtonColors(
+                            containerColor = lightBorderColor
+                        ),
+                        onClick = {
+                            mainViewModel.screens = Screens.MAIN
+                            mainViewModel.currentPos = -1
+                        }) {
+                        Icon(
+                            imageVector = Icons.AutoMirrored.Filled.ArrowBack,
+                            contentDescription = "back",
+                            tint = whiteColor
+                        )
+                    }
+                }
+            },
             colors = TopAppBarDefaults.topAppBarColors(
                 containerColor = borderColor,
+                scrolledContainerColor = borderColor,
                 titleContentColor = whiteColor,
             ),
             title = {
@@ -57,7 +79,9 @@ fun ChatScreen(
                     ),
                     onClick = {
                         if (!chatUiState.isApiLoading) {
-                            chatViewModel.isDeleteShowDialog = true
+                            if (chatUiState.message.isNotEmpty()){
+                                chatViewModel.isDeleteShowDialog = true
+                            }
                         }else{
                             mainViewModel.alertTitleText = "API Call in Progress"
                             mainViewModel.alertDescText = "Please wait while there is already an API call going on, so please be patient."
@@ -89,9 +113,9 @@ fun ChatScreen(
                 ) {
                     Icon(
                         imageVector = if (mainViewModel.isDesktopDrawerOpen) {
-                            Icons.Default.KeyboardArrowRight
+                            Icons.AutoMirrored.Filled.KeyboardArrowRight
                         } else {
-                            Icons.Default.KeyboardArrowLeft
+                            Icons.AutoMirrored.Filled.KeyboardArrowLeft
                         },
                         tint = whiteColor,
                         contentDescription = "drawer",
@@ -113,7 +137,7 @@ fun ChatScreen(
                         items(chatUiState.message) {
                             MessageItem(it)
                         }
-                    }else{
+                    } else {
                         item {
                             WelcomeScreen()
                         }
