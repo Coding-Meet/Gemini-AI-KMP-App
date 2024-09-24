@@ -1,45 +1,40 @@
 [versions]
-agp = "8.2.0"
+agp = "8.2.2"
 android-compileSdk = "34"
 android-minSdk = "24"
 android-targetSdk = "34"
-androidx-activityCompose = "1.9.0"
-androidx-appcompat = "1.6.1"
+androidx-activityCompose = "1.9.2"
+androidx-appcompat = "1.7.0"
 androidx-constraintlayout = "2.1.4"
 androidx-core-ktx = "1.13.1"
-androidx-espresso-core = "3.5.1"
+androidx-espresso-core = "3.6.1"
 androidx-material = "1.12.0"
-androidx-test-junit = "1.1.5"
-compose = "1.5.4"
-compose-compiler = "1.5.6"
+androidx-test-junit = "1.2.1"
+compose = "1.7.2"
 coreSplashscreen = "1.0.1"
-koinCompose = "1.1.0"
-moko-mvvm = "0.16.1"
-kotlinx-datetime = "0.5.0"
+kotlinx-datetime = "0.6.0"
 compose-plugin = "1.6.10"
 junit = "4.13.2"
-kotlin = "2.0.0"
-coreI18n = "1.0.0-alpha01"
+kotlin = "2.0.20"
 mpfilepicker = "3.1.0"
-koin = "3.5.3"
+koin = "3.5.6"
+koinCompose = "1.1.0"
 multiplatformMarkdownRenderer = "0.21.0"
 multiplatformSettingsNoArg = "1.1.1"
 precomposeKoin = "1.6.0"
 precomposeViewmodel = "1.6.0"
 precompose = "1.6.0"
-sqldelight = "2.0.1"
+sqldelight = "2.0.2"
 appyx-navigation = "2.0.0-alpha09"
-ktor = "2.3.11"
-coroutines = "1.8.0"
-kermit = "2.0.2"
-animationAndroid = "1.5.4"
+ktor = "2.3.12"
+coroutines = "1.9.0"
+kermit = "2.0.4"
 buildkonfig = "0.15.1"
 kstore = "0.8.0"
 
 
 [libraries]
 androidx-core-splashscreen = { module = "androidx.core:core-splashscreen", version.ref = "coreSplashscreen" }
-koin-compose = { module = "io.insert-koin:koin-compose", version.ref = "koinCompose" }
 kotlin-test = { module = "org.jetbrains.kotlin:kotlin-test", version.ref = "kotlin" }
 kotlin-test-junit = { module = "org.jetbrains.kotlin:kotlin-test-junit", version.ref = "kotlin" }
 junit = { group = "junit", name = "junit", version.ref = "junit" }
@@ -51,16 +46,14 @@ androidx-material = { group = "com.google.android.material", name = "material", 
 androidx-constraintlayout = { group = "androidx.constraintlayout", name = "constraintlayout", version.ref = "androidx-constraintlayout" }
 androidx-activity-compose = { module = "androidx.activity:activity-compose", version.ref = "androidx-activityCompose" }
 compose-ui = { module = "androidx.compose.ui:ui", version.ref = "compose" }
-moko-mvvm = { module = "dev.icerock.moko:mvvm-compose", version.ref = "moko-mvvm" }
+
 kotlinx-datetime = { module = "org.jetbrains.kotlinx:kotlinx-datetime", version.ref = "kotlinx-datetime" }
+kotlinx-coroutines = {module = "org.jetbrains.kotlinx:kotlinx-coroutines-core", version.ref="coroutines"}
 
 compose-ui-tooling = { module = "androidx.compose.ui:ui-tooling", version.ref = "compose" }
 compose-ui-tooling-preview = { module = "androidx.compose.ui:ui-tooling-preview", version.ref = "compose" }
 compose-foundation = { module = "androidx.compose.foundation:foundation", version.ref = "compose" }
 compose-material = { module = "androidx.compose.material:material", version.ref = "compose" }
-androidx-core-i18n = { group = "androidx.core", name = "core-i18n", version.ref = "coreI18n" }
-
-kotlinx-coroutines = {module = "org.jetbrains.kotlinx:kotlinx-coroutines-core", version.ref="coroutines"}
 
 ktor-client-darwin = { module = "io.ktor:ktor-client-darwin", version.ref = "ktor" }
 ktor-client-okhttp = {module = "io.ktor:ktor-client-android", version.ref = "ktor"}
@@ -70,7 +63,6 @@ ktor-client-js = { module = "io.ktor:ktor-client-js", version.ref = "ktor" }
 ktor-client-java = {module = "io.ktor:ktor-client-java", version.ref = "ktor"}
 ktor-client-serialization = {module = "io.ktor:ktor-serialization-kotlinx-json", version.ref = "ktor"}
 ktor-client-logging = {module = "io.ktor:ktor-client-logging", version.ref = "ktor"}
-
 kermit = {module = "co.touchlab:kermit", version.ref = "kermit"}
 
 
@@ -80,20 +72,22 @@ multiplatform-settings-no-arg = { module = "com.russhwolf:multiplatform-settings
 
 koin-android = {group = "io.insert-koin", name = "koin-android", version.ref="koin"}
 koin-core = {group = "io.insert-koin", name = "koin-core", version.ref="koin"}
+koin-compose = { module = "io.insert-koin:koin-compose", version.ref = "koinCompose" }
 koin-core-coroutine = {module = "io.insert-koin:koin-core-coroutines", version.ref="koin"}
 
 precompose-koin = { module = "moe.tlaster:precompose-koin", version.ref = "precomposeKoin" }
 precompose-viewmodel = { module = "moe.tlaster:precompose-viewmodel", version.ref = "precomposeViewmodel" }
 precompose = { module = "moe.tlaster:precompose", version.ref = "precompose" }
+
 sqldelight-coroutine-ext = {module = "app.cash.sqldelight:coroutines-extensions", version.ref = "sqldelight"}
 sqldelight-primitive-adapters = {module = "app.cash.sqldelight:primitive-adapters", version.ref = "sqldelight"}
-spotlight = { module = "com.bumble.appyx:spotlight", version.ref = "appyx-navigation" }
-spotlight-android = { module = "com.bumble.appyx:spotlight-android", version.ref = "appyx-navigation" }
 sqldelight-android-driver = {module = "app.cash.sqldelight:android-driver", version.ref = "sqldelight"}
 sqldelight-native-driver = {module = "app.cash.sqldelight:native-driver", version.ref = "sqldelight"}
 web-worker-driver = { module = "app.cash.sqldelight:web-worker-driver", version.ref = "sqldelight" }
 sqlite-driver = { module = "app.cash.sqldelight:sqlite-driver", version.ref = "sqldelight" }
-androidx-animation-android = { group = "androidx.compose.animation", name = "animation-android", version.ref = "animationAndroid" }
+
+spotlight = { module = "com.bumble.appyx:spotlight", version.ref = "appyx-navigation" }
+spotlight-android = { module = "com.bumble.appyx:spotlight-android", version.ref = "appyx-navigation" }
 
 kstore = { module = "io.github.xxfast:kstore", version.ref = "kstore" }
 kstore-file = { module = "io.github.xxfast:kstore-file", version.ref = "kstore" }
@@ -106,3 +100,5 @@ jetbrainsCompose = { id = "org.jetbrains.compose", version.ref = "compose-plugin
 compose-compiler = { id = "org.jetbrains.kotlin.plugin.compose", version.ref = "kotlin" }
 buildkonfig = { id = "com.codingfeline.buildkonfig", version.ref = "buildkonfig" }
 kotlinMultiplatform = { id = "org.jetbrains.kotlin.multiplatform", version.ref = "kotlin" }
+kotlinSerialization = { id = "org.jetbrains.kotlin.plugin.serialization", version.ref = "kotlin" }
+sqlDelight = { id = "app.cash.sqldelight", version.ref = "sqldelight" }

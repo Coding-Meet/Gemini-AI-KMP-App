@@ -1,8 +1,9 @@
-import org.jetbrains.compose.ExperimentalComposeLibrary
 import org.jetbrains.compose.desktop.application.dsl.TargetFormat
 import com.codingfeline.buildkonfig.compiler.FieldSpec
+import org.jetbrains.kotlin.gradle.dsl.JvmTarget
 import org.jetbrains.kotlin.gradle.targets.js.yarn.YarnLockMismatchReport
 import org.jetbrains.kotlin.gradle.targets.js.yarn.YarnRootExtension
+import org.jetbrains.kotlin.gradle.tasks.KotlinJvmCompile
 import java.util.*
 
 plugins {
@@ -11,8 +12,8 @@ plugins {
     alias(libs.plugins.jetbrainsCompose)
     alias(libs.plugins.compose.compiler)
     alias(libs.plugins.buildkonfig)
-    kotlin("plugin.serialization") version "1.9.21"
-    id("app.cash.sqldelight") version "2.0.1"
+    alias(libs.plugins.kotlinSerialization)
+    alias(libs.plugins.sqlDelight)
 }
 
 kotlin {
@@ -27,9 +28,9 @@ kotlin {
     }
 
     androidTarget {
-        compilations.all {
-            kotlinOptions {
-                jvmTarget = "1.8"
+        tasks.withType<KotlinJvmCompile>().configureEach {
+            compilerOptions {
+                jvmTarget.set(JvmTarget.JVM_1_8)
             }
         }
     }
@@ -104,12 +105,10 @@ kotlin {
             implementation(libs.koin.core)
 
             //Ktor
-            with(libs.ktor.client) {
-                implementation(core)
-                implementation(content.negotiation)
-                implementation(serialization)
-                api(logging)
-            }
+            implementation(libs.ktor.client.core)
+            implementation(libs.ktor.client.content.negotiation)
+            implementation(libs.ktor.client.serialization)
+            implementation(libs.ktor.client.logging)
 
             // markdown
             implementation(libs.multiplatform.markdown.renderer)
@@ -192,9 +191,6 @@ android {
     compileOptions {
         sourceCompatibility = JavaVersion.VERSION_1_8
         targetCompatibility = JavaVersion.VERSION_1_8
-    }
-    dependencies {
-        debugImplementation(libs.compose.ui.tooling)
     }
 }
 

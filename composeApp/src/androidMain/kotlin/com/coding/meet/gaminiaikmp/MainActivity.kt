@@ -16,10 +16,10 @@ class MainActivity : ComponentActivity() {
 
 
     override fun onCreate(savedInstanceState: Bundle?) {
+        installSplashScreen()
         super.onCreate(savedInstanceState)
         window.statusBarColor = borderColor.toArgb()
         window.navigationBarColor = borderColor.toArgb()
-        installSplashScreen()
         setContent {
             val mainViewModel: MainViewModel = KoinPlatform.getKoin().get()
             onBackPressedDispatcher.addCallback(this, object : OnBackPressedCallback(true) {
