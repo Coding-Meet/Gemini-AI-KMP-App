@@ -134,7 +134,9 @@ fun ChatScreen(
                     contentPadding = PaddingValues(horizontal = 10.dp),
                 ) {
                     if (chatUiState.message.isNotEmpty()) {
-                        items(chatUiState.message) {
+                        items(chatUiState.message, key = {
+                            it.messageId
+                        }) {
                             MessageItem(it)
                         }
                     } else {

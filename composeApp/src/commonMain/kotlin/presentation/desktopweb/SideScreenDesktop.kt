@@ -7,12 +7,13 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.*
 import androidx.compose.ui.unit.dp
 import presentation.commoninterface.DistributeComp
+import presentation.screens.chatscreen.ChatViewModel
 import presentation.screens.detailscreen.DetailScreen
 import theme.*
 import presentation.screens.mainscreen.MainViewModel
 
 
-class SideScreenDesktop(private val mainViewModel: MainViewModel) : DistributeComp {
+class SideScreenDesktop(private val mainViewModel: MainViewModel,private val chatViewModel: ChatViewModel) : DistributeComp {
     @Composable
     override fun ContentComposable(content: @Composable () -> Unit) {
         Row(
@@ -39,7 +40,7 @@ class SideScreenDesktop(private val mainViewModel: MainViewModel) : DistributeCo
                     .border(2.dp, borderColor),
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
-                DetailScreen(mainViewModel)
+                DetailScreen(mainViewModel, chatViewModel = chatViewModel)
             }
         }
     }

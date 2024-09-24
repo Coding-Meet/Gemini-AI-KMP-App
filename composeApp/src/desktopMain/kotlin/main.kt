@@ -3,7 +3,7 @@ import androidx.compose.ui.window.*
 import di.initKoin
 import gemini_ai_kmp_app.composeapp.generated.resources.Res
 import gemini_ai_kmp_app.composeapp.generated.resources.gemini_logo
-import org.koin.mp.KoinPlatform
+import org.koin.compose.koinInject
 import presentation.screens.mainscreen.MainViewModel
 import java.awt.Dimension
 
@@ -18,7 +18,7 @@ fun main() = application {
     ) {
         window.minimumSize = Dimension(1280, 768)
 
-        val mainViewModel: MainViewModel = KoinPlatform.getKoin().get()
+        val mainViewModel =  koinInject<MainViewModel>()
         App(mainViewModel)
     }
 }

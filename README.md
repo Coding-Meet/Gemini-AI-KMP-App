@@ -70,7 +70,7 @@ changing the Gemini API key.
   network calls to the REST API.
 - [Kermit](https://github.com/touchlab/Kermit) - Kermit by Touchlab is a Kotlin Multiplatform centralized logging
   utility.
-- [PreCompose](https://github.com/Tlaster/PreCompose) - Compose Multiplatform ViewModel and it's Kotlin Multiplatform
+- [ViewModel](https://www.jetbrains.com/help/kotlin-multiplatform-dev/compose-viewmodel.html) - Compose Multiplatform ViewModel and it's Kotlin Multiplatform
   project.
 - [Compose Multiplatform File Picker](https://github.com/Wavesonics/compose-multiplatform-file-picker) - A multiplatform
   compose widget for picking files.

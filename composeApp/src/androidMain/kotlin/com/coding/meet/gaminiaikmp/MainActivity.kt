@@ -7,7 +7,7 @@ import androidx.activity.OnBackPressedCallback
 import androidx.activity.compose.setContent
 import androidx.compose.ui.graphics.toArgb
 import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
-import org.koin.mp.KoinPlatform
+import org.koin.compose.koinInject
 import utils.Screens
 import presentation.screens.mainscreen.MainViewModel
 import theme.borderColor
@@ -21,7 +21,7 @@ class MainActivity : ComponentActivity() {
         window.statusBarColor = borderColor.toArgb()
         window.navigationBarColor = borderColor.toArgb()
         setContent {
-            val mainViewModel: MainViewModel = KoinPlatform.getKoin().get()
+            val mainViewModel = koinInject<MainViewModel>()
             onBackPressedDispatcher.addCallback(this, object : OnBackPressedCallback(true) {
                 override fun handleOnBackPressed() {
                     if (mainViewModel.screens == Screens.DETAIL) {

@@ -6,7 +6,7 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
-import org.koin.mp.KoinPlatform
+import org.koin.compose.koinInject
 import presentation.components.*
 import presentation.desktopweb.SideScreenDesktop
 import presentation.mobile.SideScreenMobile
@@ -18,14 +18,15 @@ import utils.*
 @Composable
 fun MainScreen(mainViewModel: MainViewModel) {
     val groupUiState by mainViewModel.uiState.collectAsState()
-    val chatViewModel: ChatViewModel = KoinPlatform.getKoin().get()
+    val chatViewModel : ChatViewModel = koinInject()
+
     ApiKeyAlertDialogBox(mainViewModel)
     NewChatAlertDialogBox(mainViewModel)
     AlertDialogLayout(mainViewModel)
     val sideScreen = if (mainViewModel.platformType == TYPE.MOBILE) {
         SideScreenMobile()
     } else {
-        SideScreenDesktop(mainViewModel)
+        SideScreenDesktop(mainViewModel,chatViewModel)
     }
     when (mainViewModel.screens) {
         Screens.MAIN -> {
@@ -36,7 +37,9 @@ fun MainScreen(mainViewModel: MainViewModel) {
                         verticalArrangement =  if (groupUiState.data.isEmpty()) Arrangement.Center else Arrangement.Top,
                     ) {
 
-                        itemsIndexed(groupUiState.data) { index, groupItem ->
+                        itemsIndexed(groupUiState.data, key = {  index, groupItem ->
+                            groupItem.groupId
+                        }) { index, groupItem ->
                             GroupLayout(groupItem, mainViewModel.currentPos == index) {
                                 val apiKey = mainViewModel.getApikeyLocalStorage().trim()
                                 if (apiKey.isNotEmpty()) {
@@ -71,7 +74,7 @@ fun MainScreen(mainViewModel: MainViewModel) {
         }
 
         Screens.DETAIL -> {
-            DetailScreen(mainViewModel)
+            DetailScreen(mainViewModel,chatViewModel)
         }
     }
     DisposableEffect(Unit) {

@@ -1,8 +1,13 @@
 import androidx.compose.ui.window.ComposeUIViewController
-import org.koin.mp.KoinPlatform
+import di.initKoin
+import org.koin.compose.koinInject
 import presentation.screens.mainscreen.MainViewModel
 
-fun MainViewController() = ComposeUIViewController {
-    val mainViewModel: MainViewModel = KoinPlatform.getKoin().get()
+fun MainViewController() = ComposeUIViewController(
+    configure = {
+        initKoin()
+    }
+) {
+    val mainViewModel =  koinInject<MainViewModel>()
     App(mainViewModel)
 }

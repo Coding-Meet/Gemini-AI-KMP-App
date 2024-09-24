@@ -8,7 +8,6 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import org.koin.mp.KoinPlatform
 import presentation.components.DeleteChatAlertDialogBox
 import presentation.components.WelcomeScreen
 import presentation.screens.chatscreen.ChatScreen
@@ -17,8 +16,7 @@ import presentation.screens.mainscreen.MainViewModel
 import theme.*
 
 @Composable
-fun DetailScreen(mainViewModel: MainViewModel) {
-    val chatViewModel: ChatViewModel = KoinPlatform.getKoin().get()
+fun DetailScreen(mainViewModel: MainViewModel,chatViewModel: ChatViewModel) {
 
     val chatUiState by chatViewModel.chatUiState.collectAsState()
     val groupUiState by mainViewModel.uiState.collectAsState()

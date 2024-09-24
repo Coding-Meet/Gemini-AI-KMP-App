@@ -56,13 +56,13 @@ kotlin {
             implementation(compose.preview)
             implementation(libs.androidx.activity.compose)
 
-            api(libs.spotlight.android)
             implementation(libs.sqldelight.android.driver)
 
             implementation(libs.ktor.client.okhttp)
 
             // koin
             implementation(libs.koin.android)
+            implementation(libs.koin.androidx.compose)
 
             // kstore
             implementation(libs.kstore.file)
@@ -79,10 +79,8 @@ kotlin {
             implementation(compose.components.resources)
             implementation(compose.components.uiToolingPreview)
 
-            // precompose
-            api(libs.precompose)
-            api(libs.precompose.viewmodel)
-            api(libs.precompose.koin)
+            // Viewmodel
+            implementation(libs.androidx.viewmodel.compose)
 
             // date time
             implementation(libs.kotlinx.datetime)
@@ -91,7 +89,6 @@ kotlin {
             implementation(libs.multiplatform.settings.no.arg)
 
             // SQLDelight
-            implementation(libs.spotlight)
             implementation(libs.sqldelight.coroutine.ext)
             implementation(libs.sqldelight.primitive.adapters)
 
@@ -103,6 +100,7 @@ kotlin {
 
             // koin
             implementation(libs.koin.core)
+            implementation(libs.koin.compose)
 
             //Ktor
             implementation(libs.ktor.client.core)

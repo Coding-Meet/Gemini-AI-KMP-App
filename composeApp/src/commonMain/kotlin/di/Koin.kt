@@ -13,7 +13,6 @@ fun initKoin(appDeclaration: KoinAppDeclaration = {}) =
             geminiRepositoryModule,
             networkModule,
             useCaseModule,
-            viewModelModule,
-            platformModule()
+            viewModelModule
         )
     }

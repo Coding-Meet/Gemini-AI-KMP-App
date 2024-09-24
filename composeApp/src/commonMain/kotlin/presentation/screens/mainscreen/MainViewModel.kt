@@ -3,9 +3,10 @@ package presentation.screens.mainscreen
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.*
 import androidx.compose.runtime.setValue
+import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
 import com.russhwolf.settings.*
 import di.getPlatform
-import moe.tlaster.precompose.viewmodel.ViewModel
 import utils.Screens
 import com.coding.meet.gaminiaikmp.BuildKonfig
 import domain.use_cases.*
@@ -14,7 +15,6 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
-import moe.tlaster.precompose.viewmodel.viewModelScope
 import utils.AppCoroutineDispatchers
 
 
