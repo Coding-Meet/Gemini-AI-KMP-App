@@ -1,0 +1,128 @@
+package com.coding.meet.gaminiaikmp.di
+
+import androidx.compose.foundation.layout.padding
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Text
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.ImageBitmap
+import androidx.compose.ui.graphics.toComposeImageBitmap
+import androidx.compose.ui.platform.ClipboardManager
+import androidx.compose.ui.text.font.FontFamily
+import androidx.compose.ui.unit.dp
+import com.coding.meet.gaminiaikmp.domain.model.ChatMessage
+import com.coding.meet.gaminiaikmp.domain.model.Group
+import com.coding.meet.gaminiaikmp.theme.whiteColor
+import com.coding.meet.gaminiaikmp.utils.AppCoroutineDispatchers
+import com.coding.meet.gaminiaikmp.utils.TYPE
+import io.github.xxfast.kstore.KStore
+import io.github.xxfast.kstore.storage.storeOf
+import kotlinx.browser.document
+import kotlinx.browser.window
+import kotlinx.coroutines.CoroutineDispatcher
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
+import org.jetbrains.skia.Image
+import org.khronos.webgl.ArrayBuffer
+import org.khronos.webgl.Uint8Array
+import org.khronos.webgl.get
+import org.w3c.dom.HTMLInputElement
+import org.w3c.files.FileReader
+import org.w3c.files.get
+import kotlin.coroutines.resume
+import kotlin.coroutines.resumeWithException
+import kotlin.coroutines.suspendCoroutine
+
+actual fun getPlatform(): TYPE = TYPE.WEB
+
+
+actual class AppCoroutineDispatchersImpl actual constructor() : AppCoroutineDispatchers {
+    override val io: CoroutineDispatcher
+        get() = Dispatchers.Default
+    override val default: CoroutineDispatcher
+        get() = Dispatchers.Default
+    override val main: CoroutineDispatcher
+        get() = Dispatchers.Main
+}
+
+actual suspend fun clipData(clipboardManager: ClipboardManager): String? {
+    return window.navigator.clipboard.readText().toString().trim()
+}
+actual suspend fun setClipData(clipboardManager: ClipboardManager,message:String){
+    window.navigator.clipboard.writeText(message)
+}
+
+@Composable
+actual fun TextComposable(message:String,isGEMINIMessage:Boolean) {
+    Text(
+        modifier = Modifier.padding(
+            start = 10.dp,
+            top = 10.dp,
+            end = 10.dp,
+            bottom = if (isGEMINIMessage) 3.dp else 10.dp
+        ),
+        text = message,
+        color = whiteColor,
+        fontFamily = FontFamily.Cursive,
+        style = MaterialTheme.typography.bodyMedium,
+    )
+}
+@Composable
+actual fun ImagePicker(showFilePicker: Boolean, onDismissDialog : () -> Unit, onResult: (ByteArray?) -> Unit) {
+    val scope = rememberCoroutineScope()
+    if (showFilePicker) {
+        scope.launch {
+            onResult(importImage())
+        }
+        onDismissDialog()
+    }
+}
+
+private suspend fun importImage(): ByteArray? = suspendCoroutine { cont ->
+    try {
+        val input = document.createElement("input").apply {
+            setAttribute("type", "file")
+            setAttribute("accept",  "image/jpeg, image/png, image/jpg")
+        } as HTMLInputElement
+
+        input.onchange = {
+            val file = input.files?.get(0)
+            if (file != null) {
+                val reader = FileReader()
+                reader.onload = { event ->
+                    val arrayBuffer = (event.target as FileReader).result as ArrayBuffer
+                    val array = Uint8Array(arrayBuffer)
+
+                    cont.resume(ByteArray(array.length) { array[it] })
+                }
+                reader.onerror = {
+                    cont.resumeWithException(Exception(reader.error.toString()))
+                }
+                reader.readAsArrayBuffer(file)
+            } else {
+                cont.resumeWithException(Exception("No file was selected"))
+            }
+        }
+        input.click()
+    } catch (e: Exception) {
+        cont.resumeWithException(e)
+    }
+}
+
+actual fun ByteArray.toComposeImageBitmap(): ImageBitmap {
+    return Image.makeFromEncoded(this).toComposeImageBitmap()
+}
+
+actual fun isNetworkAvailable(): Boolean {
+    return window.navigator.onLine
+}
+
+actual suspend fun readGroupKStore(readFun : suspend(KStore<List<Group>>) -> Unit){
+    val store: KStore<List<Group>> = storeOf(key = "group_db")
+    readFun(store)
+}
+actual suspend fun readChatMessageKStore(readFun : suspend(KStore<List<ChatMessage>>) -> Unit) {
+    val store: KStore<List<ChatMessage>> = storeOf(key = "chat_db")
+    readFun(store)
+}

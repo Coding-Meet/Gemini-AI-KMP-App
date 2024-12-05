@@ -1,9 +1,8 @@
 package com.coding.meet.gaminiaikmp
 
 import android.app.Application
-import di.*
+import com.coding.meet.gaminiaikmp.di.initKoin
 import org.koin.android.ext.koin.androidContext
-import org.koin.core.context.startKoin
 
 class MainApplication: Application() {
 

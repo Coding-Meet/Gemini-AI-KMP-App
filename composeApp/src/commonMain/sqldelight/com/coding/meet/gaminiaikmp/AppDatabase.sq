@@ -1,4 +1,4 @@
-import domain.model.Role;
+import com.coding.meet.gaminiaikmp.domain.model.Role;
 import kotlin.Boolean;
 import kotlin.ByteArray;
 import kotlin.collections.List;

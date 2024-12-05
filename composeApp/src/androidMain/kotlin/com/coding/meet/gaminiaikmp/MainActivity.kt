@@ -1,16 +1,15 @@
 package com.coding.meet.gaminiaikmp
 
-import App
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.OnBackPressedCallback
 import androidx.activity.compose.setContent
 import androidx.compose.ui.graphics.toArgb
 import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
+import com.coding.meet.gaminiaikmp.presentation.screens.mainscreen.MainViewModel
+import com.coding.meet.gaminiaikmp.theme.borderColor
+import com.coding.meet.gaminiaikmp.utils.Screens
 import org.koin.compose.koinInject
-import utils.Screens
-import presentation.screens.mainscreen.MainViewModel
-import theme.borderColor
 
 class MainActivity : ComponentActivity() {
 
