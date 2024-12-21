@@ -1,5 +1,6 @@
 package com.coding.meet.gaminiaikmp.presentation.screens.chatscreen
 
+import androidx.compose.animation.core.*
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -7,7 +8,6 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
-import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
@@ -18,6 +18,7 @@ import androidx.compose.material.icons.filled.Close
 import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -85,12 +86,13 @@ fun ChatScreen(
                     ),
                     onClick = {
                         if (!chatUiState.isApiLoading) {
-                            if (chatUiState.message.isNotEmpty()){
+                            if (chatUiState.message.isNotEmpty()) {
                                 chatViewModel.isDeleteShowDialog = true
                             }
-                        }else{
+                        } else {
                             mainViewModel.alertTitleText = "API Call in Progress"
-                            mainViewModel.alertDescText = "Please wait while there is already an API call going on, so please be patient."
+                            mainViewModel.alertDescText =
+                                "Please wait while there is already an API call going on, so please be patient."
                             mainViewModel.isAlertDialogShow = true
                         }
                     }) {
@@ -131,19 +133,29 @@ fun ChatScreen(
             if (chatUiState.isLoading) {
                 LoadingAnimation(Modifier.fillMaxWidth().wrapContentSize())
             } else {
-                val lazyListState = rememberLazyListState()
+                val infiniteTransition = rememberInfiniteTransition(label = "")
+                val rotate by infiniteTransition.animateFloat(
+                    initialValue = 0f,
+                    targetValue = 360f,
+                    animationSpec = infiniteRepeatable(
+                        animation = tween(
+                            durationMillis = 1000,
+                            easing = EaseOutSine
+                        )
+                    ), label = ""
+                )
                 LazyColumn(
                     Modifier.fillMaxSize().background(lightBackgroundColor),
-                    lazyListState,
+                    chatViewModel.lazyListState,
                     reverseLayout = true,
-                    verticalArrangement =  if (chatUiState.message.isEmpty()) Arrangement.Center else Arrangement.Bottom,
+                    verticalArrangement = if (chatUiState.message.isEmpty()) Arrangement.Center else Arrangement.Bottom,
                     contentPadding = PaddingValues(horizontal = 10.dp),
                 ) {
                     if (chatUiState.message.isNotEmpty()) {
                         items(chatUiState.message, key = {
                             it.messageId
                         }) {
-                            MessageItem(it)
+                            MessageItem(it, rotate)
                         }
                     } else {
                         item {
@@ -172,7 +184,8 @@ fun ChatScreen(
                         modifier = Modifier.padding(4.dp).height(192.dp).clip(RoundedCornerShape(16.dp)),
                     )
 
-                    Icon(Icons.Default.Close,
+                    Icon(
+                        Icons.Default.Close,
                         tint = whiteColor,
                         contentDescription = "remove",
                         modifier = Modifier.padding(end = 8.dp).clip(CircleShape)

@@ -1,5 +1,6 @@
 package com.coding.meet.gaminiaikmp.presentation.screens.chatscreen
 
+import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
@@ -39,6 +40,8 @@ class ChatViewModel(
 
     var failedMessageId by mutableStateOf("")
 
+
+    val lazyListState = LazyListState()
 
     fun getMessageList(isClicked: Boolean = false) {
 

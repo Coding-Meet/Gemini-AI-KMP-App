@@ -1,6 +1,5 @@
 package com.coding.meet.gaminiaikmp.presentation.components
 
-import androidx.compose.animation.core.*
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
@@ -12,7 +11,6 @@ import androidx.compose.material3.IconButton
 import androidx.compose.material3.IconButtonDefaults
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -43,7 +41,7 @@ import org.jetbrains.compose.resources.painterResource
 
 
 @Composable
-fun MessageItem(chatMessage: ChatMessage) {
+fun MessageItem(chatMessage: ChatMessage, rotate: Float) {
     val coroutineScope = rememberCoroutineScope()
     val clipboardManager = LocalClipboardManager.current
     val isGEMINIMessage = chatMessage.participant != Role.YOU
@@ -53,17 +51,7 @@ fun MessageItem(chatMessage: ChatMessage) {
         Role.YOU -> borderColor
         Role.ERROR -> redColor
     }
-    val infiniteTransition = rememberInfiniteTransition(label = "")
-    val rotate by infiniteTransition.animateFloat(
-        initialValue = 0f,
-        targetValue = 360f,
-        animationSpec = infiniteRepeatable(
-            animation = tween(
-                durationMillis = 1000,
-                easing = EaseOutSine
-            )
-        ), label = ""
-    )
+
     val horizontalAlignment = if (isGEMINIMessage) {
         Alignment.Start
     } else {
@@ -108,29 +96,18 @@ fun MessageItem(chatMessage: ChatMessage) {
                 .clip(cardShape)
                 .padding(2.dp)
                 .drawWithContent {
-                    rotate(
-                        if (chatMessage.isPending) {
+                    if (chatMessage.isPending) {
+                        rotate(
                             rotate
-                        } else {
-                            0f
-                        }
-                    ) {
-                        drawCircle(
-                            brush = if (chatMessage.isPending && chatMessage.participant == Role.YOU) {
-                                Brush.sweepGradient(
+                        ) {
+                            drawCircle(
+                                brush = Brush.sweepGradient(
                                     circleColors
-                                )
-                            } else {
-                                Brush.linearGradient(
-                                    listOf(
-                                        backgroundColor,
-                                        backgroundColor
-                                    )
-                                )
-                            },
-                            radius = size.width,
-                            blendMode = BlendMode.SrcIn,
-                        )
+                                ),
+                                radius = size.width,
+                                blendMode = BlendMode.SrcIn,
+                            )
+                        }
                     }
                     drawContent()
                 }.background(backgroundColor, cardShape)
@@ -149,7 +126,7 @@ fun MessageItem(chatMessage: ChatMessage) {
                             Image(
                                 bitmap,
                                 contentDescription = null,
-                                modifier = Modifier.height(192.dp).clip(RoundedCornerShape(16.dp)),
+                                modifier = Modifier.heightIn(max = 192.dp).clip(RoundedCornerShape(16.dp)),
                                 contentScale = ContentScale.FillHeight,
                             )
                         }

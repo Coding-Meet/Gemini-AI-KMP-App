@@ -18,5 +18,5 @@ data class RequestPart(
 @Serializable
 data class RequestInlineData(
     @SerialName("mimeType") val mimeType: String,
-    @SerialName("com/coding/meet/gaminiaikmp/data") val data: String
+    @SerialName("data") val data: String
 )

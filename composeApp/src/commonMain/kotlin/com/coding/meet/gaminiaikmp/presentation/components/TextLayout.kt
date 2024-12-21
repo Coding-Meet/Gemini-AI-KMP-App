@@ -16,6 +16,16 @@ import com.mikepenz.markdown.model.DefaultMarkdownTypography
 @Composable
 fun CommonTextComposable(message: String, isGEMINIMessage: Boolean) {
     SelectionContainer {
+//        Text(
+//            text = message,
+//            modifier = Modifier.padding(
+//                start = 10.dp,
+//                top = 10.dp,
+//                end = 10.dp,
+//                bottom = if (isGEMINIMessage) 3.dp else 10.dp,
+//            ),
+//            style = TextStyle(color = whiteColor)
+//        )
         Markdown(
             content = message,
             modifier = Modifier.padding(
@@ -47,7 +57,9 @@ fun CommonTextComposable(message: String, isGEMINIMessage: Boolean) {
                 MaterialTheme.typography.bodyMedium,
                 MaterialTheme.typography.bodyMedium,
                 MaterialTheme.typography.bodyMedium,
-                MaterialTheme.typography.bodyMedium
+                MaterialTheme.typography.bodyMedium,
+                MaterialTheme.typography.bodyMedium,
+                MaterialTheme.typography.bodyMedium,
             ),
         )
     }
