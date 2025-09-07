@@ -6,6 +6,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.text.TextLinkStyles
 import androidx.compose.ui.unit.dp
 import com.coding.meet.gaminiaikmp.theme.lightBackgroundColor
 import com.coding.meet.gaminiaikmp.theme.whiteColor
@@ -42,7 +43,9 @@ fun CommonTextComposable(message: String, isGEMINIMessage: Boolean) {
                 linkText = Color.Blue,
                 codeBackground = lightBackgroundColor,
                 inlineCodeBackground = lightBackgroundColor,
-                dividerColor = Color.Gray
+                dividerColor = Color.Gray,
+                tableText = whiteColor,
+                tableBackground = lightBackgroundColor
             ),
             typography = DefaultMarkdownTypography(
                 MaterialTheme.typography.headlineLarge,
@@ -59,6 +62,8 @@ fun CommonTextComposable(message: String, isGEMINIMessage: Boolean) {
                 MaterialTheme.typography.bodyMedium,
                 MaterialTheme.typography.bodyMedium,
                 MaterialTheme.typography.bodyMedium,
+                MaterialTheme.typography.bodyMedium,
+                TextLinkStyles(),
                 MaterialTheme.typography.bodyMedium,
             ),
         )

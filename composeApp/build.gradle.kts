@@ -4,6 +4,8 @@ import org.jetbrains.kotlin.gradle.dsl.JvmTarget
 import org.jetbrains.kotlin.gradle.targets.js.yarn.YarnLockMismatchReport
 import org.jetbrains.kotlin.gradle.targets.js.yarn.YarnRootExtension
 import org.jetbrains.kotlin.gradle.tasks.KotlinJvmCompile
+import org.jetbrains.kotlin.gradle.ExperimentalWasmDsl
+import org.jetbrains.kotlin.gradle.targets.js.webpack.KotlinWebpackConfig
 import java.util.*
 
 plugins {
@@ -14,18 +16,10 @@ plugins {
     alias(libs.plugins.buildkonfig)
     alias(libs.plugins.kotlinSerialization)
     alias(libs.plugins.sqlDelight)
+    alias(libs.plugins.composeHotReload)
 }
 
 kotlin {
-    js(IR) {
-        moduleName = "composeApp"
-        browser {
-            commonWebpackConfig {
-                outputFileName = "composeApp.js"
-            }
-        }
-        binaries.executable()
-    }
 
     androidTarget {
         tasks.withType<KotlinJvmCompile>().configureEach {
@@ -45,8 +39,29 @@ kotlin {
         iosTarget.binaries.framework {
             baseName = "ComposeApp"
             isStatic = true
+            // Required when using NativeSQLiteDriver
             linkerOpts.add("-lsqlite3")
         }
+    }
+
+    @OptIn(ExperimentalWasmDsl::class)
+    wasmJs {
+        moduleName = "composeApp"
+        browser {
+            val rootDirPath = project.rootDir.path
+            val projectDirPath = project.projectDir.path
+            commonWebpackConfig {
+                outputFileName = "composeApp.js"
+                devServer = (devServer ?: KotlinWebpackConfig.DevServer()).apply {
+                    static = (static ?: mutableListOf()).apply {
+                        // Serve sources to debug inside browser
+                        add(rootDirPath)
+                        add(projectDirPath)
+                    }
+                }
+            }
+        }
+        binaries.executable()
     }
 
     sourceSets {
@@ -78,6 +93,7 @@ kotlin {
             implementation(compose.material3)
             implementation(compose.components.resources)
             implementation(compose.components.uiToolingPreview)
+            implementation(compose.materialIconsExtended)
 
             // Viewmodel
             implementation(libs.androidx.viewmodel.compose)
@@ -89,10 +105,10 @@ kotlin {
             implementation(libs.multiplatform.settings.no.arg)
 
             // SQLDelight
-            implementation(libs.sqldelight.coroutine.ext)
-            implementation(libs.sqldelight.primitive.adapters)
+            implementation(libs.sqldelight.runtime)
+            implementation(libs.sqldelight.coroutines.extensions)
 
-            //Kermit  for logging
+            // Kermit  for logging
             implementation(libs.kermit)
 
             //Coroutines
@@ -117,7 +133,7 @@ kotlin {
         desktopMain.dependencies {
             implementation(compose.desktop.currentOs)
 
-            implementation(libs.sqlite.driver)
+            implementation(libs.sqldelight.sqlite.driver)
 
             implementation(libs.ktor.client.java)
 
@@ -138,15 +154,15 @@ kotlin {
             implementation(libs.kstore.file)
         }
 
-        jsMain.dependencies {
+        @OptIn(ExperimentalWasmDsl::class)
+        wasmJsMain.dependencies {
             implementation(compose.html.core)
 
             implementation(libs.ktor.client.js)
-            implementation(libs.web.worker.driver)
-            implementation(devNpm("copy-webpack-plugin", "9.1.0"))
-            implementation(npm("@cashapp/sqldelight-sqljs-worker", "2.0.1"))
-            implementation(npm("sql.js", "1.8.0"))
-
+            implementation(libs.sqldelight.web.driver)
+            implementation(npm("@cashapp/sqldelight-sqljs-worker", "2.1.0"))
+            implementation(npm("sql.js", libs.versions.sqlJs.get()))
+            implementation(devNpm("copy-webpack-plugin", libs.versions.webPackPlugin.get()))
             // kstore
             implementation(libs.kstore.storage)
         }
@@ -164,10 +180,6 @@ sqldelight {
 android {
     namespace = "com.coding.meet.gaminiaikmp"
     compileSdk = libs.versions.android.compileSdk.get().toInt()
-
-    sourceSets["main"].manifest.srcFile("src/androidMain/AndroidManifest.xml")
-    sourceSets["main"].res.srcDirs("src/androidMain/res")
-    sourceSets["main"].resources.srcDirs("src/commonMain/resources")
 
     defaultConfig {
         applicationId = "com.coding.meet.gaminiaikmp"
@@ -194,7 +206,7 @@ android {
 
 compose.desktop {
     application {
-        mainClass = "MainKt"
+        mainClass = "com.coding.meet.gaminiaikmp.MainKt"
 
         nativeDistributions {
             targetFormats(TargetFormat.Dmg, TargetFormat.Msi, TargetFormat.Deb)
@@ -235,10 +247,4 @@ buildkonfig {
             "isDebug", "false"
         )
     }
-}
-
-rootProject.plugins.withType(org.jetbrains.kotlin.gradle.targets.js.yarn.YarnPlugin::class.java) {
-    rootProject.the<YarnRootExtension>().yarnLockMismatchReport = YarnLockMismatchReport.WARNING // NONE | FAIL
-    rootProject.the<YarnRootExtension>().reportNewYarnLock = false // true
-    rootProject.the<YarnRootExtension>().yarnLockAutoReplace = false // true
 }

@@ -16,17 +16,17 @@ import io.github.xxfast.kstore.KStore
 import kotlinx.cinterop.BetaInteropApi
 import kotlinx.cinterop.ExperimentalForeignApi
 import kotlinx.cinterop.ObjCObjectVar
+import kotlinx.cinterop.alloc
 import kotlinx.cinterop.nativeHeap
+import kotlinx.cinterop.pointed
+import kotlinx.cinterop.ptr
+import kotlinx.cinterop.value
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.IO
 import kotlinx.coroutines.launch
 import org.jetbrains.skia.Image
-import platform.Foundation.NSError
-import platform.Foundation.NSURL
-import platform.Foundation.NSURLConnection
-import platform.Foundation.NSURLRequest
-import platform.Foundation.sendSynchronousRequest
+import platform.Foundation.*
 
 
 actual fun getPlatform(): TYPE = TYPE.MOBILE
@@ -79,9 +79,6 @@ actual fun isNetworkAvailable(): Boolean {
     val data = request?.let { NSURLConnection.sendSynchronousRequest(it, responsePtr, errorPtr) }
     val response = responsePtr.pointed.value
     val error = errorPtr.pointed.value
-
-    nativeHeap.free(responsePtr)
-    nativeHeap.free(errorPtr)
 
     return when {
         data != null && response is NSHTTPURLResponse -> true

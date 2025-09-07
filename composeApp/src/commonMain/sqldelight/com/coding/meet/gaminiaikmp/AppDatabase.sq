@@ -3,7 +3,7 @@ import kotlin.Boolean;
 import kotlin.ByteArray;
 import kotlin.collections.List;
 
-CREATE TABLE GroupChat(
+CREATE TABLE IF NOT EXISTS GroupChat(
     groupId TEXT UNIQUE PRIMARY KEY NOT NULL,
     title TEXT NOT NULL,
     date TEXT NOT NULL,
@@ -47,7 +47,6 @@ deleteAllMessage:
 DELETE FROM Message
 WHERE chatId = :chatId;
 
-deleteGroupWithMessage{
-  DELETE FROM Message WHERE chatId = :groupId;
-  DELETE FROM GroupChat  WHERE groupId = :groupId;
- }
+deleteGroupWithMessage:
+DELETE FROM GroupChat
+WHERE groupId = :groupId;

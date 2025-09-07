@@ -1,9 +1,11 @@
 package com.coding.meet.gaminiaikmp.utils
 
-import kotlinx.datetime.Clock
+import kotlin.time.Clock
 import kotlinx.datetime.TimeZone
+import kotlinx.datetime.number
 import kotlinx.datetime.toLocalDateTime
 import kotlin.random.Random
+import kotlin.time.ExperimentalTime
 
 fun generateRandomKey(): String {
     val charPool = ('a'..'z') + ('A'..'Z') + ('0'..'9')
@@ -15,9 +17,10 @@ fun generateRandomKey(): String {
     return key
 }
 
+@OptIn(ExperimentalTime::class)
 fun currentDateTimeToString(): String {
     val currentDateTime = Clock.System.now().toLocalDateTime(TimeZone.currentSystemDefault())
-    return "${formatTwoDigits(currentDateTime.dayOfMonth)}-${formatMonthAbbreviation(currentDateTime.monthNumber)}-${currentDateTime.year} " +
+    return "${formatTwoDigits(currentDateTime.day)}-${formatMonthAbbreviation(currentDateTime.month.number)}-${currentDateTime.year} " +
             "${format12Hour(currentDateTime.hour)}:${formatTwoDigits(currentDateTime.minute)} ${if (currentDateTime.hour < 12) "AM" else "PM"}"
 
 }
