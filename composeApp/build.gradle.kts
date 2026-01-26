@@ -11,10 +11,10 @@ import java.util.*
 plugins {
     alias(libs.plugins.kotlinMultiplatform)
     alias(libs.plugins.androidApplication)
-    alias(libs.plugins.jetbrainsCompose)
+    alias(libs.plugins.composeMultiplatform)
     alias(libs.plugins.compose.compiler)
     alias(libs.plugins.buildkonfig)
-    alias(libs.plugins.kotlinSerialization)
+    alias(libs.plugins.kotlinx.serialization)
     alias(libs.plugins.sqlDelight)
     alias(libs.plugins.composeHotReload)
 }
@@ -32,7 +32,6 @@ kotlin {
     jvm("desktop")
 
     listOf(
-        iosX64(),
         iosArm64(),
         iosSimulatorArm64()
     ).forEach { iosTarget ->
@@ -68,7 +67,7 @@ kotlin {
         val desktopMain by getting
 
         androidMain.dependencies {
-            implementation(compose.preview)
+            implementation(libs.ui.tooling.preview)
             implementation(libs.androidx.activity.compose)
 
             implementation(libs.sqldelight.android.driver)
@@ -86,14 +85,13 @@ kotlin {
             implementation(libs.androidx.core.splashscreen)
         }
         commonMain.dependencies {
-            implementation(compose.runtime)
-            implementation(compose.foundation)
-            implementation(compose.material)
-            implementation(compose.ui)
-            implementation(compose.material3)
-            implementation(compose.components.resources)
-            implementation(compose.components.uiToolingPreview)
-            implementation(compose.materialIconsExtended)
+            implementation(libs.runtime)
+            implementation(libs.foundation)
+            implementation(libs.ui)
+            implementation(libs.components.resources)
+            implementation(libs.ui.tooling.preview)
+            implementation(libs.material.icons.extended)
+            implementation(libs.material3)
 
             // Viewmodel
             implementation(libs.androidx.viewmodel.compose)
@@ -167,6 +165,9 @@ kotlin {
             implementation(libs.kstore.storage)
         }
     }
+}
+dependencies {
+    debugImplementation(libs.ui.tooling)
 }
 sqldelight {
     databases {
