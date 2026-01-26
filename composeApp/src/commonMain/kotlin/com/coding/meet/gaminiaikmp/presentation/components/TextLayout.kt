@@ -38,13 +38,9 @@ fun CommonTextComposable(message: String, isGEMINIMessage: Boolean) {
 
             colors = DefaultMarkdownColors(
                 text = whiteColor,
-                codeText = whiteColor,
-                inlineCodeText = whiteColor,
-                linkText = Color.Blue,
                 codeBackground = lightBackgroundColor,
                 inlineCodeBackground = lightBackgroundColor,
                 dividerColor = Color.Gray,
-                tableText = whiteColor,
                 tableBackground = lightBackgroundColor
             ),
             typography = DefaultMarkdownTypography(
@@ -62,9 +58,8 @@ fun CommonTextComposable(message: String, isGEMINIMessage: Boolean) {
                 MaterialTheme.typography.bodyMedium,
                 MaterialTheme.typography.bodyMedium,
                 MaterialTheme.typography.bodyMedium,
-                MaterialTheme.typography.bodyMedium,
                 TextLinkStyles(),
-                MaterialTheme.typography.bodyMedium,
+                MaterialTheme.typography.bodyMedium
             ),
         )
     }
