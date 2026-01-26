@@ -11,6 +11,7 @@ and Web platforms. It is an application by Gemini AI where you can retrieve info
 conversational format. Additionally, it allows storing chats group-wise using SQLDelight and KStore, and facilitates
 changing the Gemini API key.
 
+<!--
 ## Download / View App ⬇️
 
 <table>
@@ -43,6 +44,7 @@ changing the Gemini API key.
 </tr>
 
 </table>
+-->
 
 ## Features
 
