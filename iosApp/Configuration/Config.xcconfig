@@ -1,6 +1,7 @@
 TEAM_ID=
+
 PRODUCT_NAME=Gemini-AI-KMP-App
-BUNDLE_ID=com.coding.meet.gaminiaikmp.Gemini-AI-KMP-App
-APP_NAME=Gemini-AI-KMP-App
+PRODUCT_BUNDLE_IDENTIFIER=com.coding.meet.gaminiaikmp.Gemini-AI-KMP-App$(TEAM_ID)
+
 CURRENT_PROJECT_VERSION=1
 MARKETING_VERSION=1.0
