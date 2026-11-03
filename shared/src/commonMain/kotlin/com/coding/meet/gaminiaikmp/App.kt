@@ -1,13 +1,19 @@
 package com.coding.meet.gaminiaikmp
 
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
-import com.coding.meet.gaminiaikmp.presentation.screens.mainscreen.MainScreen
-import com.coding.meet.gaminiaikmp.presentation.screens.mainscreen.MainViewModel
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
+import com.coding.meet.gaminiaikmp.presentation.navigation.AppNavigation
+import com.coding.meet.gaminiaikmp.theme.AppTheme
+import org.koin.compose.viewmodel.koinViewModel
 
 @Composable
-fun App(mainViewModel: MainViewModel) {
-    MaterialTheme {
-        MainScreen(mainViewModel)
+fun App(
+    appViewModel: AppViewModel = koinViewModel()
+) {
+    val themeMode by appViewModel.themeMode.collectAsState()
+
+    AppTheme(themeMode = themeMode) {
+        AppNavigation()
     }
 }

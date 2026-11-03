@@ -4,132 +4,140 @@
 
 Click the image above to watch a demo of the Gemini AI KMP App on YouTube.
 
-## Overview
+---
 
-The Gemini AI KMP App is a Kotlin Compose Multiplatform project designed to target Android, iOS, Windows, macOS, Linux,
-and Web platforms. It is an application by Gemini AI where you can retrieve information from text and images in a
-conversational format. Additionally, it allows storing chats group-wise using SQLDelight and KStore, and facilitates
-changing the Gemini API key.
+## 🌟 Overview
 
-## Download / View App ⬇️
+**Gemini AI KMP App** is a production-ready, open-source **Kotlin Multiplatform (KMP)** and **Compose Multiplatform** application targeting **Android, iOS, Desktop (macOS, Windows, Linux)**, and **Web (Wasm)**. 
 
-<table>
-<tr>
-   <th>Platform</th>
-   <th>Release File</th>
-</tr>
+Powered by the latest **Google Gemini AI models** (including Gemini 3.8 Flash and Gemini 4 Argon), this app allows you to have intelligent, multimodal conversations using text and images. Conversations are stored locally with **SQLDelight** and persistent key-value configuration is handled cleanly with **Multiplatform Settings** and **KStore**.
 
-<tr>
-   <td>📱 Mobile </td>
-   <td>
-      <a href="https://github.com/Coding-Meet/Gemini-AI-KMP-App/releases"><img src="https://img.shields.io/badge/Android-black.svg?style=for-the-badge&logo=android" alt="android"></a>
-   </td>
-</tr>
+---
 
-<tr>
-   <td>🖥️ Desktop </td>
-   <td>
-      <a href="https://github.com/Coding-Meet/Gemini-AI-KMP-App/releases"><img src="https://img.shields.io/badge/Windows-black.svg?style=for-the-badge&logo=windows" alt="window"></a>
-      <a href="https://github.com/Coding-Meet/Gemini-AI-KMP-App/releases"><img src="https://img.shields.io/badge/MacOS-black.svg?style=for-the-badge&logo=apple" alt="macos"></a>
-      <a href="https://github.com/Coding-Meet/Gemini-AI-KMP-App/releases"><img src="https://img.shields.io/badge/Linux-black.svg?style=for-the-badge&logo=linux" alt="linux"></a>
-   </td>
-</tr>
+## 🚀 Key Features
 
-<tr>
-   <td>🌎 Web</td>
-   <td>
-      <a href="https://coding-meet.github.io/Gemini-AI-KMP-App/"><img src="https://img.shields.io/badge/View%20Live-black.svg?style=for-the-badge&logo=internetexplorer" alt="website"></a>
-   </td>
-</tr>
+- 💬 **Multimodal Conversational AI**: Seamless chat experience supporting text prompts and image attachments.
+- ⚡ **Latest Gemini Models**:
+  - Live model discovery from the official Gemini API (`/v1beta/models`).
+  - Flagship defaults: `gemini-3.8-flash` (Recommended), `gemini-4-argon`, `gemini-3.5-flash-lite`, and `gemini-3.6-flash`.
+  - Context & token limits display with visual badges (e.g. *Recommended*, *Thinking*, *Gemini 4*, *Fast & Lite*).
+- 🎨 **Adaptive & Responsive Material 3 UI**:
+  - Adaptive Navigation Suite adapting to Phones, Foldables, Tablets, and Desktops.
+  - Collapsible desktop drawer for chat history.
+  - Staggered adaptive grid layout for model selection.
+- 🌓 **Dynamic Theme Management**:
+  - One-click switching between **System Default**, **Light**, and **Dark** themes.
+  - Reactive theme state managed cleanly via `SettingRepository` and `AppViewModel`.
+- 📜 **Cross-Platform Vertical Scrollbars (`AppVerticalScrollbar`)**:
+  - Desktop & Web draggable scrollbars styled with Material 3 tokens.
+  - Native touch-overscroll on mobile without conflicts.
+  - Reverse-layout sync for chat messages.
+- 🔐 **API Key & Storage Management**:
+  - Easily configure, mask/reveal, or change your Google Gemini API key at runtime.
+  - Data & Storage controls with a safe **Delete All Conversations** confirmation flow.
+- 🏗️ **Clean Architecture & MVI**:
+  - Strict separation of concerns: `UI (Compose)` ➔ `ViewModel (MVI with Intent / State / Effect)` ➔ `Domain (Use Cases)` ➔ `Data (Repositories & Data Sources)`.
+  - Lifecycle-aware one-off effect handling with `ObserveAsEvents`.
 
-</table>
+---
 
-## Features
+## 🛠️ Tech Stack & Architecture
 
-- Engage in conversations from any device, including smartphones, tablets, desktops, and web browsers
-- Retrieve information from text and images in a conversational format.
-- Store chats group-wise using SQLDelight and KStore.
-- Facilitating changing the Gemini API key.
-- Simple Clean UI with Animations
+| Layer / Domain | Technology |
+| :--- | :--- |
+| **Language & Platform** | Kotlin Multiplatform (2.4.x), Compose Multiplatform (1.12.x) |
+| **Build Tools** | Android Gradle Plugin (AGP 9.1.x), Gradle 9.x |
+| **Architecture** | Clean Architecture + MVI (Model-View-Intent) + Single Source of Truth |
+| **UI & Theming** | Jetpack Compose Multiplatform, Material 3, Adaptive Layouts, Jetpack Navigation 3 |
+| **Dependency Injection** | Koin 4.2.x (`koin-compose-viewmodel`) |
+| **Networking** | Ktor 3.6.x (Content Negotiation, Kotlinx Serialization) |
+| **Local Database** | SQLDelight 2.4.x (SQLite on Mobile/Desktop, SQL.js on Web) |
+| **Key-Value Persistence**| Multiplatform Settings & KStore |
+| **File / Image Picking**| FileKit 0.17.x (Native cross-platform image picker) |
+| **Logging** | Touchlab Kermit |
+| **BuildConfig** | BuildKonfig |
 
-# Technologies:
+---
 
-- Kotlin
-- Clean Architecture
-- Jetpack Compose for UI development
-- Koin for Dependency Injection
-- SQLDelight and KStore library to Store chats
-- Generative AI for All AI-related stuff
+## 📦 Project Structure
 
-## Libraries 🛠️
+The project follows a modern modular KMP setup:
 
-- [BuildKonfig](https://github.com/yshrsmz/BuildKonfig) - BuildConfig for Kotlin Multiplatform Project. It currently
-  supports embedding values from gradle file.
-- [Koin](https://insert-koin.io/) - Kotlin dependency injection library with multiplatform support.
-- [Ktor](https://ktor.io/docs/http-client-multiplatform.html) - Provides multiplatform libraries required to make
-  network calls to the REST API.
-- [Kermit](https://github.com/touchlab/Kermit) - Kermit by Touchlab is a Kotlin Multiplatform centralized logging
-  utility.
-- [ViewModel](https://www.jetbrains.com/help/kotlin-multiplatform-dev/compose-viewmodel.html) - Compose Multiplatform ViewModel and it's Kotlin Multiplatform
-  project.
-- [Compose Multiplatform File Picker](https://github.com/Wavesonics/compose-multiplatform-file-picker) - A multiplatform
-  compose widget for picking files.
-- [Multiplatform Settings](https://github.com/russhwolf/multiplatform-settings) - This is a Kotlin library for
-  Multiplatform apps, so that common code can persist key-value data.
-- [SQLDelight](https://cashapp.github.io/sqldelight/multiplatform_sqlite/) - Cross-Platform database library
-- [KStore](https://github.com/xxfast/KStore) - A tiny Kotlin multiplatform library that assists in saving and restoring
-  objects to and from disk using kotlinx.coroutines, kotlinx.serialisation and okio.
-- [kotlinx.coroutines](https://github.com/Kotlin/kotlinx.coroutines) - Library support for Kotlin coroutines with
-  multiplatform support.
-- [kotlinx.serialization](https://github.com/Kotlin/kotlinx.serialization) - Provides sets of libraries for various
-  serialization formats eg. JSON, protocol buffers, CBOR etc.
-- [kotlinx.datetime](https://github.com/Kotlin/kotlinx-datetime) - A multiplatform Kotlin library for working with date
-  and time.
+```text
+Gemini-AI-KMP-App/
+├── androidApp/        # Android application entry point & Manifest
+├── desktopApp/        # JVM Desktop application entry point (macOS, Windows, Linux)
+├── webApp/            # Web (WasmJs) application entry point & webpack configurations
+├── iosApp/            # iOS Xcode project (SwiftUI wrapper)
+└── shared/            # Shared multiplatform core module
+    ├── commonMain/    # Core domain models, use cases, repositories, screens & UI
+    ├── androidMain/   # Android-specific drivers & platform utilities
+    ├── jvmMain/       # Desktop JVM implementations (Scrollbars, DB drivers)
+    ├── wasmJsMain/    # WebAssembly implementations
+    └── iosMain/       # iOS platform hooks
+```
 
-## Getting Started
+---
 
-### Installation 🛠️
+## 🚀 Getting Started
 
-1. Clone this repository:
+### Prerequisites
+
+- **JDK 21** (e.g. Azul Zulu JDK 21)
+- **Android Studio** Ladybug Feature Drop (or newer)
+- Xcode (for iOS builds on macOS)
+
+### Installation & Setup
+
+1. **Clone the repository**:
    ```bash
    git clone https://github.com/Coding-Meet/Gemini-AI-KMP-App.git
+   cd Gemini-AI-KMP-App
    ```
 
-2. Open in the latest version of Android Studio.
-3. Before running the project, obtain an API key from [Google AI](https://ai.google.dev) to communicate with the Gemini
-   API.
-4. Add a `local.properties` file to the project root.
-5. Place your Gemini API key in `local.properties` file as `GEMINI_API_KEY` property.
-```properties
-GEMINI_API_KEY=YOUR_API_KEY
-```
-6. Configuration of SQLDelight in Android Studio:
-  - Click on the Gradle icon at the top right corner.
+2. **Configure Gemini API Key**:
+   - Obtain an API key from [Google AI Studio](https://aistudio.google.com).
+   - Create a `local.properties` file in the project root:
+     ```properties
+     GEMINI_API_KEY=YOUR_GEMINI_API_KEY
+     ```
+   *(Note: You can also configure or update your API key directly within the app's Settings screen at any time).*
 
-   ![](image/install/openGradle.png)
+3. **Generate SQLDelight Interfaces**:
+   Run the following task in the terminal or Android Studio Gradle panel:
+   ```bash
+   ./gradlew :shared:generateCommonMainGeminiApiChatDBInterface
+   ```
 
-7. Run the following Gradle tasks:
-  - `generateCommonMainGeminiApiChatDBInterface`
-  - `generateSqlDelightInterface`
+---
 
-   ![](image/install/config.png)
+### Running the App
 
+- **Android**:
+  Select the `androidApp` run configuration in Android Studio and hit **Run** (`Shift + F10`).
+  Or via terminal:
+  ```bash
+  ./gradlew :androidApp:installDebug
+  ```
 
-### Run the app on your device or emulator:
+- **Desktop (macOS / Windows / Linux)**:
+  ```bash
+  ./gradlew :desktopApp:run
+  ```
 
-- For Android, run the `composeApp` module by selecting the `app` configuration. If you need help with the
-  configuration, follow this link
-  for [android](https://www.jetbrains.com/help/kotlin-multiplatform-dev/compose-multiplatform-create-first-app.html#run-your-application-on-android)
-- For iOS, run the `composeApp` module by selecting the `iosApp` configuration. If you need help with the configuration,
-  follow this link
-  for [Ios](https://www.jetbrains.com/help/kotlin-multiplatform-dev/compose-multiplatform-create-first-app.html#run-your-application-on-ios)
-- For Desktop, run `./gradlew :composeApp:run`
-- For Web, run `./gradlew :composeApp:wasmJsBrowserDevelopmentRun`
+- **Web (Wasm / Browser)**:
+  ```bash
+  ./gradlew :webApp:wasmJsBrowserDevelopmentRun
+  ```
 
-## Screenshot 💻
+- **iOS**:
+  Open `iosApp/iosApp.xcodeproj` in Xcode and press **Run**, or run the `iosApp` configuration from Android Studio with the KMP plugin.
 
-## Android
+---
 
+## 📸 Screenshots
+
+### Android
 <table>
    <tr>
     <td><img src="image/android/android1.png" alt="android"></td>
@@ -146,123 +154,61 @@ GEMINI_API_KEY=YOUR_API_KEY
    <tr>
     <td><img src="image/android/android7.png" alt="android"></td>
     <td><img src="image/android/android8.png" alt="android"></td>
-       </tr>
+   </tr>
    <tr>
     <td><img src="image/android/android9.png" alt="android"></td>
    </tr>
 </table>
 
-## Window
-
+### Windows & Desktop
 <table>
   <tr>
     <td><img src="image/windows/win1.png" alt="win"></td>
-      </tr>
-  <tr>
     <td><img src="image/windows/win2.png" alt="win"></td>
   </tr>
   <tr>
     <td><img src="image/windows/win3.png" alt="win"></td>
-      </tr>
-  <tr>
     <td><img src="image/windows/win4.png" alt="win"></td>
   </tr>
   <tr>
     <td><img src="image/windows/win5.png" alt="win"></td>
-      </tr>
-  <tr>
     <td><img src="image/windows/win6.png" alt="win"></td>
-  </tr>
-  <tr>
-    <td><img src="image/windows/win7.png" alt="win"></td>
-      </tr>
-  <tr>
-    <td><img src="image/windows/win8.png" alt="win"></td>
-  </tr>
-  <tr>
-    <td><img src="image/windows/win9.png" alt="win"></td>
-      </tr>
-  <tr>
-    <td><img src="image/windows/win10.png" alt="win"></td>
   </tr>
 </table>
 
-## Mac
-
+### macOS
 <table>
    <tr>
       <td><img src="image/mac/mac1.jpeg" alt="mac"></td>
-       </tr>
-  <tr>
       <td><img src="image/mac/mac2.png" alt="mac"></td>
    </tr>
    <tr>
       <td><img src="image/mac/mac3.jpeg" alt="mac"></td>
-       </tr>
-  <tr>
       <td><img src="image/mac/mac4.jpeg" alt="mac"></td>
-   </tr>
-   <tr>
-      <td><img src="image/mac/mac5.jpeg" alt="mac"></td>
-       </tr>
-  <tr>
-      <td><img src="image/mac/mac6.jpeg" alt="mac"></td>
-   </tr>
-   <tr>
-      <td><img src="image/mac/mac7.jpeg" alt="mac"></td>
-       </tr>
-  <tr>
-      <td><img src="image/mac/mac8.jpeg" alt="mac"></td>
-   </tr>
-   <tr>
-      <td><img src="image/mac/mac9.jpeg" alt="mac"></td>
-       </tr>
-  <tr>
-      <td><img src="image/mac/mac10.jpeg" alt="mac"></td>
    </tr>
 </table>
 
-## Website
-
+### Web (Wasm)
 <table>
    <tr>
       <td><img src="image/web/web1.png" alt="web"></td>
-       </tr>
-  <tr>
       <td><img src="image/web/web2.png" alt="web"></td>
    </tr>
    <tr>
       <td><img src="image/web/web3.png" alt="web"></td>
-       </tr>
-  <tr>
       <td><img src="image/web/web4.png" alt="web"></td>
-   </tr>
-   <tr>
-      <td><img src="image/web/web5.png" alt="web"></td>
-       </tr>
-  <tr>
-      <td><img src="image/web/web6.png" alt="web"></td>
-   </tr>
-   <tr>
-      <td><img src="image/web/web7.png" alt="web"></td>
-       </tr>
-  <tr>
-      <td><img src="image/web/web8.png" alt="web"></td>
-   </tr>
-   <tr>
-      <td><img src="image/web/web9.png" alt="web"></td>
-       </tr>
-  <tr>
-      <td><img src="image/web/web10.png" alt="web"></td>
    </tr>
 </table>
 
-## Contributing 🤝
+---
 
-Feel free to contribute to this project by submitting issues, pull requests, or providing valuable feedback. Your
-contributions are always welcome! 🙌
+## 🤝 Contributing
 
-## ❤ Show your support
+Contributions, issues, and feature requests are welcome! Feel free to check the [issues page](https://github.com/Coding-Meet/Gemini-AI-KMP-App/issues).
+
+---
+
+## ❤️ Show Your Support
 
 Give a ⭐️ if this project helped you!
 
@@ -270,14 +216,16 @@ Give a ⭐️ if this project helped you!
 <img src="https://cdn.buymeacoffee.com/buttons/v2/default-yellow.png" alt="Buy Me A Coffee" width="160">
 </a>
 
-Your generosity is greatly appreciated! Thank you for supporting this project.
+---
 
-## Connect with me
+## 🌐 Connect with Me
 
 [![](https://img.shields.io/badge/Youtube-red?style=for-the-badge&logo=youtube&logoColor=white)](https://youtube.com/@CodingMeet26?si=FuKwU-aBaf_5kukR)
 [![](https://img.shields.io/badge/LinkedIn-0077B5?style=for-the-badge&logo=linkedin&logoColor=white)](https://www.linkedin.com/in/coding-meet-a74933273/)
 [![](https://img.shields.io/badge/Twitter-1DA1F2?style=for-the-badge&logo=twitter&logoColor=white)](https://twitter.com/CodingMeet)
 
-## Author
+---
+
+## 👤 Author
 
 **Meet**

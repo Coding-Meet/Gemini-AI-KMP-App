@@ -1,138 +1,226 @@
 package com.coding.meet.gaminiaikmp.presentation.screens.chatscreen
 
 import androidx.compose.foundation.lazy.LazyListState
-import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateListOf
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.coding.meet.gaminiaikmp.BuildKonfig
 import com.coding.meet.gaminiaikmp.domain.model.Role
 import com.coding.meet.gaminiaikmp.domain.use_cases.*
-import com.coding.meet.gaminiaikmp.utils.AppCoroutineDispatchers
-import com.coding.meet.gaminiaikmp.utils.generateRandomKey
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.delay
-import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.asStateFlow
-import kotlinx.coroutines.flow.update
+import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
-
+import kotlin.uuid.ExperimentalUuidApi
+import kotlin.uuid.Uuid
 
 class ChatViewModel(
-    private val appCoroutineDispatchers: AppCoroutineDispatchers,
     private val getContentUseCase: GetContentUseCase,
+    private val getAllGroupUserCase: GetAllGroupUserCase,
     private val getAllMessageByGroupIdUserCase: GetAllMessageByGroupIdUserCase,
     private val insertMessageUseCase: InsertMessageUseCase,
     private val updatePendingUseCase: UpdatePendingUseCase,
     private val deleteMessageUseCase: DeleteMessageUseCase,
     private val deleteGroupWithMessageUseCase: DeleteGroupWithMessageUseCase,
+    private val getApiKeyUseCase: GetApiKeyUseCase,
 ) : ViewModel() {
 
-    private val _chatUiState = MutableStateFlow(ChatUiState())
-    val chatUiState = _chatUiState.asStateFlow()
+    private val _uiState = MutableStateFlow(ChatUiState())
+    val uiState: StateFlow<ChatUiState> = _uiState.asStateFlow()
 
-    var message by mutableStateOf("")
-    val imageUris = mutableStateListOf<ByteArray>()
+    // Backward compatibility alias
+    val chatUiState: StateFlow<ChatUiState> = _uiState.asStateFlow()
 
-    var isDeleteShowDialog by mutableStateOf(false)
-
-    var groupId by mutableStateOf("")
-
-    var failedMessageId by mutableStateOf("")
-
+    private val _effect = Channel<ChatUiEffect>(Channel.BUFFERED)
+    val effect: Flow<ChatUiEffect> = _effect.receiveAsFlow()
 
     val lazyListState = LazyListState()
 
-    fun getMessageList(isClicked: Boolean = false) {
+    // Backward compatibility properties synced with uiState
+    var message: String
+        get() = _uiState.value.inputMessage
+        set(value) = _uiState.update { it.copy(inputMessage = value) }
 
-        viewModelScope.launch(appCoroutineDispatchers.io) {
-            if (isClicked) {
-                _chatUiState.update {
-                    _chatUiState.value.copy(
-                        isLoading = true
+    val imageUris = mutableStateListOf<ByteArray>()
+
+    var isDeleteShowDialog: Boolean
+        get() = _uiState.value.isDeleteShowDialog
+        set(value) = _uiState.update { it.copy(isDeleteShowDialog = value) }
+
+    var groupId: String
+        get() = _uiState.value.groupId
+        set(value) = _uiState.update { it.copy(groupId = value) }
+
+    var failedMessageId: String
+        get() = _uiState.value.failedMessageId
+        set(value) = _uiState.update { it.copy(failedMessageId = value) }
+
+    fun getApiKey(): String {
+        return getApiKeyUseCase()
+    }
+
+    fun handleIntent(intent: ChatUiIntent) {
+        when (intent) {
+            is ChatUiIntent.LoadMessages -> {
+                groupId = intent.groupId
+                getMessageList(intent.isClicked)
+            }
+            is ChatUiIntent.UpdateInputMessage -> {
+                _uiState.update { it.copy(inputMessage = intent.message) }
+            }
+            is ChatUiIntent.AddImage -> {
+                if (imageUris.size < 3) {
+                    imageUris.add(intent.imageBytes)
+                    _uiState.update { it.copy(selectedImages = imageUris.toList()) }
+                } else {
+                    sendEffect(ChatUiEffect.ShowAlert("Images Limit Reached", "You can only select up to 3 images."))
+                }
+            }
+            is ChatUiIntent.RemoveImage -> {
+                imageUris.remove(intent.imageBytes)
+                _uiState.update { it.copy(selectedImages = imageUris.toList()) }
+            }
+            is ChatUiIntent.ClearImages -> {
+                imageUris.clear()
+                _uiState.update { it.copy(selectedImages = emptyList()) }
+            }
+            is ChatUiIntent.SendMessage -> {
+                val apiKey = if (intent.apiKey.isNotEmpty()) intent.apiKey else getApiKey()
+                generateContentWithText(intent.groupId, intent.content, apiKey)
+            }
+            is ChatUiIntent.OpenDeleteDialog -> {
+                _uiState.update { it.copy(isDeleteShowDialog = true) }
+            }
+            is ChatUiIntent.DismissDeleteDialog -> {
+                _uiState.update { it.copy(isDeleteShowDialog = false) }
+            }
+            is ChatUiIntent.DeleteAllMessages -> {
+                deleteAllMessage(intent.groupId)
+            }
+            is ChatUiIntent.DeleteGroupWithMessages -> {
+                deleteGroupWithMessage(intent.groupId) {
+                    sendEffect(ChatUiEffect.NavigateBack)
+                }
+            }
+            is ChatUiIntent.ShowAlert -> {
+                _uiState.update {
+                    it.copy(
+                        isAlertDialogShow = true,
+                        alertTitleText = intent.title,
+                        alertDescText = intent.message
                     )
                 }
             }
-
-            delay(500)
-            _chatUiState.update {
-                _chatUiState.value.copy(
-                    message = getAllMessageByGroupIdUserCase.getMessageListByGroupId(groupId).reversed()
-                )
+            is ChatUiIntent.DismissAlert -> {
+                _uiState.update { it.copy(isAlertDialogShow = false) }
             }
-            _chatUiState.update {
-                _chatUiState.value.copy(
+            is ChatUiIntent.HandleError -> {
+                handleError(intent.messageId, intent.errorMessage)
+            }
+            is ChatUiIntent.RetryFailedMessage -> {
+                if (failedMessageId.isNotEmpty()) {
+                    handleError(failedMessageId, "Failed to generate content. Please try again.")
+                }
+            }
+        }
+    }
+
+    fun getMessageList(isClicked: Boolean = false) {
+        val currentGroupId = groupId
+        if (currentGroupId.isEmpty()) return
+
+        viewModelScope.launch(Dispatchers.Default) {
+            if (isClicked) {
+                _uiState.update { it.copy(isLoading = true) }
+            }
+            val group = getAllGroupUserCase.getGroupList().find { it.groupId == currentGroupId }
+            delay(500)
+            val messages = getAllMessageByGroupIdUserCase.getMessageListByGroupId(currentGroupId).reversed()
+            _uiState.update {
+                it.copy(
+                    groupId = currentGroupId,
+                    group = group,
+                    message = messages,
                     isLoading = false
                 )
             }
         }
-
     }
 
-    fun deleteAllMessage() {
-        viewModelScope.launch(appCoroutineDispatchers.io) {
-            deleteMessageUseCase.deleteAllMessage(groupId)
+    fun deleteAllMessage(targetGroupId: String = groupId) {
+        viewModelScope.launch(Dispatchers.Default) {
+            deleteMessageUseCase.deleteAllMessage(targetGroupId)
             getMessageList(true)
         }
     }
 
-    fun deleteGroupWithMessage(
-        deleteGroup: () -> Unit
-    ) {
-        viewModelScope.launch(appCoroutineDispatchers.io) {
-            deleteGroupWithMessageUseCase.deleteGroupWithMessage(groupId)
+    fun deleteGroupWithMessage(targetGroupId: String = groupId, deleteGroup: () -> Unit = {}) {
+        viewModelScope.launch(Dispatchers.Default) {
+            deleteGroupWithMessageUseCase.deleteGroupWithMessage(targetGroupId)
+            _uiState.update {
+                it.copy(
+                    group = null,
+                    groupId = "",
+                    message = emptyList(),
+                    isDeleteShowDialog = false
+                )
+            }
             deleteGroup()
+            sendEffect(ChatUiEffect.NavigateBack)
         }
     }
 
-    fun generateContentWithText(groupId: String, content: String, apiKey: String) {
+    fun generateContentWithText(targetGroupId: String, content: String, apiKey: String) {
         val images = imageUris.toList()
         imageUris.clear()
-        viewModelScope.launch(appCoroutineDispatchers.io) {
-            val messageId = generateRandomKey()
+        _uiState.update { it.copy(selectedImages = emptyList(), inputMessage = "") }
+
+        viewModelScope.launch(Dispatchers.Default) {
+            val messageId = Uuid.random().toString()
             failedMessageId = messageId
-            _chatUiState.update {
-                _chatUiState.value.copy(
-                    isApiLoading = true
-                )
+            _uiState.update { it.copy(isApiLoading = true) }
+            addToMessages(targetGroupId, messageId, content, Role.YOU, isPending = true, images)
+
+            if (apiKey.isBlank()) {
+                handleError(messageId, "Gemini API Key is missing. Please configure your API key in Settings.")
+                return@launch
             }
-            addToMessages(groupId, messageId, content, Role.YOU, isPending = true, images)
+
             try {
                 val gemini = getContentUseCase.getContentWithImage(content, apiKey, images)
-                val generatedContent = gemini.candidates[0].content.parts[0].text
-                val botId = generateRandomKey()
+                val generatedContent = gemini.candidates.firstOrNull()?.let { candidate ->
+                    val textParts = candidate.content.parts.filter { it.text.isNotBlank() }
+                    textParts.joinToString("\n") { it.text }
+                } ?: ""
+
+                if (generatedContent.isBlank()) {
+                    throw Exception("No text was generated by the model. Please try again.")
+                }
+
+                val botId = Uuid.random().toString()
                 handleContent(messageId, false)
                 failedMessageId = ""
                 addToMessages(
-                    groupId,
+                    targetGroupId,
                     botId,
                     generatedContent,
                     Role.GEMINI,
                     isPending = false,
                     emptyList()
                 )
-                _chatUiState.update {
-                    _chatUiState.value.copy(isApiLoading = false)
-                }
+                _uiState.update { it.copy(isApiLoading = false) }
             } catch (e: Exception) {
-                val errorMessage = if (e.message != null) {
-                    if (e.message.toString().contains("Illegal input: Field")) {
-                        "Failed to generate content. Please try again."
-                    } else {
-                        e.message.toString()
-                    }
-                } else {
-                    "Failed to generate content. Please try again."
-                }
+                val errorMessage = e.message?.takeIf { it.isNotBlank() } ?: "Failed to generate content. Please try again."
                 handleError(messageId, errorMessage)
             }
         }
     }
 
     fun handleError(messageId: String, errorMessage: String) {
-        viewModelScope.launch(appCoroutineDispatchers.io) {
+        viewModelScope.launch(Dispatchers.Default) {
             updatePendingUseCase.updatePending(messageId, false)
-            val errorId = generateRandomKey()
+            val errorId = Uuid.random().toString()
             addToMessages(
                 groupId,
                 errorId,
@@ -142,34 +230,36 @@ class ChatViewModel(
                 emptyList()
             )
             failedMessageId = ""
-            _chatUiState.update {
-                _chatUiState.value.copy(isApiLoading = false)
-            }
+            _uiState.update { it.copy(isApiLoading = false) }
         }
     }
 
-
     private fun handleContent(messageId: String, isPending: Boolean) {
-        viewModelScope.launch(appCoroutineDispatchers.io) {
+        viewModelScope.launch(Dispatchers.Default) {
             updatePendingUseCase.updatePending(messageId, isPending)
             getMessageList()
         }
     }
 
     private fun addToMessages(
-        groupId: String,
+        targetGroupId: String,
         messageId: String,
         text: String,
         sender: Role,
         isPending: Boolean,
         images: List<ByteArray>
     ) {
-        viewModelScope.launch(appCoroutineDispatchers.io) {
+        viewModelScope.launch(Dispatchers.Default) {
             insertMessageUseCase.insertMessage(
-                messageId, groupId, text, images, sender, isPending
+                messageId, targetGroupId, text, images, sender, isPending
             )
             getMessageList()
         }
     }
 
+    fun sendEffect(effect: ChatUiEffect) {
+        viewModelScope.launch {
+            _effect.send(effect)
+        }
+    }
 }

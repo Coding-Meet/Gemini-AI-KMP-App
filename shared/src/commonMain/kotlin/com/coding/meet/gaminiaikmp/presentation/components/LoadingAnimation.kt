@@ -7,6 +7,7 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.remember
@@ -16,16 +17,16 @@ import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
-import com.coding.meet.gaminiaikmp.theme.lightBorderColor
+import com.coding.meet.gaminiaikmp.presentation.preview.ComponentPreviews
 import kotlinx.coroutines.delay
 
 @Composable
 fun LoadingAnimation(
     modifier: Modifier = Modifier,
-    circleSize: Dp = 25.dp,
-    circleColor: Color = lightBorderColor,
-    spaceBetween: Dp = 10.dp,
-    travelDistance: Dp = 20.dp
+    circleSize: Dp = 16.dp,
+    circleColor: Color = MaterialTheme.colorScheme.primary,
+    spaceBetween: Dp = 8.dp,
+    travelDistance: Dp = 14.dp
 ) {
     val circles = listOf(
         remember { Animatable(initialValue = 0f) },
@@ -35,7 +36,7 @@ fun LoadingAnimation(
 
     circles.forEachIndexed { index, animatable ->
         LaunchedEffect(key1 = animatable) {
-            delay(index * 100L)
+            delay(index * 120L)
             animatable.animateTo(
                 targetValue = 1f,
                 animationSpec = infiniteRepeatable(
@@ -73,5 +74,10 @@ fun LoadingAnimation(
             )
         }
     }
+}
 
+@ComponentPreviews
+@Composable
+fun LoadingAnimationPreview() {
+    LoadingAnimation()
 }

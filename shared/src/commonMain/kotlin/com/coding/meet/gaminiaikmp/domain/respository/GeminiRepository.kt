@@ -2,6 +2,7 @@ package com.coding.meet.gaminiaikmp.domain.respository
 
 import com.coding.meet.gaminiaikmp.domain.model.ChatMessage
 import com.coding.meet.gaminiaikmp.domain.model.Gemini
+import com.coding.meet.gaminiaikmp.domain.model.GeminiModelInfo
 import com.coding.meet.gaminiaikmp.domain.model.Group
 import com.coding.meet.gaminiaikmp.domain.model.Role
 
@@ -39,5 +40,6 @@ interface GeminiRepository {
 
     suspend fun deleteAllMessage(groupId: String)
     suspend fun deleteGroupWithMessage(groupId: String)
-
+    suspend fun clearAllConversations()
+    suspend fun getAvailableModels(apiKey: String): List<GeminiModelInfo>
 }
