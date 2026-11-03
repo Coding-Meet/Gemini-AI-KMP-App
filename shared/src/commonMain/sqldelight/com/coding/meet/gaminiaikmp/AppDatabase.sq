@@ -50,3 +50,9 @@ WHERE chatId = :chatId;
 deleteGroupWithMessage:
 DELETE FROM GroupChat
 WHERE groupId = :groupId;
+
+clearAllMessages:
+DELETE FROM Message;
+
+clearAllGroups:
+DELETE FROM GroupChat;

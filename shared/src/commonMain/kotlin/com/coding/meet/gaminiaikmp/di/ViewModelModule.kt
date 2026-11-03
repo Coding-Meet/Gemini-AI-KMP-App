@@ -1,13 +1,15 @@
 package com.coding.meet.gaminiaikmp.di
 
+import com.coding.meet.gaminiaikmp.AppViewModel
 import com.coding.meet.gaminiaikmp.presentation.screens.chatscreen.ChatViewModel
 import com.coding.meet.gaminiaikmp.presentation.screens.mainscreen.MainViewModel
-import com.coding.meet.gaminiaikmp.utils.AppCoroutineDispatchers
-import org.koin.core.module.dsl.factoryOf
+import com.coding.meet.gaminiaikmp.presentation.screens.settingsscreen.SettingsViewModel
+import org.koin.core.module.dsl.viewModelOf
 import org.koin.dsl.module
 
 val viewModelModule = module {
-    single<AppCoroutineDispatchers> { AppCoroutineDispatchersImpl() }
-    factoryOf(::MainViewModel)
-    factoryOf(::ChatViewModel)
+    viewModelOf(::AppViewModel)
+    viewModelOf(::MainViewModel)
+    viewModelOf(::ChatViewModel)
+    viewModelOf(::SettingsViewModel)
 }

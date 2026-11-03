@@ -76,11 +76,17 @@ kotlin {
             implementation(libs.material3.adaptive.navigation.suite)
             implementation(libs.material3.window.size.class1)
 
+            // Navigation
+            implementation(libs.androidx.navigation.compose)
+            implementation("org.jetbrains.androidx.navigation3:navigation3-ui:1.1.2")
+            implementation("org.jetbrains.compose.material3.adaptive:adaptive-navigation3:1.3.0-rc01")
+
             // Lifecycle & ViewModel
             implementation(libs.androidx.lifecycle.viewmodelCompose)
             implementation(libs.androidx.lifecycle.runtimeCompose)
 
-            // DateTime
+            // Serialization & DateTime
+            implementation(libs.kotlinx.serialization.json)
             implementation(libs.kotlinx.datetime)
 
             // Settings
@@ -112,6 +118,9 @@ kotlin {
             implementation(libs.multiplatform.markdown.renderer)
             implementation(libs.multiplatform.markdown.renderer.m3)
 
+            // FileKit
+            implementation(libs.filekit.dialogs.compose)
+
             // KStore
             implementation(libs.kstore)
         }
@@ -130,7 +139,6 @@ kotlin {
         iosMain.dependencies {
             implementation(libs.sqldelight.native.driver)
             implementation(libs.ktor.client.darwin)
-            implementation(libs.filekit.dialogs.compose)
             implementation(libs.kstore.file)
         }
 

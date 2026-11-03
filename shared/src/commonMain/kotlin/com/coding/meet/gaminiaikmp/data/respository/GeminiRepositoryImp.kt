@@ -11,7 +11,9 @@ import com.coding.meet.gaminiaikmp.di.getPlatform
 import com.coding.meet.gaminiaikmp.di.readChatMessageKStore
 import com.coding.meet.gaminiaikmp.di.readGroupKStore
 import com.coding.meet.gaminiaikmp.domain.model.ChatMessage
+import com.coding.meet.gaminiaikmp.domain.model.DEFAULT_GEMINI_MODELS
 import com.coding.meet.gaminiaikmp.domain.model.Gemini
+import com.coding.meet.gaminiaikmp.domain.model.GeminiModelInfo
 import com.coding.meet.gaminiaikmp.domain.model.Group
 import com.coding.meet.gaminiaikmp.domain.model.Role
 import com.coding.meet.gaminiaikmp.domain.respository.GeminiRepository
@@ -164,11 +166,101 @@ class GeminiRepositoryImp(
     }
 
     override suspend fun deleteGroupWithMessage(groupId: String) {
+        sharedDatabase { appDatabase ->
+            appDatabase.appDatabaseQueries.deleteAllMessage(groupId)
+            appDatabase.appDatabaseQueries.deleteGroupWithMessage(groupId)
+        }
+    }
 
+    override suspend fun clearAllConversations() {
+        if (platform == TYPE.WEB) {
+            readGroupKStore { it.reset() }
+            readChatMessageKStore { it.reset() }
+        } else {
             sharedDatabase { appDatabase ->
-                appDatabase.appDatabaseQueries.deleteAllMessage(groupId)
-                appDatabase.appDatabaseQueries.deleteGroupWithMessage(groupId)
+                appDatabase.appDatabaseQueries.clearAllMessages()
+                appDatabase.appDatabaseQueries.clearAllGroups()
             }
+        }
+    }
 
+    override suspend fun getAvailableModels(apiKey: String): List<GeminiModelInfo> {
+        if (apiKey.isBlank()) return DEFAULT_GEMINI_MODELS
+        return try {
+            val response = geminiService.listModels(apiKey)
+            val filtered = response.models.filter { modelDto ->
+                val id = modelDto.name.removePrefix("models/").lowercase()
+                modelDto.supportedGenerationMethods.contains("generateContent") &&
+                    // Filter out audio / voice / speech models
+                    !id.contains("tts") &&
+                    !id.contains("live") &&
+                    !id.contains("transcribe") &&
+                    !id.contains("translate") &&
+                    // Filter out image, video and music generators
+                    !id.contains("image") &&
+                    !id.contains("imagen") &&
+                    !id.contains("banana") &&
+                    !id.contains("omni") &&
+                    !id.contains("lyria") &&
+                    // Filter out shut down models
+                    !id.contains("gemini-2.0") &&
+                    !id.contains("gemini-3-pro-preview") &&
+                    !id.contains("gemini-3.1-flash-lite-preview") &&
+                    // Filter out specialized agent and robotics models
+                    !id.contains("deep-research") &&
+                    !id.contains("antigravity") &&
+                    !id.contains("robotics") &&
+                    !id.contains("computer-use") &&
+                    !id.contains("embedding") &&
+                    !id.contains("aqa")
+            }.map { modelDto ->
+                val rawId = modelDto.name.removePrefix("models/")
+                val id = rawId.lowercase()
+                val displayName = modelDto.displayName ?: rawId
+                val desc = modelDto.description ?: ""
+                val isThinking = modelDto.thinking == true
+                val badge = when {
+                    id == "gemini-3.8-flash" -> "Recommended"
+                    id == "gemini-4-argon" -> "Gemini 4"
+                    id == "gemini-3.5-flash-lite" -> "Fast & Lite"
+                    id == "gemini-3.6-flash" -> "Stable"
+                    id == "gemini-3.1-flash-lite" -> "Lite"
+                    id.contains("latest") -> "Latest"
+                    id == "gemini-2.5-flash-lite" -> "2.5 Lite"
+                    id == "gemini-2.5-flash" || id == "gemini-2.5-pro" -> "Legacy"
+                    id.contains("gemma") -> "Gemma"
+                    id.contains("preview") -> "Preview"
+                    isThinking -> "Thinking"
+                    else -> null
+                }
+                GeminiModelInfo(
+                    id = rawId,
+                    name = displayName,
+                    description = desc,
+                    badge = badge,
+                    inputTokenLimit = modelDto.inputTokenLimit,
+                    outputTokenLimit = modelDto.outputTokenLimit,
+                    isThinking = isThinking
+                )
+            }
+            if (filtered.isNotEmpty()) {
+                filtered.sortedWith(
+                    compareByDescending<GeminiModelInfo> { it.id.lowercase() == "gemini-3.8-flash" }
+                        .thenByDescending { it.id.lowercase() == "gemini-4-argon" }
+                        .thenByDescending { it.id.lowercase() == "gemini-3.5-flash-lite" }
+                        .thenByDescending { it.id.lowercase() == "gemini-3.6-flash" }
+                        .thenByDescending { it.id.lowercase() == "gemini-3.1-flash-lite" }
+                        .thenByDescending { it.id.lowercase().contains("latest") }
+                        .thenByDescending { it.id.lowercase().contains("3.") }
+                        .thenByDescending { it.id.lowercase().contains("gemma") }
+                        .thenByDescending { it.id.lowercase().contains("2.5") }
+                )
+            } else {
+                DEFAULT_GEMINI_MODELS
+            }
+        } catch (e: Exception) {
+            println("Failed to fetch models from API, falling back to defaults: ${e.message}")
+            DEFAULT_GEMINI_MODELS
+        }
     }
 }

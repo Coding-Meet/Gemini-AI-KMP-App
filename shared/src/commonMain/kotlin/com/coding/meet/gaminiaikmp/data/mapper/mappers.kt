@@ -4,23 +4,20 @@ import com.coding.meet.gaminiaikmp.data.models.CandidateDto
 import com.coding.meet.gaminiaikmp.data.models.ContentDto
 import com.coding.meet.gaminiaikmp.data.models.GeminiResponseDto
 import com.coding.meet.gaminiaikmp.data.models.PartDto
-
 import com.coding.meet.gaminiaikmp.domain.model.Gemini
-
 
 fun GeminiResponseDto.toGemini(): Gemini {
     return Gemini(candidates.map { it.toCandidate() })
 }
 
 fun CandidateDto.toCandidate(): Gemini.Candidate {
-    return Gemini.Candidate(content.toContent())
+    return Gemini.Candidate(content?.toContent() ?: Gemini.Content(emptyList(), "model"))
 }
 
 fun ContentDto.toContent(): Gemini.Content {
-    return Gemini.Content(parts.map { it.toPart() }, role)
+    return Gemini.Content(parts.map { it.toPart() }, role ?: "model")
 }
 
 fun PartDto.toPart(): Gemini.Part {
-    return Gemini.Part(text)
+    return Gemini.Part(text ?: "")
 }
-
