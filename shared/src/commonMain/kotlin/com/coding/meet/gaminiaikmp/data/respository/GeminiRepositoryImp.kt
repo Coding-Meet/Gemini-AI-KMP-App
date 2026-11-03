@@ -166,9 +166,20 @@ class GeminiRepositoryImp(
     }
 
     override suspend fun deleteGroupWithMessage(groupId: String) {
-        sharedDatabase { appDatabase ->
-            appDatabase.appDatabaseQueries.deleteAllMessage(groupId)
-            appDatabase.appDatabaseQueries.deleteGroupWithMessage(groupId)
+        if (platform == TYPE.WEB) {
+            readChatMessageKStore { kStore ->
+                val chatList = kStore.getOrEmpty()
+                chatList.filter { it.groupId == groupId }.forEach { kStore.minus(it) }
+            }
+            readGroupKStore { kStore ->
+                val groupList = kStore.getOrEmpty()
+                groupList.filter { it.groupId == groupId }.forEach { kStore.minus(it) }
+            }
+        } else {
+            sharedDatabase { appDatabase ->
+                appDatabase.appDatabaseQueries.deleteAllMessage(groupId)
+                appDatabase.appDatabaseQueries.deleteGroupWithMessage(groupId)
+            }
         }
     }
 
