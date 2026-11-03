@@ -27,7 +27,9 @@ import androidx.window.core.layout.WindowSizeClass
 import com.coding.meet.gaminiaikmp.presentation.components.WelcomeScreen
 import com.coding.meet.gaminiaikmp.presentation.screens.chatscreen.ChatScreen
 import com.coding.meet.gaminiaikmp.presentation.screens.chatscreen.components.DrawerToggleButton
-import com.coding.meet.gaminiaikmp.presentation.screens.mainscreen.MainScreen
+import com.coding.meet.gaminiaikmp.presentation.screens.grouplistscreen.GroupListScreen
+import com.coding.meet.gaminiaikmp.presentation.screens.grouplistscreen.GroupUiIntent
+import com.coding.meet.gaminiaikmp.presentation.screens.grouplistscreen.GroupViewModel
 import com.coding.meet.gaminiaikmp.presentation.screens.mainscreen.MainUiIntent
 import com.coding.meet.gaminiaikmp.presentation.screens.mainscreen.MainViewModel
 import com.coding.meet.gaminiaikmp.presentation.screens.settingsscreen.SettingsScreen
@@ -36,7 +38,8 @@ import org.koin.compose.viewmodel.koinViewModel
 @OptIn(ExperimentalMaterial3AdaptiveApi::class)
 @Composable
 fun AppNavigation(
-    mainViewModel: MainViewModel = koinViewModel()
+    mainViewModel: MainViewModel = koinViewModel(),
+    groupViewModel: GroupViewModel = koinViewModel()
 ) {
     val mainUiState by mainViewModel.uiState.collectAsState()
     val backStack = rememberNavBackStack(nav3Configuration, ScreenRoute.ConversationList)
@@ -63,7 +66,7 @@ fun AppNavigation(
         onBack = {
             if (backStack.size > 1) {
                 backStack.removeLastOrNull()
-                mainViewModel.handleIntent(MainUiIntent.ClearSelection)
+                groupViewModel.handleIntent(GroupUiIntent.ClearSelection)
             }
         },
         sceneStrategies = listOf(listDetailStrategy),
@@ -104,13 +107,13 @@ fun AppNavigation(
                     }
                 )
             ) {
-                MainScreen(
-                    mainViewModel = mainViewModel,
+                GroupListScreen(
+                    groupViewModel = groupViewModel,
                     onSettingsClick = {
                         backStack.add(ScreenRoute.Settings)
                     },
                     onGroupClick = { index, groupId ->
-                        mainViewModel.handleIntent(MainUiIntent.SelectGroup(index, groupId))
+                        groupViewModel.handleIntent(GroupUiIntent.SelectGroup(index, groupId))
                         val currentDetail = backStack.lastOrNull() as? ScreenRoute.ConversationDetail
                         if (currentDetail != null) {
                             if (currentDetail.groupId != groupId) {
@@ -132,11 +135,11 @@ fun AppNavigation(
                         if (backStack.size > 1) {
                             backStack.removeLastOrNull()
                         }
-                        mainViewModel.handleIntent(MainUiIntent.ClearSelection)
+                        groupViewModel.handleIntent(GroupUiIntent.ClearSelection)
                     },
                     onDeleteSuccess = {
-                        mainViewModel.handleIntent(MainUiIntent.LoadGroups)
-                        mainViewModel.handleIntent(MainUiIntent.ClearSelection)
+                        groupViewModel.handleIntent(GroupUiIntent.LoadGroups)
+                        groupViewModel.handleIntent(GroupUiIntent.ClearSelection)
                         if (backStack.size > 1) {
                             backStack.removeLastOrNull()
                         }
@@ -158,8 +161,8 @@ fun AppNavigation(
                         }
                     },
                     onAllConversationsDeleted = {
-                        mainViewModel.handleIntent(MainUiIntent.LoadGroups)
-                        mainViewModel.handleIntent(MainUiIntent.ClearSelection)
+                        groupViewModel.handleIntent(GroupUiIntent.LoadGroups)
+                        groupViewModel.handleIntent(GroupUiIntent.ClearSelection)
                         if (backStack.size > 1) {
                             backStack.removeLastOrNull()
                         }

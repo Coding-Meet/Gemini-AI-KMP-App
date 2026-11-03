@@ -1,4 +1,4 @@
-package com.coding.meet.gaminiaikmp.presentation.screens.mainscreen.components
+package com.coding.meet.gaminiaikmp.presentation.screens.grouplistscreen.components
 
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
@@ -147,3 +147,4 @@ fun ApiKeyAlertDialogPreview() {
         onSave = {}
     )
 }
+

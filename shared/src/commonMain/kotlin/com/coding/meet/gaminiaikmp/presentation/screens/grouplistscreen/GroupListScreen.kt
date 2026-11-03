@@ -1,12 +1,7 @@
-package com.coding.meet.gaminiaikmp.presentation.screens.mainscreen
+package com.coding.meet.gaminiaikmp.presentation.screens.grouplistscreen
 
 import androidx.compose.foundation.background
-import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.PaddingValues
-import androidx.compose.foundation.layout.fillMaxHeight
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.lazy.rememberLazyListState
@@ -24,10 +19,10 @@ import com.coding.meet.gaminiaikmp.presentation.components.AppVerticalScrollbar
 import com.coding.meet.gaminiaikmp.presentation.components.SimpleAlertDialog
 import com.coding.meet.gaminiaikmp.presentation.components.WelcomeScreen
 import com.coding.meet.gaminiaikmp.presentation.preview.AllAdaptivePreviews
-import com.coding.meet.gaminiaikmp.presentation.screens.mainscreen.components.ApiKeyAlertDialog
-import com.coding.meet.gaminiaikmp.presentation.screens.mainscreen.components.GroupLayout
-import com.coding.meet.gaminiaikmp.presentation.screens.mainscreen.components.NewChatAlertDialog
-import com.coding.meet.gaminiaikmp.presentation.screens.mainscreen.components.TopBarLayout
+import com.coding.meet.gaminiaikmp.presentation.screens.grouplistscreen.components.ApiKeyAlertDialog
+import com.coding.meet.gaminiaikmp.presentation.screens.grouplistscreen.components.GroupLayout
+import com.coding.meet.gaminiaikmp.presentation.screens.grouplistscreen.components.NewChatAlertDialog
+import com.coding.meet.gaminiaikmp.presentation.screens.grouplistscreen.components.TopBarLayout
 import com.coding.meet.gaminiaikmp.utils.ObserveAsEvents
 import com.coding.meet.gaminiaikmp.utils.currentDateTimeToString
 import com.coding.meet.gaminiaikmp.utils.isValidApiKey
@@ -35,43 +30,41 @@ import org.koin.compose.viewmodel.koinViewModel
 import kotlin.uuid.Uuid
 
 @Composable
-fun MainScreen(
-    mainViewModel: MainViewModel = koinViewModel(),
+fun GroupListScreen(
+    groupViewModel: GroupViewModel = koinViewModel(),
     onGroupClick: (index: Int, groupId: String) -> Unit = { _, _ -> },
     onSettingsClick: () -> Unit = {}
 ) {
-    val mainUiState by mainViewModel.uiState.collectAsState()
+    val groupUiState by groupViewModel.uiState.collectAsState()
 
-    // Observe MainUiEffect lifecycle-safely
-    mainViewModel.effect.ObserveAsEvents { effect ->
+    // Observe GroupUiEffect lifecycle-safely
+    groupViewModel.effect.ObserveAsEvents { effect ->
         when (effect) {
-            is MainUiEffect.NavigateToDetail -> {
-                val groupIndex = mainUiState.groupList.indexOfFirst { it.groupId == effect.groupId }
-                if (groupIndex != -1) {
-                    onGroupClick(groupIndex, effect.groupId)
-                }
+            is GroupUiEffect.NavigateToDetail -> {
+                val groupIndex = groupUiState.groupList.indexOfFirst { it.groupId == effect.groupId }
+                onGroupClick(if (groupIndex != -1) groupIndex else 0, effect.groupId)
             }
-            is MainUiEffect.ShowAlert -> {
-                mainViewModel.handleIntent(MainUiIntent.ShowAlert(effect.title, effect.message))
+            is GroupUiEffect.ShowAlert -> {
+                groupViewModel.handleIntent(GroupUiIntent.ShowAlert(effect.title, effect.message))
             }
             else -> Unit
         }
     }
 
     ApiKeyAlertDialog(
-        show = mainUiState.isApiShowDialog,
-        initialApiKey = mainUiState.apiKeyText,
-        onDismiss = { mainViewModel.handleIntent(MainUiIntent.DismissApiKeyDialog) },
-        onSave = { apiKey -> mainViewModel.handleIntent(MainUiIntent.SaveApiKey(apiKey)) },
-        onError = { title, message -> mainViewModel.handleIntent(MainUiIntent.ShowAlert(title, message)) }
+        show = groupUiState.isApiShowDialog,
+        initialApiKey = groupUiState.apiKeyText,
+        onDismiss = { groupViewModel.handleIntent(GroupUiIntent.DismissApiKeyDialog) },
+        onSave = { apiKey -> groupViewModel.handleIntent(GroupUiIntent.SaveApiKey(apiKey)) },
+        onError = { title, message -> groupViewModel.handleIntent(GroupUiIntent.ShowAlert(title, message)) }
     )
 
     NewChatAlertDialog(
-        show = mainUiState.isNewChatShowDialog,
-        onDismiss = { mainViewModel.handleIntent(MainUiIntent.DismissNewChatDialog) },
+        show = groupUiState.isNewChatShowDialog,
+        onDismiss = { groupViewModel.handleIntent(GroupUiIntent.DismissNewChatDialog) },
         onSave = { name ->
-            mainViewModel.handleIntent(
-                MainUiIntent.AddNewGroup(
+            groupViewModel.handleIntent(
+                GroupUiIntent.AddNewGroup(
                     groupId = Uuid.random().toString(),
                     groupName = name,
                     date = currentDateTimeToString(),
@@ -79,51 +72,51 @@ fun MainScreen(
                 )
             )
         },
-        onError = { title, message -> mainViewModel.handleIntent(MainUiIntent.ShowAlert(title, message)) }
+        onError = { title, message -> groupViewModel.handleIntent(GroupUiIntent.ShowAlert(title, message)) }
     )
 
     SimpleAlertDialog(
-        show = mainUiState.isAlertDialogShow,
-        title = mainUiState.alertTitleText,
-        message = mainUiState.alertDescText,
-        onDismiss = { mainViewModel.handleIntent(MainUiIntent.DismissAlert) }
+        show = groupUiState.isAlertDialogShow,
+        title = groupUiState.alertTitleText,
+        message = groupUiState.alertDescText,
+        onDismiss = { groupViewModel.handleIntent(GroupUiIntent.DismissAlert) }
     )
 
-    MainScreenContent(
-        mainUiState = mainUiState,
+    GroupListScreenContent(
+        groupUiState = groupUiState,
         onNewGroupClick = {
-            val apiKey = mainViewModel.getApikeyLocalStorage().trim()
+            val apiKey = groupViewModel.getApikeyLocalStorage().trim()
             if (apiKey.isNotEmpty()) {
                 if (apiKey.isValidApiKey()) {
-                    mainViewModel.handleIntent(MainUiIntent.OpenNewChatDialog)
+                    groupViewModel.handleIntent(GroupUiIntent.OpenNewChatDialog)
                 } else {
-                    mainViewModel.handleIntent(MainUiIntent.OpenApiKeyDialog)
+                    groupViewModel.handleIntent(GroupUiIntent.OpenApiKeyDialog)
                 }
             } else {
-                mainViewModel.handleIntent(MainUiIntent.OpenApiKeyDialog)
+                groupViewModel.handleIntent(GroupUiIntent.OpenApiKeyDialog)
             }
         },
         onSettingsClick = onSettingsClick,
         onItemClick = { index, groupItem ->
-            val apiKey = mainViewModel.getApikeyLocalStorage().trim()
+            val apiKey = groupViewModel.getApikeyLocalStorage().trim()
             if (apiKey.isNotEmpty()) {
                 if (apiKey.isValidApiKey()) {
                     onGroupClick(index, groupItem.groupId)
                 } else {
-                    mainViewModel.handleIntent(MainUiIntent.UpdateApiKeyText(apiKey))
-                    mainViewModel.handleIntent(MainUiIntent.OpenApiKeyDialog)
+                    groupViewModel.handleIntent(GroupUiIntent.UpdateApiKeyText(apiKey))
+                    groupViewModel.handleIntent(GroupUiIntent.OpenApiKeyDialog)
                 }
             } else {
-                mainViewModel.handleIntent(MainUiIntent.UpdateApiKeyText(apiKey))
-                mainViewModel.handleIntent(MainUiIntent.OpenApiKeyDialog)
+                groupViewModel.handleIntent(GroupUiIntent.UpdateApiKeyText(apiKey))
+                groupViewModel.handleIntent(GroupUiIntent.OpenApiKeyDialog)
             }
         }
     )
 }
 
 @Composable
-fun MainScreenContent(
-    mainUiState: MainUiState,
+fun GroupListScreenContent(
+    groupUiState: GroupUiState,
     onNewGroupClick: () -> Unit = {},
     onSettingsClick: () -> Unit = {},
     onItemClick: (index: Int, group: Group) -> Unit = { _, _ -> }
@@ -146,19 +139,19 @@ fun MainScreenContent(
                     .fillMaxSize()
                     .background(MaterialTheme.colorScheme.background),
                 state = listState,
-                verticalArrangement = if (mainUiState.groupList.isEmpty()) Arrangement.Center else Arrangement.Top,
+                verticalArrangement = if (groupUiState.groupList.isEmpty()) Arrangement.Center else Arrangement.Top,
                 contentPadding = PaddingValues(vertical = 8.dp)
             ) {
-                itemsIndexed(mainUiState.groupList, key = { _, groupItem ->
+                itemsIndexed(groupUiState.groupList, key = { _, groupItem ->
                     groupItem.groupId
                 }) { index, groupItem ->
                     GroupLayout(
                         group = groupItem,
-                        isSelected = mainUiState.currentPos == index,
+                        isSelected = groupUiState.currentPos == index,
                         onClick = { onItemClick(index, groupItem) }
                     )
                 }
-                if (isCompactScreen && mainUiState.groupList.isEmpty()) {
+                if (isCompactScreen && groupUiState.groupList.isEmpty()) {
                     item {
                         WelcomeScreen()
                     }
@@ -178,15 +171,16 @@ fun MainScreenContent(
 
 @AllAdaptivePreviews
 @Composable
-fun MainScreenPreview() {
-    MainScreenContent(
-        mainUiState = MainUiState(
+fun GroupListScreenPreview() {
+    GroupListScreenContent(
+        groupUiState = GroupUiState(
             groupList = listOf(
-                Group("1", "Kotlin Multiplatform", "03 Nov, 10:00 AM", "robot_1.png"),
-                Group("2", "Compose Adaptive UI", "02 Nov, 08:30 PM", "robot_2.png"),
-                Group("3", "Gemini 2.5 Pro Assistant", "01 Nov, 04:15 PM", "robot_3.png")
+                Group("1", "Kotlin Multiplatform Discussion", "03 Nov, 10:30 AM", "robot_1.png"),
+                Group("2", "Gemini 3.8 Flash Testing", "03 Nov, 11:15 AM", "robot_2.png"),
+                Group("3", "Compose Adaptive Layouts", "03 Nov, 01:45 PM", "robot_3.png")
             ),
             currentPos = 0
         )
     )
 }
+

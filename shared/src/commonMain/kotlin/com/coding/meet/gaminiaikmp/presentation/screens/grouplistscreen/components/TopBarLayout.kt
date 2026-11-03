@@ -1,4 +1,4 @@
-package com.coding.meet.gaminiaikmp.presentation.screens.mainscreen.components
+package com.coding.meet.gaminiaikmp.presentation.screens.grouplistscreen.components
 
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.material.icons.Icons
@@ -92,3 +92,4 @@ fun TopBarLayoutPreview() {
         Text("Conversations content")
     }
 }
+
