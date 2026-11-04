@@ -5,6 +5,7 @@ import com.coding.meet.gaminiaikmp.domain.model.Gemini
 import com.coding.meet.gaminiaikmp.domain.model.GeminiModelInfo
 import com.coding.meet.gaminiaikmp.domain.model.Group
 import com.coding.meet.gaminiaikmp.domain.model.Role
+import kotlinx.coroutines.flow.Flow
 
 
 interface GeminiRepository {
@@ -35,6 +36,7 @@ interface GeminiRepository {
     )
 
 
+    fun getGroupListFlow(): Flow<List<Group>>
     suspend fun getGroupList(): List<Group>
     suspend fun getMessageListByGroupId(groupId: String): List<ChatMessage>
 

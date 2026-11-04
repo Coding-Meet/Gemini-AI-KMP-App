@@ -30,16 +30,33 @@ class GroupViewModel(
     val effect: Flow<GroupUiEffect> = _effect.receiveAsFlow()
 
     init {
-        handleIntent(GroupUiIntent.LoadGroups)
+        observeGroups()
+    }
+
+    private fun observeGroups() {
+        viewModelScope.launch(Dispatchers.Default) {
+            _uiState.update { it.copy(isLoading = true) }
+            getAllGroupUserCase.getGroupListFlow().collect { groups ->
+                _uiState.update { current ->
+                    val stillExists = groups.any { it.groupId == current.selectedGroupId }
+                    current.copy(
+                        groupList = groups,
+                        isLoading = false,
+                        selectedGroupId = if (stillExists) current.selectedGroupId else null
+                    )
+                }
+            }
+        }
     }
 
     fun handleIntent(intent: GroupUiIntent) {
         when (intent) {
-            is GroupUiIntent.LoadGroups -> getGroupList()
+            is GroupUiIntent.LoadGroups -> {
+                // Handled automatically via reactive SQL Flow in observeGroups()
+            }
             is GroupUiIntent.SelectGroup -> {
                 _uiState.update {
                     it.copy(
-                        currentPos = intent.index,
                         selectedGroupId = intent.groupId
                     )
                 }
@@ -47,7 +64,6 @@ class GroupViewModel(
             is GroupUiIntent.ClearSelection -> {
                 _uiState.update {
                     it.copy(
-                        currentPos = -1,
                         selectedGroupId = null
                     )
                 }
@@ -98,28 +114,15 @@ class GroupViewModel(
         }
     }
 
-    fun getGroupList() {
-        viewModelScope.launch(Dispatchers.Default) {
-            _uiState.update { it.copy(isLoading = true) }
-            val groups = getAllGroupUserCase.getGroupList()
-            _uiState.update { it.copy(groupList = groups, isLoading = false) }
-        }
-    }
-
     fun addNewGroup(groupId: String, groupName: String, date: String, icon: String) {
         viewModelScope.launch(Dispatchers.Default) {
             insertGroupUseCase.insertGroup(
                 groupId, groupName, date, icon
             )
-            val groups = getAllGroupUserCase.getGroupList()
-            val newIndex = groups.indexOfFirst { it.groupId == groupId }
             _uiState.update {
                 it.copy(
-                    groupList = groups,
-                    isLoading = false,
                     isNewChatShowDialog = false,
                     newGroupText = "",
-                    currentPos = if (newIndex != -1) newIndex else 0,
                     selectedGroupId = groupId
                 )
             }
@@ -141,4 +144,3 @@ class GroupViewModel(
         }
     }
 }
-

@@ -2,10 +2,7 @@ package com.coding.meet.gaminiaikmp.di
 
 import androidx.compose.ui.graphics.ImageBitmap
 import androidx.compose.ui.graphics.toComposeImageBitmap
-import com.coding.meet.gaminiaikmp.domain.model.ChatMessage
-import com.coding.meet.gaminiaikmp.domain.model.Group
 import com.coding.meet.gaminiaikmp.utils.TYPE
-import io.github.xxfast.kstore.KStore
 import org.jetbrains.skia.Image
 import java.io.IOException
 import java.net.InetSocketAddress
@@ -27,6 +24,3 @@ actual fun isNetworkAvailable(): Boolean {
         false
     }
 }
-
-actual suspend fun readGroupKStore(readFun: suspend (KStore<List<Group>>) -> Unit) {}
-actual suspend fun readChatMessageKStore(readFun: suspend (KStore<List<ChatMessage>>) -> Unit) {}

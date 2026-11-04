@@ -8,6 +8,7 @@ import kotlinx.coroutines.flow.StateFlow
 class AppViewModel(
     getThemeModeUseCase: GetThemeModeUseCase
 ) : ViewModel() {
-    val themeMode: StateFlow<AppThemeMode> = getThemeModeUseCase.themeMode
-}
 
+    val themeMode: StateFlow<AppThemeMode> = getThemeModeUseCase.themeMode
+
+}

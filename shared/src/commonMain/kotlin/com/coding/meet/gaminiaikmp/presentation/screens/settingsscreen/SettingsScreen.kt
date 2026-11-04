@@ -1,28 +1,65 @@
 package com.coding.meet.gaminiaikmp.presentation.screens.settingsscreen
 
 import androidx.compose.foundation.BorderStroke
-import androidx.compose.foundation.background
-import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.BoxWithConstraints
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxHeight
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
-import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
-import androidx.compose.material.icons.filled.*
-import androidx.compose.material3.*
+import androidx.compose.material.icons.filled.DarkMode
+import androidx.compose.material.icons.filled.DeleteForever
+import androidx.compose.material.icons.filled.Edit
+import androidx.compose.material.icons.filled.Info
+import androidx.compose.material.icons.filled.Key
+import androidx.compose.material.icons.filled.LightMode
+import androidx.compose.material.icons.filled.Palette
+import androidx.compose.material.icons.filled.Psychology
+import androidx.compose.material.icons.filled.Refresh
+import androidx.compose.material.icons.filled.SettingsBrightness
+import androidx.compose.material.icons.filled.Storage
+import androidx.compose.material.icons.filled.Visibility
+import androidx.compose.material.icons.filled.VisibilityOff
+import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material3.FilledTonalButton
+import androidx.compose.material3.HorizontalDivider
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Scaffold
+import androidx.compose.material3.SnackbarHost
+import androidx.compose.material3.SnackbarHostState
+import androidx.compose.material3.Surface
+import androidx.compose.material3.Text
+import androidx.compose.material3.TopAppBar
+import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.material3.adaptive.currentWindowAdaptiveInfoV2
-import androidx.compose.runtime.*
+import androidx.compose.material3.rememberTopAppBarState
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.window.core.layout.WindowSizeClass
 import com.coding.meet.gaminiaikmp.presentation.components.AppVerticalScrollbar
 import com.coding.meet.gaminiaikmp.presentation.preview.AllAdaptivePreviews
-import com.coding.meet.gaminiaikmp.presentation.screens.chatscreen.components.DrawerToggleButton
 import com.coding.meet.gaminiaikmp.presentation.screens.settingsscreen.components.DeleteAllChatsDialog
 import com.coding.meet.gaminiaikmp.presentation.screens.settingsscreen.components.EditApiKeyDialog
 import com.coding.meet.gaminiaikmp.presentation.screens.settingsscreen.components.ModelCard
@@ -33,12 +70,10 @@ import org.koin.compose.viewmodel.koinViewModel
 
 @Composable
 fun SettingsScreen(
-    settingsViewModel: SettingsViewModel = koinViewModel(),
     onBackClick: () -> Unit = {},
-    onAllConversationsDeleted: () -> Unit = {},
-    isDesktopDrawerOpen: Boolean = false,
-    onToggleDrawer: (() -> Unit)? = null
+    onAllConversationsDeleted: () -> Unit = {}
 ) {
+    val settingsViewModel = koinViewModel<SettingsViewModel>()
     val uiState by settingsViewModel.uiState.collectAsState()
     val snackbarHostState = remember { SnackbarHostState() }
 
@@ -74,8 +109,6 @@ fun SettingsScreen(
         uiState = uiState,
         snackbarHostState = snackbarHostState,
         onBackClick = onBackClick,
-        isDesktopDrawerOpen = isDesktopDrawerOpen,
-        onToggleDrawer = onToggleDrawer,
         onSelectModel = { settingsViewModel.handleIntent(SettingsUiIntent.SelectModel(it)) },
         onRefreshModels = { settingsViewModel.handleIntent(SettingsUiIntent.RefreshModels) },
         onSelectTheme = { settingsViewModel.handleIntent(SettingsUiIntent.SelectTheme(it)) },
@@ -90,8 +123,6 @@ fun SettingsScreenContent(
     uiState: SettingsUiState = SettingsUiState(),
     snackbarHostState: SnackbarHostState = remember { SnackbarHostState() },
     onBackClick: () -> Unit = {},
-    isDesktopDrawerOpen: Boolean = false,
-    onToggleDrawer: (() -> Unit)? = null,
     onSelectModel: (String) -> Unit = {},
     onRefreshModels: () -> Unit = {},
     onSelectTheme: (AppThemeMode) -> Unit = {},
@@ -102,54 +133,38 @@ fun SettingsScreenContent(
     val windowAdaptiveInfo = currentWindowAdaptiveInfoV2()
     val isCompactScreen = !windowAdaptiveInfo.windowSizeClass.isWidthAtLeastBreakpoint(WindowSizeClass.WIDTH_DP_MEDIUM_LOWER_BOUND)
     val scrollBehavior = TopAppBarDefaults.pinnedScrollBehavior(rememberTopAppBarState())
-    Row(
-        modifier = Modifier
-            .fillMaxSize()
-            .background(MaterialTheme.colorScheme.background)
-    ) {
-        if (!isCompactScreen) {
-            VerticalDivider(
-                modifier = Modifier.fillMaxHeight(),
-                thickness = 1.dp,
-                color = MaterialTheme.colorScheme.outlineVariant
+
+    Scaffold(
+        modifier = Modifier.fillMaxSize(),
+        containerColor = MaterialTheme.colorScheme.background,
+        snackbarHost = { SnackbarHost(snackbarHostState) },
+        topBar = {
+            TopAppBar(
+                navigationIcon = {
+                    IconButton(onClick = onBackClick) {
+                        Icon(
+                            imageVector = Icons.AutoMirrored.Filled.ArrowBack,
+                            contentDescription = "Back",
+                            tint = MaterialTheme.colorScheme.onSurface
+                        )
+                    }
+                },
+                colors = TopAppBarDefaults.topAppBarColors(
+                    containerColor = MaterialTheme.colorScheme.surface,
+                    scrolledContainerColor = MaterialTheme.colorScheme.surfaceContainer,
+                    titleContentColor = MaterialTheme.colorScheme.onSurface
+                ),
+                title = {
+                    Text(
+                        text = "Settings",
+                        style = MaterialTheme.typography.titleLarge,
+                        fontWeight = FontWeight.Bold
+                    )
+                },
+                scrollBehavior = scrollBehavior
             )
         }
-
-        Box(
-            modifier = Modifier
-                .weight(1f)
-                .fillMaxHeight()
-        ) {
-            Scaffold(
-                containerColor = MaterialTheme.colorScheme.background,
-                snackbarHost = { SnackbarHost(snackbarHostState) },
-                topBar = {
-                    TopAppBar(
-                        navigationIcon = {
-                            IconButton(onClick = onBackClick) {
-                                Icon(
-                                    imageVector = Icons.AutoMirrored.Filled.ArrowBack,
-                                    contentDescription = "Back",
-                                    tint = MaterialTheme.colorScheme.onSurface
-                                )
-                            }
-                        },
-                        colors = TopAppBarDefaults.topAppBarColors(
-                            containerColor = MaterialTheme.colorScheme.surface,
-                            scrolledContainerColor = MaterialTheme.colorScheme.surfaceContainer,
-                            titleContentColor = MaterialTheme.colorScheme.onSurface
-                        ),
-                        title = {
-                            Text(
-                                text = "Settings",
-                                style = MaterialTheme.typography.titleLarge,
-                                fontWeight = FontWeight.Bold
-                            )
-                        },
-                        scrollBehavior = scrollBehavior
-                    )
-                }
-            ) { paddingValues ->
+    ) { paddingValues ->
                 val scrollState = rememberScrollState()
                 Box(
                     modifier = Modifier
@@ -469,17 +484,7 @@ fun SettingsScreenContent(
                 )
             }
         }
-
-        if (!isCompactScreen && onToggleDrawer != null) {
-                DrawerToggleButton(
-                    isDesktopDrawerOpen = isDesktopDrawerOpen,
-                    onToggleDrawer = onToggleDrawer,
-                    modifier = Modifier.align(Alignment.CenterStart)
-                )
-            }
-        }
     }
-}
 
 @AllAdaptivePreviews
 @Composable

@@ -59,7 +59,6 @@ kotlin {
             implementation(libs.ktor.client.okhttp)
             implementation(libs.koin.android)
             implementation(libs.koin.androidx.compose)
-            implementation(libs.kstore.file)
         }
 
         commonMain.dependencies {
@@ -77,9 +76,9 @@ kotlin {
             implementation(libs.material3.window.size.class1)
 
             // Navigation
-            implementation(libs.androidx.navigation.compose)
-            implementation("org.jetbrains.androidx.navigation3:navigation3-ui:1.1.2")
-            implementation("org.jetbrains.compose.material3.adaptive:adaptive-navigation3:1.3.0-rc01")
+            implementation(libs.navigation3.ui)
+            implementation(libs.lifecycle.viewmodel.navigation3)
+            implementation(libs.adaptive.navigation3)
 
             // Lifecycle & ViewModel
             implementation(libs.androidx.lifecycle.viewmodelCompose)
@@ -120,9 +119,6 @@ kotlin {
 
             // FileKit
             implementation(libs.filekit.dialogs.compose)
-
-            // KStore
-            implementation(libs.kstore)
         }
 
         commonTest.dependencies {
@@ -133,13 +129,11 @@ kotlin {
             implementation(compose.desktop.currentOs)
             implementation(libs.sqldelight.sqlite.driver)
             implementation(libs.ktor.client.java)
-            implementation(libs.kstore.file)
         }
 
         iosMain.dependencies {
             implementation(libs.sqldelight.native.driver)
             implementation(libs.ktor.client.darwin)
-            implementation(libs.kstore.file)
         }
 
         @OptIn(ExperimentalWasmDsl::class)
@@ -150,7 +144,6 @@ kotlin {
             implementation(npm("@cashapp/sqldelight-sqljs-worker", "2.1.0"))
             implementation(npm("sql.js", libs.versions.sqlJs.get()))
             implementation(devNpm("copy-webpack-plugin", libs.versions.webPackPlugin.get()))
-            implementation(libs.kstore.storage)
         }
 
         getByName("androidDeviceTest").dependencies {
