@@ -1,6 +1,5 @@
 package com.coding.meet.gaminiaikmp.screenshot
 
-import com.apadmi.cmpdevicepreview.devices.DevicePresets
 import java.io.File
 
 /**
@@ -48,73 +47,32 @@ fun main(args: Array<String>) {
     println("=== Exporting All Screen States with Descriptive Numbered Prefixes (Dark & Light) ===")
 
     // 1. Android (Google Pixel 9 Realistic Frame)
-    val pixelPreset = DevicePresets.pixel9
-    println("\n[1/4] Generating Android screen states (${pixelPreset.name})...")
+    println("\n[1/4] Generating Android screen states (Pixel 9)...")
     println("  -> Dark Mode...")
-    exportMobileStates(
-        preset = pixelPreset,
-        outputDir = androidDarkDir,
-        sampleImageBytes = sampleImageBytes,
-        isDark = true
-    )
+    exportPlatformScreens(TargetPlatform.ANDROID, androidDarkDir, sampleImageBytes, isDark = true)
     println("  -> Light Mode...")
-    exportMobileStates(
-        preset = pixelPreset,
-        outputDir = androidLightDir,
-        sampleImageBytes = sampleImageBytes,
-        isDark = false
-    )
+    exportPlatformScreens(TargetPlatform.ANDROID, androidLightDir, sampleImageBytes, isDark = false)
 
     // 2. iOS (Apple iPhone 16 Pro Realistic Frame)
-    val iPhonePreset = DevicePresets.iPhone16Pro
-    println("\n[2/4] Generating iOS screen states (${iPhonePreset.name})...")
+    println("\n[2/4] Generating iOS screen states (iPhone 16 Pro)...")
     println("  -> Dark Mode...")
-    exportMobileStates(
-        preset = iPhonePreset,
-        outputDir = iosDarkDir,
-        sampleImageBytes = sampleImageBytes,
-        isDark = true
-    )
+    exportPlatformScreens(TargetPlatform.IOS, iosDarkDir, sampleImageBytes, isDark = true)
     println("  -> Light Mode...")
-    exportMobileStates(
-        preset = iPhonePreset,
-        outputDir = iosLightDir,
-        sampleImageBytes = sampleImageBytes,
-        isDark = false
-    )
+    exportPlatformScreens(TargetPlatform.IOS, iosLightDir, sampleImageBytes, isDark = false)
 
     // 3. macOS (Desktop Two-Pane Window Frame)
-    val macPreset = DevicePresets.largeDesktopWindow
-    println("\n[3/4] Generating macOS desktop two-pane screen states (${macPreset.name})...")
+    println("\n[3/4] Generating macOS desktop two-pane screen states (Large Desktop Window)...")
     println("  -> Dark Mode...")
-    exportDesktopStates(
-        preset = macPreset,
-        outputDir = macDarkDir,
-        sampleImageBytes = sampleImageBytes,
-        isDark = true
-    )
+    exportPlatformScreens(TargetPlatform.MACOS, macDarkDir, sampleImageBytes, isDark = true)
     println("  -> Light Mode...")
-    exportDesktopStates(
-        preset = macPreset,
-        outputDir = macLightDir,
-        sampleImageBytes = sampleImageBytes,
-        isDark = false
-    )
+    exportPlatformScreens(TargetPlatform.MACOS, macLightDir, sampleImageBytes, isDark = false)
 
     // 4. Web (Chrome Browser Two-Pane Frame)
     println("\n[4/4] Generating Web (Wasm) two-pane screen states...")
     println("  -> Dark Mode...")
-    exportWebStates(
-        outputDir = webDarkDir,
-        sampleImageBytes = sampleImageBytes,
-        isDark = true
-    )
+    exportPlatformScreens(TargetPlatform.WEB, webDarkDir, sampleImageBytes, isDark = true)
     println("  -> Light Mode...")
-    exportWebStates(
-        outputDir = webLightDir,
-        sampleImageBytes = sampleImageBytes,
-        isDark = false
-    )
+    exportPlatformScreens(TargetPlatform.WEB, webLightDir, sampleImageBytes, isDark = false)
 
     println("\n=== All Screen States Exported Successfully! ===")
 }
