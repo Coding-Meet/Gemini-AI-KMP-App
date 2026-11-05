@@ -11,3 +11,12 @@ plugins {
     alias(libs.plugins.buildkonfig) apply false
     alias(libs.plugins.sqlDelight) apply false
 }
+
+if (findProject(":screenshot") != null) {
+    tasks.register("exportDevicePreviewScreenshot") {
+        group = "documentation"
+        description = "Exports realistic framed device screenshots of Gemini AI KMP App."
+        dependsOn(":screenshot:exportDeviceScreenshots")
+    }
+}
+
