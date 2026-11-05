@@ -151,7 +151,7 @@ class AllPlatformScreenshotTest {
             CompositionLocalProvider(LocalDeviceScreenshots provides screenshots) {
                 AppTheme(themeMode = AppThemeMode.DARK) {
                     DeviceFrameView(
-                        device = DevicePresets.chromeBrowser,
+                        device = DevicePresets.browserChrome,
                         configuration = DeviceConfiguration(
                             orientation = DeviceOrientation.Landscape,
                             appearance = Appearance.Dark,

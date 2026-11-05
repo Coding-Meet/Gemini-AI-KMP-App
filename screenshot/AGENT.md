@@ -83,7 +83,7 @@ Access hardware presets through `DevicePresets.<presetName>`:
 | **Android** | `DevicePresets.pixel9`, `DevicePresets.pixel10`, `DevicePresets.pixel10ProFold`, `DevicePresets.galaxyS24`, `DevicePresets.galaxyS25`, `DevicePresets.galaxyZFold8`, `DevicePresets.galaxyTabS10Plus` |
 | **iOS / iPadOS** | `DevicePresets.iPhone16`, `DevicePresets.iPhone16Pro`, `DevicePresets.iPhone16ProMax`, `DevicePresets.iPhone17Pro`, `DevicePresets.iPadPro11M4`, `DevicePresets.iPadAir13M4` |
 | **macOS Desktop** | `DevicePresets.largeDesktopWindow` (1600×923 dp), `DevicePresets.smallDesktopWindow` |
-| **Web Browser** | `DevicePresets.chromeBrowser` (1600×900 dp), `DevicePresets.webBrowser` |
+| **Web Browser** | `DevicePresets.browserChrome` (1600×900 dp) |
 | **Utilities** | `DevicePresets.all: List<DevicePreset>`, `DevicePresets.byId(id: String): DevicePreset?` |
 
 ---
