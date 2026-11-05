@@ -26,6 +26,13 @@ dependencies {
     implementation(libs.koin.compose)
 
     implementation(libs.compose.uiToolingPreview)
+
+    testImplementation(kotlin("test"))
+    testImplementation(libs.compose.uiTest)
+}
+
+tasks.withType<Test> {
+    useJUnitPlatform()
 }
 
 tasks.register<JavaExec>("exportDeviceScreenshots") {
