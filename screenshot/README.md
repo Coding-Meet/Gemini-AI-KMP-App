@@ -32,7 +32,7 @@ By default, the `:screenshot` and `:cmpdevicepreview` modules **must remain comm
    - To overcome these upstream issues, we use a locally patched version of `cmpdevicepreview` located in `CMPDevicePreview/cmpdevicepreview`.
    - **Fixes Applied**:
      - Intercepted all `ComposeSceneLayer` instances directly inside `SimulatedPlatform.skiko.kt` and `SimulatedScreenLayers.skiko.kt`.
-     - Injected a reactive scrim overlay with `zIndex(999f)` on top of the device screen canvas.
+     - Rendered dialog and popup layers directly within the simulated screen container with proper background scrim overlays.
      - Advanced Skiko rendering time (`nanoTime`) over multiple frames to allow Material 3 `DialogAppearanceController` animations to fully settle at 100% solid opacity.
 
 3. **Isolated from Production**:
