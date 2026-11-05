@@ -7,11 +7,17 @@ plugins {
 dependencies {
     implementation(project(":shared"))
 
-    // https://github.com/Coding-Meet/CMPDevicePreview
-    implementation(project(":cmpdevicepreview"))
+    // --- CMPDevicePreview Dependency ---
+    // Option 1 (Default / Portable): Pre-compiled standalone JVM JAR with custom dialog layer & web frame.
+    // Built from: https://github.com/Coding-Meet/CMPDevicePreview
+    // Can also be copied and reused in any other Compose project without needing CMPDevicePreview submodule.
+    implementation(files("libs/cmpdevicepreview-jvm.jar"))
 
-    // this official libary but i have some issue screenshort frame and dialog not work show i change code
-    // https://github.com/Apadmi-Engineering/CMPDevicePreview
+    // Option 2 (Source / Debugging): Link local source module for active development or troubleshooting.
+    // If using this, also uncomment `:cmpdevicepreview` lines in settings.gradle.kts.
+    // implementation(project(":cmpdevicepreview"))
+
+    // Official upstream library (reference only; currently has dialog and web frame limitations)
     // implementation("com.apadmi:cmpdevicepreview:0.1.1")
 
     implementation(compose.desktop.currentOs)

@@ -6,7 +6,7 @@ This module is an internal developer tool for generating realistic, device-frame
 
 ## ⚠️ Important Note: Keep Commented in `settings.gradle.kts`
 
-By default, the `:screenshot` and `:cmpdevicepreview` modules **must remain commented out** in [`settings.gradle.kts`](../settings.gradle.kts):
+By default, the screenshot-related modules **must remain commented out** in [`settings.gradle.kts`](../settings.gradle.kts):
 
 ```kotlin
 // Screenshot and Preview functionality only for developer internal screenshot capture
@@ -17,7 +17,7 @@ By default, the `:screenshot` and `:cmpdevicepreview` modules **must remain comm
 
 > [!WARNING]
 > **Do not uncomment these lines for regular app builds, contributions, or CI/CD pipelines.**
-> If uncommented without the local `CMPDevicePreview` source present, Gradle synchronization and builds will fail.
+> Keeping them commented out ensures standard builds remain lightweight and fast without loading screenshot export dependencies.
 
 ---
 
@@ -28,35 +28,77 @@ By default, the `:screenshot` and `:cmpdevicepreview` modules **must remain comm
    - In the **official published version** of `cmpdevicepreview`, Compose Multiplatform Desktop has issues intercepting and rendering `AlertDialog`, `Dialog`, and underlying `ComposeSceneLayer` elements inside the off-screen simulated canvas.
    - Furthermore, upstream dialog appearance animations run asynchronously, causing captured dialog snapshots to render with low opacity / semi-transparent scrims.
 
-2. **Custom Local Fixes in `CMPDevicePreview`**:
-   - To overcome these upstream issues, we use a locally patched version of `cmpdevicepreview` located in `CMPDevicePreview/cmpdevicepreview`.
-   - **Fixes Applied**:
-     - Intercepted all `ComposeSceneLayer` instances directly inside `SimulatedPlatform.skiko.kt` and `SimulatedScreenLayers.skiko.kt`.
-     - Rendered dialog and popup layers directly within the simulated screen container with proper background scrim overlays.
-     - Advanced Skiko rendering time (`nanoTime`) over multiple frames to allow Material 3 `DialogAppearanceController` animations to fully settle at 100% solid opacity.
-
-3. **Isolated from Production**:
-   - Because these fixes are maintained locally and are not yet published to Maven Central, keeping `:screenshot` and `:cmpdevicepreview` commented out ensures that the core app (`:androidApp`, `:desktopApp`, `:webApp`, `:shared`) remains clean, independent, and builds seamlessly on any machine.
+2. **Custom Fixes & Pre-built JVM JAR (`screenshot/libs/cmpdevicepreview-jvm.jar`)**:
+   - To overcome upstream issues without complicating Gradle builds, we built a standalone JVM JAR from our patched fork [Coding-Meet/CMPDevicePreview](https://github.com/Coding-Meet/CMPDevicePreview):
+     - **Location**: [`screenshot/libs/cmpdevicepreview-jvm.jar`](libs/cmpdevicepreview-jvm.jar)
+     - **Interception**: Direct `ComposeSceneLayer` capture for dialogs and popups in `SimulatedPlatform.skiko.kt`.
+     - **Chrome Web Frame**: Added realistic web browser header with window controls, back/forward/refresh buttons, URL pill, and dark/light styling.
+     - **Animation Settling**: Fast-forwarded Skiko frame clock so Material 3 dialog appearance animations settle at solid 100% opacity.
 
 ---
 
-## 🛠️ How to Export Screenshots (Developer Guide)
+## 🚀 Two Ways to Use CMPDevicePreview
 
-When you need to regenerate screenshots for documentation or repository updates:
+You can use either the pre-compiled JAR (recommended) or the direct source submodule:
 
-### Step 1: Ensure Local Submodule Exists
-Verify that `CMPDevicePreview/cmpdevicepreview` exists in the project root.
+### Way 1: Using Pre-compiled JAR (Default & Recommended)
+Use this for everyday screenshot exports, JVM tests, or when you want zero build friction without managing submodule Gradle compatibility.
 
-### Step 2: Uncomment in `settings.gradle.kts`
-Open [`settings.gradle.kts`](../settings.gradle.kts) and temporarily uncomment:
+1. In [`settings.gradle.kts`](../settings.gradle.kts), **uncomment only `:screenshot`**:
+   ```kotlin
+   include(":screenshot")
+   //include(":cmpdevicepreview")
+   //project(":cmpdevicepreview").projectDir = file("CMPDevicePreview/cmpdevicepreview")
+   ```
+2. In [`screenshot/build.gradle.kts`](build.gradle.kts), the JAR dependency is enabled by default:
+   ```kotlin
+   implementation(files("libs/cmpdevicepreview-jvm.jar"))
+   ```
 
-```kotlin
-include(":screenshot")
-include(":cmpdevicepreview")
-project(":cmpdevicepreview").projectDir = file("CMPDevicePreview/cmpdevicepreview")
-```
+### Way 2: Using Source Submodule (For Debugging & Developing New Frames)
+If you hit an issue, need to inspect internal logs, or want to modify `CMPDevicePreview` code directly (e.g., adding new device specs, tweaking bezels, or Skiko layers):
 
-### Step 3: Run the Export Task or JVM UI Tests
+1. In [`settings.gradle.kts`](../settings.gradle.kts), **uncomment all lines**:
+   ```kotlin
+   include(":screenshot")
+   include(":cmpdevicepreview")
+   project(":cmpdevicepreview").projectDir = file("CMPDevicePreview/cmpdevicepreview")
+   ```
+2. In [`screenshot/build.gradle.kts`](build.gradle.kts), switch to the project dependency:
+   ```kotlin
+   // implementation(files("libs/cmpdevicepreview-jvm.jar"))
+   implementation(project(":cmpdevicepreview"))
+   ```
+
+---
+
+## 📦 Reusing the JAR in Other Projects
+
+The compiled JAR ([`screenshot/libs/cmpdevicepreview-jvm.jar`](libs/cmpdevicepreview-jvm.jar)) is completely portable:
+
+- **No submodule needed**: If you have another Compose Multiplatform app and want realistic Pixel, iPhone, Mac, and Web browser screenshots, you don't need to clone or configure the `CMPDevicePreview` submodule.
+- **How to use**:
+  1. Copy `cmpdevicepreview-jvm.jar` into your other project's `libs/` directory.
+  2. In your module's `build.gradle.kts`, add:
+     ```kotlin
+     implementation(files("libs/cmpdevicepreview-jvm.jar"))
+     ```
+  3. You immediately get all custom features: Compose Dialog interception, 100% solid opacity scrims, and realistic Chrome web browser frames!
+
+> [!TIP]
+> **Complete Integration Guide for AI Agents & External Projects**:
+> See [`AGENT.md`](AGENT.md) for full public API references (`DevicePresets`, `SimulatedDevice`, `DeviceFrame`, `WebBrowserFrame`, `LocalDeviceScreenshots`), Gradle setup, headless export recipes, and JVM UI testing patterns.
+
+---
+
+## 🛠️ How to Export Screenshots & Run Tests (Developer Guide)
+
+When you need to regenerate screenshots or run UI verification:
+
+### Step 1: Enable the Screenshot Module
+In [`settings.gradle.kts`](../settings.gradle.kts), uncomment `include(":screenshot")`.
+
+### Step 2: Run the Export Task or JVM UI Tests
 
 #### Option A: Bulk Export All Screenshots (92 Assets)
 Execute the Gradle export task in your terminal:
@@ -74,16 +116,12 @@ Execute the Compose UI test suite in your terminal:
 ./gradlew :screenshot:test
 ```
 
-This runs [`AllPlatformScreenshotTest`](src/test/kotlin/com/coding/meet/gaminiaikmp/screenshot/AllPlatformScreenshotTest.kt) using Compose Multiplatform's `runComposeUiTest` directly inside the JVM without needing an emulator or physical device. It validates:
-- Phone frames (Google Pixel 9, iPhone 16 Pro)
-- macOS desktop window chassis
-- Web Chrome browser chassis
-- Native `ComposeSceneLayer` dialog rendering and scrims
+This runs [`AllPlatformScreenshotTest`](src/test/kotlin/com/coding/meet/gaminiaikmp/screenshot/AllPlatformScreenshotTest.kt) using Compose Multiplatform's `runComposeUiTest` directly inside the JVM without needing an emulator or physical device.
 
 ---
 
-### Step 4: Re-comment Before Committing
-Before pushing your changes to GitHub, comment the lines back out in [`settings.gradle.kts`](../settings.gradle.kts):
+### Step 3: Re-comment Before Committing
+Before pushing your changes to GitHub, re-comment the lines in [`settings.gradle.kts`](../settings.gradle.kts):
 
 ```kotlin
 // Screenshot and Preview functionality only for developer internal screenshot capture
@@ -91,4 +129,25 @@ Before pushing your changes to GitHub, comment the lines back out in [`settings.
 //include(":cmpdevicepreview")
 //project(":cmpdevicepreview").projectDir = file("CMPDevicePreview/cmpdevicepreview")
 ```
+
+---
+
+## 🔄 How to Rebuild the JVM JAR (Advanced)
+
+If you modify source code or device specifications inside `CMPDevicePreview` and want to update the JAR:
+
+1. Build the JVM JAR inside `CMPDevicePreview`:
+   ```bash
+   cd CMPDevicePreview
+   ./gradlew :cmpdevicepreview:jvmJar
+   ```
+2. Copy the newly generated JAR to `screenshot/libs/`:
+   ```bash
+   cp cmpdevicepreview/build/libs/cmpdevicepreview-jvm.jar ../screenshot/libs/
+   ```
+3. Test the updated JAR:
+   ```bash
+   cd ..
+   ./gradlew :screenshot:test
+   ```
 
