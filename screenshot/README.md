@@ -56,7 +56,9 @@ include(":cmpdevicepreview")
 project(":cmpdevicepreview").projectDir = file("CMPDevicePreview/cmpdevicepreview")
 ```
 
-### Step 3: Run the Export Task
+### Step 3: Run the Export Task or JVM UI Tests
+
+#### Option A: Bulk Export All Screenshots (92 Assets)
 Execute the Gradle export task in your terminal:
 
 ```bash
@@ -64,6 +66,21 @@ Execute the Gradle export task in your terminal:
 ```
 
 This will automatically render and save all **92 framed screenshots** (13 dark + 13 light Android, 13 dark + 13 light iOS, 10 dark + 10 light macOS, 10 dark + 10 light Web) into the `image/` directory.
+
+#### Option B: Run JVM UI Tests (Automated Regression & Verification)
+Execute the Compose UI test suite in your terminal:
+
+```bash
+./gradlew :screenshot:test
+```
+
+This runs [`AllPlatformScreenshotTest`](src/test/kotlin/com/coding/meet/gaminiaikmp/screenshot/AllPlatformScreenshotTest.kt) using Compose Multiplatform's `runComposeUiTest` directly inside the JVM without needing an emulator or physical device. It validates:
+- Phone frames (Google Pixel 9, iPhone 16 Pro)
+- macOS desktop window chassis
+- Web Chrome browser chassis
+- Native `ComposeSceneLayer` dialog rendering and scrims
+
+---
 
 ### Step 4: Re-comment Before Committing
 Before pushing your changes to GitHub, comment the lines back out in [`settings.gradle.kts`](../settings.gradle.kts):
