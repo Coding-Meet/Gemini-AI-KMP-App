@@ -76,11 +76,13 @@ fun ChatScreen(
         }
     }
 
+    val currentTargetGroupId = if (groupId.isNotBlank()) groupId else chatUiState.groupId
+
     DeleteChatAlertDialog(
         show = chatUiState.isDeleteShowDialog,
         onDismiss = { chatViewModel.handleIntent(ChatUiIntent.DismissDeleteDialog) },
         onConfirmDelete = {
-            chatViewModel.handleIntent(ChatUiIntent.DeleteGroupWithMessages(groupId))
+            chatViewModel.handleIntent(ChatUiIntent.DeleteGroupWithMessages(currentTargetGroupId))
         }
     )
 
@@ -94,16 +96,14 @@ fun ChatScreen(
     ChatScreenContent(
         chatUiState = chatUiState,
         group = chatUiState.group,
-        groupId = if (groupId.isNotEmpty()) groupId else chatUiState.groupId,
+        groupId = currentTargetGroupId,
         onBackClick = onBackClick,
         isDesktopDrawerOpen = isDesktopDrawerOpen,
         onToggleDrawer = onToggleDrawer,
         lazyListState = chatViewModel.lazyListState,
         onDeleteClick = {
             if (!chatUiState.isApiLoading) {
-                if (chatUiState.message.isNotEmpty()) {
-                    chatViewModel.handleIntent(ChatUiIntent.OpenDeleteDialog)
-                }
+                chatViewModel.handleIntent(ChatUiIntent.OpenDeleteDialog)
             } else {
                 chatViewModel.handleIntent(
                     ChatUiIntent.ShowAlert(

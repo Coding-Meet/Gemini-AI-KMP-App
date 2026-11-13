@@ -1,4 +1,4 @@
-package com.coding.meet.gaminiaikmp.presentation.screens.mainscreen.components
+package com.coding.meet.gaminiaikmp.presentation.screens.grouplistscreen.components
 
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -62,3 +62,4 @@ fun GroupLayoutPreview() {
         onClick = {}
     )
 }
+

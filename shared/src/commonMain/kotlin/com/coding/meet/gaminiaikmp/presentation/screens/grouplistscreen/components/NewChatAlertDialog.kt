@@ -1,4 +1,4 @@
-package com.coding.meet.gaminiaikmp.presentation.screens.mainscreen.components
+package com.coding.meet.gaminiaikmp.presentation.screens.grouplistscreen.components
 
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
@@ -78,6 +78,7 @@ fun NewChatAlertDialog(
                 onClick = {
                     val trimmed = text.trim()
                     if (trimmed.isNotEmpty()) {
+                        text = ""
                         onSave(trimmed)
                         keyboardController?.hide()
                     } else {
@@ -114,3 +115,4 @@ fun NewChatAlertDialogPreview() {
         onSave = {}
     )
 }
+
