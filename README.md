@@ -8,7 +8,7 @@ Click the image above to watch a demo of the Gemini AI KMP App on YouTube.
 
 ## 🌟 Overview
 
-**Gemini AI KMP App** is a production-ready, open-source **Kotlin Multiplatform (KMP)** and **Compose Multiplatform** application targeting **Android, iOS, Desktop (macOS, Windows, Linux)**, and **Web (Wasm)**. 
+**Gemini AI KMP App** is a production-ready, open-source **Kotlin Multiplatform (KMP)** and **Compose Multiplatform** application targeting **Android, iOS, Desktop (macOS, Windows, Linux)**, and **Web (Wasm)**.
 
 Powered by the latest **Google Gemini AI models** (including Gemini 3.8 Flash and Gemini 4 Argon), this app allows you to have intelligent, multimodal conversations using text and images. Conversations are stored locally with **SQLDelight** and persistent key-value configuration is handled cleanly with **Multiplatform Settings**.
 
@@ -20,7 +20,7 @@ Powered by the latest **Google Gemini AI models** (including Gemini 3.8 Flash an
 - ⚡ **Latest Gemini Models**:
   - Live model discovery from the official Gemini API (`/v1beta/models`).
   - Flagship defaults: `gemini-3.8-flash` (Recommended), `gemini-4-argon`, `gemini-3.5-flash-lite`, and `gemini-3.6-flash`.
-  - Context & token limits display with visual badges (e.g. *Recommended*, *Thinking*, *Gemini 4*, *Fast & Lite*).
+  - Context & token limits display with visual badges (e.g. _Recommended_, _Thinking_, _Gemini 4_, _Fast & Lite_).
 - 🎨 **Adaptive & Responsive Material 3 UI**:
   - Adaptive Navigation Suite adapting to Phones, Foldables, Tablets, and Desktops.
   - Collapsible desktop drawer for chat history.
@@ -43,19 +43,19 @@ Powered by the latest **Google Gemini AI models** (including Gemini 3.8 Flash an
 
 ## 🛠️ Tech Stack & Architecture
 
-| Layer / Domain | Technology |
-| :--- | :--- |
-| **Language & Platform** | Kotlin Multiplatform (2.4.x), Compose Multiplatform (1.12.x) |
-| **Build Tools** | Android Gradle Plugin (AGP 9.1.x), Gradle 9.x |
-| **Architecture** | Clean Architecture + MVI (Model-View-Intent) + Single Source of Truth |
-| **UI & Theming** | Jetpack Compose Multiplatform, Material 3, Adaptive Layouts, Jetpack Navigation 3 |
-| **Dependency Injection** | Koin 4.2.x (`koin-compose-viewmodel`) |
-| **Networking** | Ktor 3.6.x (Content Negotiation, Kotlinx Serialization) |
-| **Local Database** | SQLDelight 2.4.x (SQLite on Mobile/Desktop, SQL.js on Web) |
-| **Key-Value Persistence**| Multiplatform Settings |
-| **File / Image Picking**| FileKit 0.17.x (Native cross-platform image picker) |
-| **Logging** | Touchlab Kermit |
-| **BuildConfig** | BuildKonfig |
+| Layer / Domain            | Technology                                                                        |
+| :------------------------ | :-------------------------------------------------------------------------------- |
+| **Language & Platform**   | Kotlin Multiplatform (2.4.x), Compose Multiplatform (1.12.x)                      |
+| **Build Tools**           | Android Gradle Plugin (AGP 9.1.x), Gradle 9.x                                     |
+| **Architecture**          | Clean Architecture + MVI (Model-View-Intent) + Single Source of Truth             |
+| **UI & Theming**          | Jetpack Compose Multiplatform, Material 3, Adaptive Layouts, Jetpack Navigation 3 |
+| **Dependency Injection**  | Koin 4.2.x (`koin-compose-viewmodel`)                                             |
+| **Networking**            | Ktor 3.6.x (Content Negotiation, Kotlinx Serialization)                           |
+| **Local Database**        | SQLDelight 2.4.x (SQLite on Mobile/Desktop, SQL.js on Web)                        |
+| **Key-Value Persistence** | Multiplatform Settings                                                            |
+| **File / Image Picking**  | FileKit 0.17.x (Native cross-platform image picker)                               |
+| **Logging**               | Touchlab Kermit                                                                   |
+| **BuildConfig**           | BuildKonfig                                                                       |
 
 ---
 
@@ -90,6 +90,7 @@ Gemini-AI-KMP-App/
 ### Installation & Setup
 
 1. **Clone the repository**:
+
    ```bash
    git clone https://github.com/Coding-Meet/Gemini-AI-KMP-App.git
    cd Gemini-AI-KMP-App
@@ -101,7 +102,7 @@ Gemini-AI-KMP-App/
      ```properties
      GEMINI_API_KEY=YOUR_GEMINI_API_KEY
      ```
-   *(Note: You can also configure or update your API key directly within the app's Settings screen at any time).*
+     _(Note: You can also configure or update your API key directly within the app's Settings screen at any time)._
 
 3. **Generate SQLDelight Interfaces**:
    Run the following task in the terminal or Android Studio Gradle panel:
@@ -116,16 +117,19 @@ Gemini-AI-KMP-App/
 - **Android**:
   Select the `androidApp` run configuration in Android Studio and hit **Run** (`Shift + F10`).
   Or via terminal:
+
   ```bash
   ./gradlew :androidApp:installDebug
   ```
 
 - **Desktop (macOS / Windows / Linux)**:
+
   ```bash
   ./gradlew :desktopApp:run
   ```
 
 - **Web (Wasm / Browser)**:
+
   ```bash
   ./gradlew :webApp:wasmJsBrowserDevelopmentRun
   ```
@@ -137,66 +141,223 @@ Gemini-AI-KMP-App/
 
 ## 📸 Screenshots
 
-### Android
+### Android (Google Pixel 9)
+
+#### 🌙 Dark Mode
 <table>
    <tr>
-    <td><img src="image/android/android1.png" alt="android"></td>
-    <td><img src="image/android/android2.png" alt="android"></td>
+    <td><img src="image/android/dark/01_welcome_screen.png" alt="Welcome Screen"></td>
+    <td><img src="image/android/dark/02_add_api_key_dialog.png" alt="Add API Key Dialog"></td>
+    <td><img src="image/android/dark/03_new_group_dialog.png" alt="New Group Dialog"></td>
    </tr>
    <tr>
-    <td><img src="image/android/android3.png" alt="android"></td>
-    <td><img src="image/android/android4.png" alt="android"></td>
+    <td><img src="image/android/dark/04_conversations_list.png" alt="Conversations List"></td>
+    <td><img src="image/android/dark/05_empty_chat_screen.png" alt="Empty Chat Screen"></td>
+    <td><img src="image/android/dark/06_question_sending_loading.png" alt="Sending & Loading"></td>
    </tr>
    <tr>
-    <td><img src="image/android/android5.png" alt="android"></td>
-    <td><img src="image/android/android6.png" alt="android"></td>
+    <td><img src="image/android/dark/07_gemini_markdown_response.png" alt="Gemini Markdown Response"></td>
+    <td><img src="image/android/dark/08_multimodal_image_prompt.png" alt="Multimodal Prompt"></td>
+    <td><img src="image/android/dark/09_gemini_vision_response.png" alt="Gemini Vision Response"></td>
    </tr>
    <tr>
-    <td><img src="image/android/android7.png" alt="android"></td>
-    <td><img src="image/android/android8.png" alt="android"></td>
+    <td><img src="image/android/dark/10_delete_chat_dialog.png" alt="Delete Chat Dialog"></td>
+    <td><img src="image/android/dark/11_settings_screen.png" alt="Settings Screen"></td>
+    <td><img src="image/android/dark/12_edit_api_key_dialog.png" alt="Edit API Key Dialog"></td>
    </tr>
    <tr>
-    <td><img src="image/android/android9.png" alt="android"></td>
+    <td><img src="image/android/dark/13_delete_all_chats_dialog.png" alt="Delete All Chats Dialog"></td>
+    <td></td>
+    <td></td>
    </tr>
 </table>
 
-### Windows & Desktop
+#### ☀️ Light Mode
 <table>
-  <tr>
-    <td><img src="image/windows/win1.png" alt="win"></td>
-    <td><img src="image/windows/win2.png" alt="win"></td>
-  </tr>
-  <tr>
-    <td><img src="image/windows/win3.png" alt="win"></td>
-    <td><img src="image/windows/win4.png" alt="win"></td>
-  </tr>
-  <tr>
-    <td><img src="image/windows/win5.png" alt="win"></td>
-    <td><img src="image/windows/win6.png" alt="win"></td>
-  </tr>
+   <tr>
+    <td><img src="image/android/light/01_welcome_screen.png" alt="Welcome Screen"></td>
+    <td><img src="image/android/light/02_add_api_key_dialog.png" alt="Add API Key Dialog"></td>
+    <td><img src="image/android/light/03_new_group_dialog.png" alt="New Group Dialog"></td>
+   </tr>
+   <tr>
+    <td><img src="image/android/light/04_conversations_list.png" alt="Conversations List"></td>
+    <td><img src="image/android/light/05_empty_chat_screen.png" alt="Empty Chat Screen"></td>
+    <td><img src="image/android/light/06_question_sending_loading.png" alt="Sending & Loading"></td>
+   </tr>
+   <tr>
+    <td><img src="image/android/light/07_gemini_markdown_response.png" alt="Gemini Markdown Response"></td>
+    <td><img src="image/android/light/08_multimodal_image_prompt.png" alt="Multimodal Prompt"></td>
+    <td><img src="image/android/light/09_gemini_vision_response.png" alt="Gemini Vision Response"></td>
+   </tr>
+   <tr>
+    <td><img src="image/android/light/10_delete_chat_dialog.png" alt="Delete Chat Dialog"></td>
+    <td><img src="image/android/light/11_settings_screen.png" alt="Settings Screen"></td>
+    <td><img src="image/android/light/12_edit_api_key_dialog.png" alt="Edit API Key Dialog"></td>
+   </tr>
+   <tr>
+    <td><img src="image/android/light/13_delete_all_chats_dialog.png" alt="Delete All Chats Dialog"></td>
+    <td></td>
+    <td></td>
+   </tr>
 </table>
 
-### macOS
+### iOS (iPhone 16 Pro)
+
+#### 🌙 Dark Mode
 <table>
    <tr>
-      <td><img src="image/mac/mac1.jpeg" alt="mac"></td>
-      <td><img src="image/mac/mac2.png" alt="mac"></td>
+    <td><img src="image/ios/dark/01_welcome_screen.png" alt="Welcome Screen"></td>
+    <td><img src="image/ios/dark/02_add_api_key_dialog.png" alt="Add API Key Dialog"></td>
+    <td><img src="image/ios/dark/03_new_group_dialog.png" alt="New Group Dialog"></td>
    </tr>
    <tr>
-      <td><img src="image/mac/mac3.jpeg" alt="mac"></td>
-      <td><img src="image/mac/mac4.jpeg" alt="mac"></td>
+    <td><img src="image/ios/dark/04_conversations_list.png" alt="Conversations List"></td>
+    <td><img src="image/ios/dark/05_empty_chat_screen.png" alt="Empty Chat Screen"></td>
+    <td><img src="image/ios/dark/06_question_sending_loading.png" alt="Sending & Loading"></td>
+   </tr>
+   <tr>
+    <td><img src="image/ios/dark/07_gemini_markdown_response.png" alt="Gemini Markdown Response"></td>
+    <td><img src="image/ios/dark/08_multimodal_image_prompt.png" alt="Multimodal Prompt"></td>
+    <td><img src="image/ios/dark/09_gemini_vision_response.png" alt="Gemini Vision Response"></td>
+   </tr>
+   <tr>
+    <td><img src="image/ios/dark/10_delete_chat_dialog.png" alt="Delete Chat Dialog"></td>
+    <td><img src="image/ios/dark/11_settings_screen.png" alt="Settings Screen"></td>
+    <td><img src="image/ios/dark/12_edit_api_key_dialog.png" alt="Edit API Key Dialog"></td>
+   </tr>
+   <tr>
+    <td><img src="image/ios/dark/13_delete_all_chats_dialog.png" alt="Delete All Chats Dialog"></td>
+    <td></td>
+    <td></td>
    </tr>
 </table>
 
-### Web (Wasm)
+#### ☀️ Light Mode
 <table>
    <tr>
-      <td><img src="image/web/web1.png" alt="web"></td>
-      <td><img src="image/web/web2.png" alt="web"></td>
+    <td><img src="image/ios/light/01_welcome_screen.png" alt="Welcome Screen"></td>
+    <td><img src="image/ios/light/02_add_api_key_dialog.png" alt="Add API Key Dialog"></td>
+    <td><img src="image/ios/light/03_new_group_dialog.png" alt="New Group Dialog"></td>
    </tr>
    <tr>
-      <td><img src="image/web/web3.png" alt="web"></td>
-      <td><img src="image/web/web4.png" alt="web"></td>
+    <td><img src="image/ios/light/04_conversations_list.png" alt="Conversations List"></td>
+    <td><img src="image/ios/light/05_empty_chat_screen.png" alt="Empty Chat Screen"></td>
+    <td><img src="image/ios/light/06_question_sending_loading.png" alt="Sending & Loading"></td>
+   </tr>
+   <tr>
+    <td><img src="image/ios/light/07_gemini_markdown_response.png" alt="Gemini Markdown Response"></td>
+    <td><img src="image/ios/light/08_multimodal_image_prompt.png" alt="Multimodal Prompt"></td>
+    <td><img src="image/ios/light/09_gemini_vision_response.png" alt="Gemini Vision Response"></td>
+   </tr>
+   <tr>
+    <td><img src="image/ios/light/10_delete_chat_dialog.png" alt="Delete Chat Dialog"></td>
+    <td><img src="image/ios/light/11_settings_screen.png" alt="Settings Screen"></td>
+    <td><img src="image/ios/light/12_edit_api_key_dialog.png" alt="Edit API Key Dialog"></td>
+   </tr>
+   <tr>
+    <td><img src="image/ios/light/13_delete_all_chats_dialog.png" alt="Delete All Chats Dialog"></td>
+    <td></td>
+    <td></td>
+   </tr>
+</table>
+
+### macOS (Two-Pane Desktop)
+
+#### 🌙 Dark Mode
+<table>
+   <tr>
+      <td><img src="image/mac/dark/01_two_pane_welcome.png" alt="macOS Welcome"></td>
+      <td><img src="image/mac/dark/02_two_pane_add_api_key_dialog.png" alt="macOS Add Key"></td>
+   </tr>
+   <tr>
+      <td><img src="image/mac/dark/03_two_pane_new_group_dialog.png" alt="macOS New Group"></td>
+      <td><img src="image/mac/dark/04_two_pane_chat_loading.png" alt="macOS Sending & Loading"></td>
+   </tr>
+   <tr>
+      <td><img src="image/mac/dark/05_two_pane_chat_response.png" alt="macOS Chat Markdown"></td>
+      <td><img src="image/mac/dark/06_two_pane_multimodal_vision.png" alt="macOS Vision"></td>
+   </tr>
+   <tr>
+      <td><img src="image/mac/dark/07_two_pane_delete_chat_dialog.png" alt="macOS Delete Chat"></td>
+      <td><img src="image/mac/dark/08_two_pane_settings_screen.png" alt="macOS Settings"></td>
+   </tr>
+   <tr>
+      <td><img src="image/mac/dark/09_two_pane_edit_api_key_dialog.png" alt="macOS Edit Key"></td>
+      <td><img src="image/mac/dark/10_two_pane_delete_all_chats_dialog.png" alt="macOS Delete All"></td>
+   </tr>
+</table>
+
+#### ☀️ Light Mode
+<table>
+   <tr>
+      <td><img src="image/mac/light/01_two_pane_welcome.png" alt="macOS Welcome"></td>
+      <td><img src="image/mac/light/02_two_pane_add_api_key_dialog.png" alt="macOS Add Key"></td>
+   </tr>
+   <tr>
+      <td><img src="image/mac/light/03_two_pane_new_group_dialog.png" alt="macOS New Group"></td>
+      <td><img src="image/mac/light/04_two_pane_chat_loading.png" alt="macOS Sending & Loading"></td>
+   </tr>
+   <tr>
+      <td><img src="image/mac/light/05_two_pane_chat_response.png" alt="macOS Chat Markdown"></td>
+      <td><img src="image/mac/light/06_two_pane_multimodal_vision.png" alt="macOS Vision"></td>
+   </tr>
+   <tr>
+      <td><img src="image/mac/light/07_two_pane_delete_chat_dialog.png" alt="macOS Delete Chat"></td>
+      <td><img src="image/mac/light/08_two_pane_settings_screen.png" alt="macOS Settings"></td>
+   </tr>
+   <tr>
+      <td><img src="image/mac/light/09_two_pane_edit_api_key_dialog.png" alt="macOS Edit Key"></td>
+      <td><img src="image/mac/light/10_two_pane_delete_all_chats_dialog.png" alt="macOS Delete All"></td>
+   </tr>
+</table>
+
+### Web (Wasm Two-Pane Browser)
+
+#### 🌙 Dark Mode
+<table>
+   <tr>
+      <td><img src="image/web/dark/01_web_welcome.png" alt="Web Welcome"></td>
+      <td><img src="image/web/dark/02_web_add_api_key_dialog.png" alt="Web Add Key"></td>
+   </tr>
+   <tr>
+      <td><img src="image/web/dark/03_web_new_group_dialog.png" alt="Web New Group"></td>
+      <td><img src="image/web/dark/04_web_chat_loading.png" alt="Web Sending & Loading"></td>
+   </tr>
+   <tr>
+      <td><img src="image/web/dark/05_web_chat_response.png" alt="Web Chat Markdown"></td>
+      <td><img src="image/web/dark/06_web_multimodal_vision.png" alt="Web Vision"></td>
+   </tr>
+   <tr>
+      <td><img src="image/web/dark/07_web_delete_chat_dialog.png" alt="Web Delete Chat"></td>
+      <td><img src="image/web/dark/08_web_settings_screen.png" alt="Web Settings"></td>
+   </tr>
+   <tr>
+      <td><img src="image/web/dark/09_web_edit_api_key_dialog.png" alt="Web Edit Key"></td>
+      <td><img src="image/web/dark/10_web_delete_all_chats_dialog.png" alt="Web Delete All"></td>
+   </tr>
+</table>
+
+#### ☀️ Light Mode
+<table>
+   <tr>
+      <td><img src="image/web/light/01_web_welcome.png" alt="Web Welcome"></td>
+      <td><img src="image/web/light/02_web_add_api_key_dialog.png" alt="Web Add Key"></td>
+   </tr>
+   <tr>
+      <td><img src="image/web/light/03_web_new_group_dialog.png" alt="Web New Group"></td>
+      <td><img src="image/web/light/04_web_chat_loading.png" alt="Web Sending & Loading"></td>
+   </tr>
+   <tr>
+      <td><img src="image/web/light/05_web_chat_response.png" alt="Web Chat Markdown"></td>
+      <td><img src="image/web/light/06_web_multimodal_vision.png" alt="Web Vision"></td>
+   </tr>
+   <tr>
+      <td><img src="image/web/light/07_web_delete_chat_dialog.png" alt="Web Delete Chat"></td>
+      <td><img src="image/web/light/08_web_settings_screen.png" alt="Web Settings"></td>
+   </tr>
+   <tr>
+      <td><img src="image/web/light/09_web_edit_api_key_dialog.png" alt="Web Edit Key"></td>
+      <td><img src="image/web/light/10_web_delete_all_chats_dialog.png" alt="Web Delete All"></td>
    </tr>
 </table>
 

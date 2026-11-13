@@ -37,3 +37,8 @@ include(":androidApp")
 include(":desktopApp")
 include(":shared")
 include(":webApp")
+
+// Screenshot and Preview functionality only for developer internal screenshot capture
+//include(":screenshot")
+//include(":cmpdevicepreview")
+//project(":cmpdevicepreview").projectDir = file("CMPDevicePreview/cmpdevicepreview")
