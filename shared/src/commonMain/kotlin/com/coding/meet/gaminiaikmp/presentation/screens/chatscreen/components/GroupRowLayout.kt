@@ -26,7 +26,9 @@ fun GroupRowLayout(group: Group, modifier: Modifier = Modifier) {
         "robot_3.png" -> Res.drawable.robot_3
         "robot_4.png" -> Res.drawable.robot_4
         "robot_5.png" -> Res.drawable.robot_5
-        else -> Res.drawable.robot_6
+        "robot_6.png" -> Res.drawable.robot_6
+        "robot_7.png" -> Res.drawable.robot_7
+        else -> Res.drawable.robot_8
     }
     Row(
         modifier = modifier.fillMaxWidth(),

@@ -10,7 +10,7 @@ Click the image above to watch a demo of the Gemini AI KMP App on YouTube.
 
 **Gemini AI KMP App** is a production-ready, open-source **Kotlin Multiplatform (KMP)** and **Compose Multiplatform** application targeting **Android, iOS, Desktop (macOS, Windows, Linux)**, and **Web (Wasm)**. 
 
-Powered by the latest **Google Gemini AI models** (including Gemini 3.8 Flash and Gemini 4 Argon), this app allows you to have intelligent, multimodal conversations using text and images. Conversations are stored locally with **SQLDelight** and persistent key-value configuration is handled cleanly with **Multiplatform Settings** and **KStore**.
+Powered by the latest **Google Gemini AI models** (including Gemini 3.8 Flash and Gemini 4 Argon), this app allows you to have intelligent, multimodal conversations using text and images. Conversations are stored locally with **SQLDelight** and persistent key-value configuration is handled cleanly with **Multiplatform Settings**.
 
 ---
 
@@ -52,7 +52,7 @@ Powered by the latest **Google Gemini AI models** (including Gemini 3.8 Flash an
 | **Dependency Injection** | Koin 4.2.x (`koin-compose-viewmodel`) |
 | **Networking** | Ktor 3.6.x (Content Negotiation, Kotlinx Serialization) |
 | **Local Database** | SQLDelight 2.4.x (SQLite on Mobile/Desktop, SQL.js on Web) |
-| **Key-Value Persistence**| Multiplatform Settings & KStore |
+| **Key-Value Persistence**| Multiplatform Settings |
 | **File / Image Picking**| FileKit 0.17.x (Native cross-platform image picker) |
 | **Logging** | Touchlab Kermit |
 | **BuildConfig** | BuildKonfig |

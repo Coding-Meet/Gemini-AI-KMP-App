@@ -18,7 +18,7 @@ fun main() = application {
         title = "Gemini AI KMP App",
         icon = painterResource(Res.drawable.gemini_logo)
     ) {
-        window.minimumSize = Dimension(1280, 768)
+//        window.minimumSize = Dimension(1280, 768)
         App()
     }
 }

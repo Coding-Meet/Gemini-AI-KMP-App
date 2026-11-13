@@ -1,10 +1,13 @@
 package com.coding.meet.gaminiaikmp.theme
 
 import androidx.compose.foundation.isSystemInDarkTheme
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Surface
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.compositionLocalOf
+import androidx.compose.ui.Modifier
 
 val LocalThemeMode = compositionLocalOf { AppThemeMode.SYSTEM }
 
@@ -24,8 +27,13 @@ fun AppTheme(
     CompositionLocalProvider(LocalThemeMode provides themeMode) {
         MaterialTheme(
             colorScheme = colorScheme,
-            content = content
-        )
+        ){
+            Surface(
+                modifier = Modifier.fillMaxSize(),
+                content = content,
+                color = MaterialTheme.colorScheme.surface
+            )
+        }
     }
 }
 

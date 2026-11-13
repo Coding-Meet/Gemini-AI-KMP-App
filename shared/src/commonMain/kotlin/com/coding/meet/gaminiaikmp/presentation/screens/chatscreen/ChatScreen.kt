@@ -6,8 +6,10 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
@@ -38,7 +40,6 @@ import com.coding.meet.gaminiaikmp.presentation.components.WelcomeScreen
 import com.coding.meet.gaminiaikmp.presentation.preview.AllAdaptivePreviews
 import com.coding.meet.gaminiaikmp.presentation.screens.chatscreen.components.BottomTextBar
 import com.coding.meet.gaminiaikmp.presentation.screens.chatscreen.components.DeleteChatAlertDialog
-import com.coding.meet.gaminiaikmp.presentation.screens.chatscreen.components.DrawerToggleButton
 import com.coding.meet.gaminiaikmp.presentation.screens.chatscreen.components.GroupRowLayout
 import com.coding.meet.gaminiaikmp.presentation.screens.chatscreen.components.MessageItem
 import com.coding.meet.gaminiaikmp.utils.ObserveAsEvents
@@ -47,12 +48,11 @@ import org.koin.compose.viewmodel.koinViewModel
 @Composable
 fun ChatScreen(
     groupId: String = "",
-    chatViewModel: ChatViewModel = koinViewModel(),
     onBackClick: () -> Unit = {},
-    onDeleteSuccess: () -> Unit = {},
-    isDesktopDrawerOpen: Boolean = false,
-    onToggleDrawer: (() -> Unit)? = null
+    onDeleteSuccess: () -> Unit = {}
 ) {
+    val chatViewModel = koinViewModel<ChatViewModel>()
+
     val chatUiState by chatViewModel.uiState.collectAsState()
 
     // Observe ChatUiEffect lifecycle-safely
@@ -98,8 +98,6 @@ fun ChatScreen(
         group = chatUiState.group,
         groupId = currentTargetGroupId,
         onBackClick = onBackClick,
-        isDesktopDrawerOpen = isDesktopDrawerOpen,
-        onToggleDrawer = onToggleDrawer,
         lazyListState = chatViewModel.lazyListState,
         onDeleteClick = {
             if (!chatUiState.isApiLoading) {
@@ -127,9 +125,7 @@ fun ChatScreenContent(
     group: Group?,
     groupId: String,
     onBackClick: () -> Unit = {},
-    isDesktopDrawerOpen: Boolean = false,
-    onToggleDrawer: (() -> Unit)? = null,
-    lazyListState: androidx.compose.foundation.lazy.LazyListState = androidx.compose.foundation.lazy.rememberLazyListState(),
+    lazyListState: LazyListState = rememberLazyListState(),
     onDeleteClick: () -> Unit = {},
     onRemoveImage: (ByteArray) -> Unit = {},
     onMessageChange: (String) -> Unit = {},
@@ -141,31 +137,13 @@ fun ChatScreenContent(
     val isCompactScreen = !windowAdaptiveInfo.windowSizeClass.isWidthAtLeastBreakpoint(WindowSizeClass.WIDTH_DP_MEDIUM_LOWER_BOUND)
     val scrollBehavior = TopAppBarDefaults.pinnedScrollBehavior(rememberTopAppBarState())
 
-    Row(
+    Column(
         modifier = Modifier
             .fillMaxSize()
             .background(MaterialTheme.colorScheme.background)
+            .nestedScroll(scrollBehavior.nestedScrollConnection)
     ) {
-        // Continuous vertical divider separating the list panel and detail panel on wide screens
-        if (!isCompactScreen) {
-            VerticalDivider(
-                modifier = Modifier.fillMaxHeight(),
-                thickness = 1.dp,
-                color = MaterialTheme.colorScheme.outlineVariant
-            )
-        }
-
-        Box(
-            modifier = Modifier
-                .weight(1f)
-                .fillMaxHeight()
-        ) {
-            Column(
-                modifier = Modifier
-                    .fillMaxSize()
-                    .nestedScroll(scrollBehavior.nestedScrollConnection)
-            ) {
-                TopAppBar(
+        TopAppBar(
                     navigationIcon = {
                         if (isCompactScreen) {
                             IconButton(onClick = onBackClick) {
@@ -298,25 +276,14 @@ fun ChatScreenContent(
                 }
 
                 BottomTextBar(
-                    message = chatUiState.inputMessage,
-                    onMessageChange = onMessageChange,
-                    selectedImagesCount = chatUiState.selectedImages.size,
-                    onAddImage = onAddImage,
-                    onSendMessage = onSendMessage,
-                    isApiLoading = chatUiState.isApiLoading,
-                    onShowAlert = onShowAlert
-                )
-            }
-
-            // Drawer Toggle Handle anchored to the vertical divider at CenterStart
-            if (!isCompactScreen && onToggleDrawer != null) {
-                DrawerToggleButton(
-                    isDesktopDrawerOpen = isDesktopDrawerOpen,
-                    onToggleDrawer = onToggleDrawer,
-                    modifier = Modifier.align(Alignment.CenterStart)
-                )
-            }
-        }
+            message = chatUiState.inputMessage,
+            onMessageChange = onMessageChange,
+            selectedImagesCount = chatUiState.selectedImages.size,
+            onAddImage = onAddImage,
+            onSendMessage = onSendMessage,
+            isApiLoading = chatUiState.isApiLoading,
+            onShowAlert = onShowAlert
+        )
     }
 }
 
@@ -333,7 +300,6 @@ fun ChatScreenPreview() {
             )
         ),
         group = Group("1", "Gemini AI Chat", "03 Nov, 12:00 PM", "robot_1.png"),
-        groupId = "1",
-        isDesktopDrawerOpen = true
+        groupId = "1"
     )
 }

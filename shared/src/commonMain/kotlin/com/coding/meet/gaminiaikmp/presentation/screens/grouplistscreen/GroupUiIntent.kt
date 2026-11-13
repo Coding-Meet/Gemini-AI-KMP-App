@@ -2,7 +2,7 @@ package com.coding.meet.gaminiaikmp.presentation.screens.grouplistscreen
 
 sealed interface GroupUiIntent {
     data object LoadGroups : GroupUiIntent
-    data class SelectGroup(val index: Int, val groupId: String) : GroupUiIntent
+    data class SelectGroup(val groupId: String) : GroupUiIntent
     data object ClearSelection : GroupUiIntent
     data object OpenNewChatDialog : GroupUiIntent
     data object DismissNewChatDialog : GroupUiIntent
@@ -20,4 +20,3 @@ sealed interface GroupUiIntent {
     data class ShowAlert(val title: String, val description: String) : GroupUiIntent
     data object DismissAlert : GroupUiIntent
 }
-

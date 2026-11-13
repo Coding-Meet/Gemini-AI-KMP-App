@@ -3,9 +3,10 @@ package com.coding.meet.gaminiaikmp.presentation.screens.grouplistscreen
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.itemsIndexed
+import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.VerticalDivider
 import androidx.compose.material3.adaptive.currentWindowAdaptiveInfoV2
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
@@ -32,7 +33,8 @@ import kotlin.uuid.Uuid
 @Composable
 fun GroupListScreen(
     groupViewModel: GroupViewModel = koinViewModel(),
-    onGroupClick: (index: Int, groupId: String) -> Unit = { _, _ -> },
+    selectedGroupId: String? = null,
+    onGroupClick: (groupId: String) -> Unit = {},
     onSettingsClick: () -> Unit = {}
 ) {
     val groupUiState by groupViewModel.uiState.collectAsState()
@@ -41,8 +43,8 @@ fun GroupListScreen(
     groupViewModel.effect.ObserveAsEvents { effect ->
         when (effect) {
             is GroupUiEffect.NavigateToDetail -> {
-                val groupIndex = groupUiState.groupList.indexOfFirst { it.groupId == effect.groupId }
-                onGroupClick(if (groupIndex != -1) groupIndex else 0, effect.groupId)
+                groupViewModel.handleIntent(GroupUiIntent.SelectGroup(effect.groupId))
+                onGroupClick(effect.groupId)
             }
             is GroupUiEffect.ShowAlert -> {
                 groupViewModel.handleIntent(GroupUiIntent.ShowAlert(effect.title, effect.message))
@@ -84,6 +86,7 @@ fun GroupListScreen(
 
     GroupListScreenContent(
         groupUiState = groupUiState,
+        selectedGroupId = selectedGroupId,
         onNewGroupClick = {
             val apiKey = groupViewModel.getApikeyLocalStorage().trim()
             if (apiKey.isNotEmpty()) {
@@ -97,11 +100,12 @@ fun GroupListScreen(
             }
         },
         onSettingsClick = onSettingsClick,
-        onItemClick = { index, groupItem ->
+        onItemClick = { groupItem ->
             val apiKey = groupViewModel.getApikeyLocalStorage().trim()
             if (apiKey.isNotEmpty()) {
                 if (apiKey.isValidApiKey()) {
-                    onGroupClick(index, groupItem.groupId)
+                    groupViewModel.handleIntent(GroupUiIntent.SelectGroup(groupItem.groupId))
+                    onGroupClick(groupItem.groupId)
                 } else {
                     groupViewModel.handleIntent(GroupUiIntent.UpdateApiKeyText(apiKey))
                     groupViewModel.handleIntent(GroupUiIntent.OpenApiKeyDialog)
@@ -117,53 +121,73 @@ fun GroupListScreen(
 @Composable
 fun GroupListScreenContent(
     groupUiState: GroupUiState,
+    selectedGroupId: String? = null,
     onNewGroupClick: () -> Unit = {},
     onSettingsClick: () -> Unit = {},
-    onItemClick: (index: Int, group: Group) -> Unit = { _, _ -> }
+    onItemClick: (group: Group) -> Unit = {}
 ) {
     val windowAdaptiveInfo = currentWindowAdaptiveInfoV2()
     val isCompactScreen = !windowAdaptiveInfo.windowSizeClass.isWidthAtLeastBreakpoint(WindowSizeClass.WIDTH_DP_MEDIUM_LOWER_BOUND)
     val listState = rememberLazyListState()
+    val activeSelection = selectedGroupId ?: groupUiState.selectedGroupId
 
-    TopBarLayout(
-        onNewGroupClick = onNewGroupClick,
-        onSettingsClick = onSettingsClick
-    ) { paddingValues ->
+    Row(
+        modifier = Modifier
+            .fillMaxSize()
+            .background(MaterialTheme.colorScheme.background)
+    ) {
         Box(
             modifier = Modifier
-                .fillMaxSize()
-                .padding(paddingValues)
+                .weight(1f)
+                .fillMaxHeight()
         ) {
-            LazyColumn(
-                modifier = Modifier
-                    .fillMaxSize()
-                    .background(MaterialTheme.colorScheme.background),
-                state = listState,
-                verticalArrangement = if (groupUiState.groupList.isEmpty()) Arrangement.Center else Arrangement.Top,
-                contentPadding = PaddingValues(vertical = 8.dp)
-            ) {
-                itemsIndexed(groupUiState.groupList, key = { _, groupItem ->
-                    groupItem.groupId
-                }) { index, groupItem ->
-                    GroupLayout(
-                        group = groupItem,
-                        isSelected = groupUiState.currentPos == index,
-                        onClick = { onItemClick(index, groupItem) }
+            TopBarLayout(
+                onNewGroupClick = onNewGroupClick,
+                onSettingsClick = onSettingsClick
+            ) { paddingValues ->
+                Box(
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .padding(paddingValues)
+                ) {
+                    LazyColumn(
+                        modifier = Modifier
+                            .fillMaxSize()
+                            .background(MaterialTheme.colorScheme.background),
+                        state = listState,
+                        verticalArrangement = if (groupUiState.groupList.isEmpty()) Arrangement.Center else Arrangement.Top,
+                        contentPadding = PaddingValues(vertical = 8.dp)
+                    ) {
+                        items(groupUiState.groupList, key = { it.groupId }) { groupItem ->
+                            GroupLayout(
+                                group = groupItem,
+                                isSelected = !isCompactScreen && (activeSelection == groupItem.groupId),
+                                onClick = { onItemClick(groupItem) }
+                            )
+                        }
+                        if (isCompactScreen && groupUiState.groupList.isEmpty()) {
+                            item {
+                                WelcomeScreen()
+                            }
+                        }
+                    }
+
+                    AppVerticalScrollbar(
+                        lazyListState = listState,
+                        modifier = Modifier
+                            .align(Alignment.CenterEnd)
+                            .fillMaxHeight()
+                            .padding(vertical = 4.dp, horizontal = 2.dp)
                     )
                 }
-                if (isCompactScreen && groupUiState.groupList.isEmpty()) {
-                    item {
-                        WelcomeScreen()
-                    }
-                }
             }
+        }
 
-            AppVerticalScrollbar(
-                lazyListState = listState,
-                modifier = Modifier
-                    .align(Alignment.CenterEnd)
-                    .fillMaxHeight()
-                    .padding(vertical = 4.dp, horizontal = 2.dp)
+        if (!isCompactScreen) {
+            VerticalDivider(
+                modifier = Modifier.fillMaxHeight(),
+                thickness = 1.dp,
+                color = MaterialTheme.colorScheme.outlineVariant
             )
         }
     }
@@ -179,8 +203,7 @@ fun GroupListScreenPreview() {
                 Group("2", "Gemini 3.8 Flash Testing", "03 Nov, 11:15 AM", "robot_2.png"),
                 Group("3", "Compose Adaptive Layouts", "03 Nov, 01:45 PM", "robot_3.png")
             ),
-            currentPos = 0
+            selectedGroupId = "1"
         )
     )
 }
-

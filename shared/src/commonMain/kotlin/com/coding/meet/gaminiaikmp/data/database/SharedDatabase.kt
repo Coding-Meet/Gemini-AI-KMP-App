@@ -69,6 +69,11 @@ class SharedDatabase(
         }
     }
 
+    suspend fun getDatabase(): GeminiApiChatDB {
+        initDatabase()
+        return database!!
+    }
+
     suspend operator fun <R> invoke(block: suspend (GeminiApiChatDB) -> R): R {
         initDatabase()
         return block(database!!)
